@@ -1,0 +1,13 @@
+name: mstrap
+version: 0.1.0
+
+authors:
+  - Max Fierke <max@maxfierke.com>
+
+targets:
+  mstrap:
+    main: src/mstrap.cr
+
+crystal: 0.27.0
+
+license: MIT

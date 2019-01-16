@@ -15,11 +15,15 @@ bin/mstrap: deps $(SOURCES)
 	mkdir -p bin
 	$(CRYSTAL_BIN) build -o bin/mstrap src/cli.cr $(CRFLAGS)
 
+bin/mstrap-project: deps $(SOURCES)
+	mkdir -p bin
+	$(CRYSTAL_BIN) build -o bin/mstrap-project src/project_cli.cr $(CRFLAGS)
+
 .PHONY: build
-build: bin/mstrap
+build: bin/mstrap bin/mstrap-project
 
 .PHONY: deps
-deps:
+deps: shard.yml shard.lock
 	$(SHARDS_BIN) check || $(SHARDS_BIN) install
 
 .PHONY: clean
@@ -35,10 +39,10 @@ test: deps $(SOURCES)
 spec: test
 
 .PHONY: install
-install: bin/mstrap
+install: bin/mstrap bin/mstrap-project
 	mkdir -p $(PREFIX)/bin
-	cp ./bin/mstrap $(PREFIX)/bin
+	cp ./bin/mstrap* $(PREFIX)/bin
 
 .PHONY: reinstall
-reinstall: bin/mstrap
-	cp ./bin/mstrap $(MSTRAP_BIN) -rf
+reinstall: bin/mstrap bin/mstrap-project
+	cp ./bin/mstrap* $(MSTRAP_BIN) -rf

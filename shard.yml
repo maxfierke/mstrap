@@ -4,9 +4,14 @@ version: 0.1.0
 authors:
   - Max Fierke <max@maxfierke.com>
 
+dependencies:
+  baked_file_system:
+    github: schovi/baked_file_system
+    version: 0.9.8
+
 targets:
   mstrap:
-    main: src/mstrap.cr
+    main: src/cli.cr
 
 crystal: 0.27.0
 

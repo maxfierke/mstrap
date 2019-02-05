@@ -49,7 +49,7 @@ module MStrap
     end
 
     private def step
-      @step ||= if step_arg = ARGV.shift
+      @step ||= if step_arg = ARGV.shift?
         @step_args = ARGV.dup
         Step.all.keys.find { |step| step.to_s == step_arg }
       else

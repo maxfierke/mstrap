@@ -1,0 +1,25 @@
+# Useful utilities
+brew 'ack'
+brew 'autoconf'
+brew 'bash-completion'
+brew 'coreutils'
+brew 'curl'
+brew 'findutils'
+brew 'gcc'
+brew 'git'
+brew 'gnu-sed'
+brew 'gnu-tar'
+brew 'hub'
+brew 'jq'
+brew 'openssl'
+brew 'pkg-config'
+brew 'readline'
+brew 'zlib'
+
+# Language runtime managers
+brew 'nodenv'
+brew 'pyenv'
+brew 'rbenv'
+
+# Services
+brew 'nginx', restart_service: :changed

@@ -4,6 +4,7 @@ module MStrap
       include Utils::Logging
       include Utils::System
 
+      BREWFILE_PATH = "#{MStrap::Paths::RC_DIR}/Brewfile"
       STRAP_SH_URL = "https://raw.githubusercontent.com/MikeMcQuaid/strap/master/bin/strap.sh"
       STRAP_SH_PATH = "#{MStrap::Paths::RC_DIR}/vendor/strap.sh"
 
@@ -72,8 +73,15 @@ module MStrap
       end
 
       private def brew_bundle
+        unless File.exists?(BREWFILE_PATH)
+          logw "---> No Brewfile found. Copying default to #{BREWFILE_PATH}: "
+          brewfile_contents = FS.get("files/Brewfile").gets_to_end
+          File.write(BREWFILE_PATH, brewfile_contents)
+          success "OK"
+        end
+
         log "---> Installing dependencies from Brewfile (may take a while): "
-        unless cmd "brew bundle --file=#{MStrap::Paths::RC_DIR}/Brewfile #{debug? ? "--verbose" : ""}"
+        unless cmd "brew bundle --file=#{BREWFILE_PATH} #{debug? ? "--verbose" : ""}"
           logc "Uhh oh, something went wrong in homebrewland. Check above or in #{MStrap::Paths::LOG_FILE}."
         end
         success "OK"

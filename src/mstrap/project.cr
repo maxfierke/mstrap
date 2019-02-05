@@ -2,11 +2,10 @@ module MStrap
   class Project
     include Utils::System
 
-    @hostname : String
     @name : String
     @path : String
 
-    getter :name, :cname, :path, :hostname, :repo
+    getter :name, :cname, :path, :repo
 
     def self.from_yaml(config_path)
       config = YAML.parse(File.read(config_path))
@@ -16,12 +15,10 @@ module MStrap
 
     def self.for(project)
       case project["type"].as(String?)
-      when "ember-cli"
-        Projects::EmberCLIProject
-      # when "phoenix"
-      #   PhoenixProject
       when "rails"
         Projects::RailsProject
+      when "web"
+        Projects::WebProject
       else
         Project
       end.new(project)
@@ -32,7 +29,6 @@ module MStrap
       @cname = project_config["cname"].as(String)
       @path = "#{MStrap::Paths::SRC_DIR}/#{project_config["path"].as(String?) || cname}"
       @repo = project_config["repo"].as(String)
-      @hostname = project_config["hostname"].as(String?) || "#{cname}.localhost"
     end
 
     def git_uri
@@ -51,11 +47,6 @@ module MStrap
       else
         MStrap::ProjectBootstrapper.new(self).bootstrap
       end
-    end
-
-    def nginx_upstream
-      # This shouldn't be necessary but there seems to be a compiler bug
-      nil
     end
   end
 end

@@ -18,7 +18,7 @@ module MStrap
 
     private def setup_nginx_conf
       project = @project
-      return unless project.responds_to?(:nginx_upstream)
+      return unless project.is_a?(Projects::WebProject)
 
       nginx_conf_tpl = FS.get("files/nginx.conf.erb").gets_to_end
       rc_nginx_conf_path = File.join(MStrap::Paths::RC_DIR, "nginx_#{project.cname}.conf.erb")

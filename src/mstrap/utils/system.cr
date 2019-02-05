@@ -13,11 +13,11 @@ module MStrap
         output = Process::Redirect::Inherit,
         error = Process::Redirect::Inherit
       )
-        logd "+ #{env ? env : ""}#{args.join(" ")}"
+        logd "+ #{env ? env : ""} #{command} #{args.join(" ")}"
 
         status = Process.run(
           command,
-          args.to_a,
+          args.size > 0 ? args.to_a : nil,
           shell: shell,
           env: env,
           input: input,

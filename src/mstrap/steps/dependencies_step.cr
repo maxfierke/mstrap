@@ -61,7 +61,7 @@ module MStrap
           FileUtils.mkdir_p("#{MStrap::Paths::RC_DIR}/vendor")
 
           HTTP::Client.get(STRAP_SH_URL) do |response|
-            File.write(STRAP_SH_PATH, response.body_io.gets)
+            File.write(STRAP_SH_PATH, response.body_io.gets_to_end)
           end
         end
 
@@ -75,7 +75,7 @@ module MStrap
       private def brew_bundle
         unless File.exists?(BREWFILE_PATH)
           logw "---> No Brewfile found. Copying default to #{BREWFILE_PATH}: "
-          brewfile_contents = FS.get("files/Brewfile").gets_to_end
+          brewfile_contents = FS.get("Brewfile").gets_to_end
           File.write(BREWFILE_PATH, brewfile_contents)
           success "OK"
         end

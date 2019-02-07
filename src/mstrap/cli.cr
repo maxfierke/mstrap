@@ -111,7 +111,8 @@ module MStrap
     end
 
     private def name
-      @name ||= ENV["MSTRAP_USER_FULLNAME"]? ||
+      @name ||= options[:name]?.as(String?) ||
+        ENV["MSTRAP_USER_FULLNAME"]? ||
         ask("What is your name (First and Last)?")
     end
 

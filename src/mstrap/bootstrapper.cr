@@ -3,16 +3,16 @@ module MStrap
     include Utils::Logging
 
     DEFAULT_STEPS = [
-      :update,
-      :bootstrap,
-      :config,
-      :services,
-      :projects,
-      :elixir,
-      :node,
-      :python,
-      :ruby,
-      :migrations
+      #:update,
+      :dependencies,
+      :shell,
+      #:services,
+      #:projects,
+      #:elixir,
+      #:node,
+      #:python,
+      #:ruby,
+      #:migrations
     ]
 
     @step : Symbol?

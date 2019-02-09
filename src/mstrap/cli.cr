@@ -89,15 +89,6 @@ module MStrap
     end
 
     def run!
-      # # Save terminal status on exit
-      # stty_save = `stty -g`.chomp
-
-      # Signal::INT.trap do
-      #   print "\n"
-      #   system("stty", [stty_save])
-      #   exit 1
-      # end
-
       MStrap::Bootstrapper.new(options.merge({
         :config_path => config_path,
         :name => name,

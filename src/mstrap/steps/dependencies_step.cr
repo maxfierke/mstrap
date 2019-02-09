@@ -37,7 +37,6 @@ module MStrap
         ENV["STRAP_GIT_EMAIL"]    = options[:email].as(String)
         ENV["STRAP_GITHUB_USER"]  = github
         ENV["STRAP_GITHUB_TOKEN"] = github_access_token
-        ENV["HOMEBREW_NO_ENV_FILTERING"] = "1"
       end
 
       private def setup_hub_config

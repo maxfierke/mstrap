@@ -6,7 +6,7 @@ module MStrap
       #:update,
       :dependencies,
       :shell,
-      #:services,
+      :services,
       #:projects,
       #:elixir,
       #:node,

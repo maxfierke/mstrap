@@ -29,6 +29,10 @@ module MStrap
         new(options).bootstrap
       end
 
+      def self.requires_mstrap?
+        false
+      end
+
       def initialize(@options : CLIOptions)
         super
         @name     = options[:name].as(String)

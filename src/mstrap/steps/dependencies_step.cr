@@ -8,6 +8,10 @@ module MStrap
       STRAP_SH_URL = "https://raw.githubusercontent.com/MikeMcQuaid/strap/master/bin/strap.sh"
       STRAP_SH_PATH = "#{MStrap::Paths::RC_DIR}/vendor/strap.sh"
 
+      def self.requires_mstrap?
+        false
+      end
+
       def bootstrap
         set_strap_env!
         setup_hub_config

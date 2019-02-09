@@ -36,7 +36,12 @@ module MStrap
 
       def logc(msg)
         logf "!!! #{msg}"
-        abort msg.colorize(:red)
+        if debug?
+          abort msg.colorize(:red)
+        else
+          puts msg.colorize(:red)
+          exit 1
+        end
       end
     end
   end

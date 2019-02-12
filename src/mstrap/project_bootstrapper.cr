@@ -47,10 +47,11 @@ module MStrap
     end
 
     private def setup_nodenv
-      node_version_path = File.join(project.path, ".node-version")
-      return unless File.exists?(node_version_path)
-      node_version = File.read(node_version_path).chomp
-      cmd({ "NODENV_VERSION" => node_version }, "brew", "bootstrap-nodenv-node")
+      project = @project
+      return unless project.responds_to?(:with_project_node)
+      project.with_project_node do
+        cmd "brew bootstrap-nodenv-node"
+      end
     end
   end
 end

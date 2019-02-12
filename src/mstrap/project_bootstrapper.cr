@@ -11,8 +11,9 @@ module MStrap
     def bootstrap
       setup_nginx_conf
       Dir.cd(project.path) do
-        setup_rbenv
         setup_nodenv
+        setup_rbenv
+        setup_pyenv
       end
     end
 
@@ -38,19 +39,32 @@ module MStrap
       FileUtils.rm(rc_nginx_conf_path)
     end
 
-    private def setup_rbenv
-      project = @project
-      return unless project.responds_to?(:with_project_ruby)
-      project.with_project_ruby do
-        cmd "brew bootstrap-rbenv-ruby"
-      end
-    end
-
     private def setup_nodenv
       project = @project
       return unless project.responds_to?(:with_project_node)
       project.with_project_node do
         cmd "brew bootstrap-nodenv-node"
+      end
+    end
+
+    private def setup_pyenv
+      project = @project
+      return unless project.responds_to?(:with_project_python)
+      project.with_project_python do
+        cmd "pyenv install #{python_version} --skip-existing"
+        cmd "pyenv rehash"
+
+        if File.exists?("requirements.txt")
+          cmd "pip install -r requirements.txt"
+        end
+      end
+    end
+
+    private def setup_rbenv
+      project = @project
+      return unless project.responds_to?(:with_project_ruby)
+      project.with_project_ruby do
+        cmd "brew bootstrap-rbenv-ruby"
       end
     end
   end

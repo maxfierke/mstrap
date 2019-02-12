@@ -4,6 +4,7 @@ module MStrap
 
     DEFAULT_STEPS = [
       #:update,
+      :init,
       :dependencies,
       :shell,
       :services,
@@ -24,8 +25,6 @@ module MStrap
 
     def bootstrap
       #tracker.identify
-
-      FileUtils.mkdir_p(MStrap::Paths::RC_DIR, 0o775)
 
       if step_key = step
         validate_step!(step_key)

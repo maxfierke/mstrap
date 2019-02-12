@@ -56,14 +56,6 @@ module MStrap
       end
 
       private def strap_sh
-        unless File.exists?(MStrap::Paths::STRAP_SH_PATH)
-          FileUtils.mkdir_p("#{MStrap::Paths::RC_DIR}/vendor")
-
-          HTTP::Client.get(MStrap::Paths::STRAP_SH_URL) do |response|
-            File.write(MStrap::Paths::STRAP_SH_PATH, response.body_io.gets_to_end)
-          end
-        end
-
         logn "==> Running strap.sh: "
         unless cmd "sh #{MStrap::Paths::STRAP_SH_PATH} #{debug? ? "--debug" : ""}"
           logc "Uhh oh, something went wrong in strap.sh-land. Check above or in #{MStrap::Paths::LOG_FILE}."
@@ -72,13 +64,6 @@ module MStrap
       end
 
       private def brew_bundle
-        unless File.exists?(MStrap::Paths::BREWFILE)
-          logw "---> No Brewfile found. Copying default to #{MStrap::Paths::BREWFILE}: "
-          brewfile_contents = FS.get("Brewfile").gets_to_end
-          File.write(MStrap::Paths::BREWFILE, brewfile_contents)
-          success "OK"
-        end
-
         log "---> Installing dependencies from Brewfile (may take a while): "
         unless cmd "brew bundle --file=#{MStrap::Paths::BREWFILE} #{debug? ? "--verbose" : ""}"
           logc "Uhh oh, something went wrong in homebrewland. Check above or in #{MStrap::Paths::LOG_FILE}."

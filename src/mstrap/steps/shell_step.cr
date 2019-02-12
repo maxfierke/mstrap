@@ -15,8 +15,6 @@ module MStrap
       needed environment to continue.
       MSG
       UNSUPPORTED_SHELL_MSG = <<-MSG
-      Think you're cooler than us, huh?
-
       mstrap couldn't detect a supported shell, so you're on your own here.
 
       Using the the runtime configuration of whatever your shell is, make sure that it

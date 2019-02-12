@@ -22,6 +22,10 @@ module MStrap
           MStrap.debug = true
         end
 
+        opts.on("-f", "--force", "Force overwrite of existing config with reckless abandon") do |force|
+          options[:force] = true
+        end
+
         opts.on(
           "-c",
           "--config-path [CONFIG_PATH]",

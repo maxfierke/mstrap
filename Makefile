@@ -18,7 +18,8 @@ override CRFLAGS += $(if $(RELEASE),--release ,--debug )$(if $(STATIC),--static 
 .PHONY: all
 all: build
 
-libs: vendor/libcrypto.a vendor/libevent.a vendor/libgc.a vendor/libpcre.a vendor/libssl.a vendor/libyaml.a
+libs: vendor/libevent.a vendor/libgc.a vendor/libpcre.a vendor/libyaml.a
+
 
 bin/mstrap: deps libs $(SOURCES)
 	mkdir -p bin
@@ -56,10 +57,6 @@ install: bin/mstrap bin/mstrap-project
 reinstall: bin/mstrap bin/mstrap-project
 	cp ./bin/mstrap* $(MSTRAP_BIN) -rf
 
-vendor/libcrypto.a:
-	mkdir -p $(STATIC_LIBS_DIR)
-	cp -f $(OPENSSL_LIB_PATH)/libcrypto.a $(STATIC_LIBS_DIR)
-
 vendor/libevent.a:
 	mkdir -p $(STATIC_LIBS_DIR)
 	cp -f $(LIBEVENT_LIB_PATH)/libevent.a $(STATIC_LIBS_DIR)
@@ -71,10 +68,6 @@ vendor/libgc.a:
 vendor/libpcre.a:
 	mkdir -p $(STATIC_LIBS_DIR)
 	cp -f $(LIBPCRE_LIB_PATH)/libpcre.a $(STATIC_LIBS_DIR)
-
-vendor/libssl.a:
-	mkdir -p $(STATIC_LIBS_DIR)
-	cp -f $(OPENSSL_LIB_PATH)/libssl.a $(STATIC_LIBS_DIR)
 
 vendor/libyaml.a:
 	mkdir -p $(STATIC_LIBS_DIR)

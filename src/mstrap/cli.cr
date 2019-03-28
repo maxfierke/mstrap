@@ -12,7 +12,11 @@ module MStrap
 
     def initialize(args)
       @options = CLIOptions {
-        :argv => args.dup
+        :argv => args.dup,
+        :force => false,
+        :config_path => MStrap::Paths::CONFIG_YML,
+        :skip_migrations => false,
+        :skip_update => false
       }
 
       OptionParser.new do |opts|
@@ -94,15 +98,10 @@ module MStrap
 
     def run!
       MStrap::Bootstrapper.new(options.merge({
-        :config_path => config_path,
         :name => name,
         :email => email,
         :github => github
       })).bootstrap
-    end
-
-    private def config_path
-      @config_path ||= options[:config_path]?.as?(String) || MStrap::Paths::CONFIG_YML
     end
 
     private def name

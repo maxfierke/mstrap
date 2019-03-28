@@ -14,7 +14,7 @@ module MStrap
     end
 
     private def force?
-      !!options[:force]
+      !!options[:force]?
     end
 
     private def create_rc_dir

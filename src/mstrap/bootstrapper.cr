@@ -24,17 +24,17 @@ module MStrap
     end
 
     def bootstrap
-      #tracker.identify
+      tracker.identify
 
       if step_key = step
         validate_step!(step_key)
         run_step!(step_key)
-        #tracker.track("Single Step Run: #{step_key}", { step: step_key.to_s })
+        tracker.track("Single Step Run: #{step_key}", { step: step_key.to_s })
         success "`mstrap #{step_key}` has completed successfully!"
       else
         logw "Strap in!"
         DEFAULT_STEPS.each { |s| run_step!(s) }
-        #tracker.track("Full Run")
+        tracker.track("Full Run")
         success "mstrap has completed successfully!"
       end
 
@@ -71,7 +71,7 @@ module MStrap
     end
 
     private def tracker
-      #@tracker ||= MStrap::Tracker.new(options)
+      @tracker ||= MStrap::Tracker.for(options)
     end
   end
 end

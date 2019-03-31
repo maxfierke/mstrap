@@ -4,8 +4,12 @@ module MStrap
 
     include Utils::System
 
+    alias ProjectHash = Hash(String, Array(String) | String | Int32 | Nil)
+
+    @cname : String
     @name : String
     @path : String
+    @repo : String
 
     getter :name, :cname, :path, :repo
 
@@ -15,17 +19,15 @@ module MStrap
       config["projects"].as_a.map { |project| self.for(project) }
     end
 
-    def self.for(project)
-      # TODO: This is terrible and gross, but will be refactored later
-      project_type_val = project["type"]
-      project_type = if project_type_val.is_a?(Array(String)) || project_type_val.is_a?(Array(YAML::Any::Type))
-        raise "BUG: type must be a string"
-      elsif project_type_val.is_a?(YAML::Any)
-        project_type_val.as_s?
-      else
-        project_type_val.as(String?)
-      end
+    def self.for(project : YAML::Any)
+      class_for(project["type"].as_s?).new(project)
+    end
 
+    def self.for(project : ProjectHash)
+      class_for(project["type"].as?(String)).new(project)
+    end
+
+    def self.class_for(project_type)
       case project_type
       when "javascript"
         Projects::JavascriptProject
@@ -39,21 +41,21 @@ module MStrap
         Projects::WebProject
       else
         Project
-      end.new(project)
+      end
     end
 
-    def initialize(project_config = {} of String => String | Int32)
-      if project_config.is_a?(YAML::Any)
-        @name = project_config["name"].as_s
-        @cname = project_config["cname"].as_s
-        @path = File.join(MStrap::Paths::SRC_DIR, project_config["path"]? ? project_config["path"].as_s : cname)
-        @repo = project_config["repo"].as_s
-      else
-        @name = project_config["name"].as(String)
-        @cname = project_config["cname"].as(String)
-        @path = File.join(MStrap::Paths::SRC_DIR, project_config["path"]? ? project_config["path"].as(String) : cname)
-        @repo = project_config["repo"].as(String)
-      end
+    def initialize(project_config : YAML::Any)
+      @name = project_config["name"].as_s
+      @cname = project_config["cname"].as_s
+      @path = File.join(MStrap::Paths::SRC_DIR, project_config["path"]? ? project_config["path"].as_s : cname)
+      @repo = project_config["repo"].as_s
+    end
+
+    def initialize(project_config : ProjectHash)
+      @name = project_config["name"].as(String)
+      @cname = project_config["cname"].as(String)
+      @path = File.join(MStrap::Paths::SRC_DIR, project_config["path"]? ? project_config["path"].as(String) : cname)
+      @repo = project_config["repo"].as(String)
     end
 
     def git_uri

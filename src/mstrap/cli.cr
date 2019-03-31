@@ -81,7 +81,7 @@ module MStrap
         opts.on(
           "--skip-project-update",
           "Skip auto-update of projects"
-        ) do |skip_update|
+        ) do |skip_project_update|
           options[:skip_project_update] = true
         end
 

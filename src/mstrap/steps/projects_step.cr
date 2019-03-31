@@ -11,7 +11,7 @@ module MStrap
       end
 
       def bootstrap
-        Dir.mkdir(Paths::PROJECT_SOCKETS) unless Dir.exists?(Paths::PROJECT_SOCKETS)
+        Dir.mkdir_p(Paths::PROJECT_SOCKETS)
 
         logn "==> Fetching, updating, and bootstrapping projects"
         projects.not_nil!.each do |project|

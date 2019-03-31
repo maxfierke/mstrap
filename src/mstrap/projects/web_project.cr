@@ -2,21 +2,23 @@ module MStrap
   module Projects
     class WebProject < Project
       @hostname : String
+      @port : Int32?
+      @upstream : String?
 
       getter :hostname, :port
 
-      def initialize(project_config = {} of String => String | Int32)
+      def initialize(project_config : YAML::Any)
         super(project_config)
+        @hostname = project_config["hostname"]? ? project_config["hostname"].as_s : "#{cname}.localhost"
+        @port = project_config["port"]? ? project_config["port"].as_s.to_i : nil
+        @nginx_upstream = project_config["upstream"]? ? project_config["upstream"].as_s : nil
+      end
 
-        if project_config.is_a?(YAML::Any)
-          @hostname = project_config["hostname"]? ? project_config["hostname"].as_s : "#{cname}.localhost"
-          @port = project_config["port"]? ? project_config["port"].as_s.to_i : nil
-          @nginx_upstream = project_config["upstream"]? ? project_config["upstream"].as_s : nil
-        else
-          @hostname = project_config["hostname"]? ? project_config["hostname"].as(String) : "#{cname}.localhost"
-          @port = project_config["port"]?.as(Int32)
-          @nginx_upstream = project_config["upstream"]?.as(String?)
-        end
+      def initialize(project_config : Project::ProjectHash)
+        super(project_config)
+        @hostname = project_config["hostname"]? ? project_config["hostname"].as(String) : "#{cname}.localhost"
+        @port = project_config["port"]? ? project_config["port"].as(Int32) : nil
+        @nginx_upstream = project_config["upstream"]?.as(String?)
       end
 
       def nginx_upstream

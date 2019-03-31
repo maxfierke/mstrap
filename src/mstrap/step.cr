@@ -1,8 +1,11 @@
 module MStrap
   abstract class Step
     getter :options
+    getter :config_path
 
-    def initialize(@options : CLIOptions)
+    def initialize(options : CLIOptions)
+      @options = options
+      @config_path = options[:config_path].as(String)
     end
 
     abstract def bootstrap

@@ -8,11 +8,11 @@ module MStrap
       end
 
       protected def default_bootstrap
-        super
-
         Dir.cd(path) do
           setup_nodenv
         end
+
+        super
       end
     end
   end

@@ -8,7 +8,8 @@ module MStrap
     CONFIG_YML = File.join(RC_DIR, "config.yml")
     HUB_CONFIG_XML = File.join(XDG_CONFIG_DIR, "hub")
     LOG_FILE = File.join(RC_DIR, "mstrap.log")
-    PROJECT_SOCKETS = File.join(RC_DIR, "project-sockets")
+    PROJECT_SITES = File.join(RC_DIR, "project-sites")
+    PROJECT_SOCKETS = File.join(PROJECT_SITES, "sockets")
     SERVICES_YML = File.join(RC_DIR, "services.yml")
     STRAP_SH_PATH = File.join(MStrap::Paths::RC_DIR, "vendor", "strap.sh")
     STRAP_SH_URL = "https://raw.githubusercontent.com/MikeMcQuaid/strap/master/bin/strap.sh"

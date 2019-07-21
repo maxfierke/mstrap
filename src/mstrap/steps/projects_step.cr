@@ -6,8 +6,6 @@ module MStrap
       @projects : Array(Project) | Nil
 
       def bootstrap
-        Dir.mkdir_p(Paths::PROJECT_SOCKETS)
-
         logn "==> Fetching, updating, and bootstrapping projects"
         projects.not_nil!.each do |project|
           log "---> Fetching #{project.name}: "

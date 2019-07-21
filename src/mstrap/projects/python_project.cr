@@ -8,11 +8,11 @@ module MStrap
       end
 
       protected def default_bootstrap
-        super
-
         Dir.cd(path) do
           setup_pyenv
         end
+
+        super
       end
     end
   end

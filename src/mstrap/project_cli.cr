@@ -1,12 +1,10 @@
 module MStrap
   class ProjectCLI
-    PROJECT_TYPES = [
-      :generic,
+    PROJECT_RUNTIMES = [
+      :unknown,
       :javascript,
       :python,
-      :rails,
       :ruby,
-      :web
     ]
 
     getter :project_def
@@ -54,10 +52,10 @@ module MStrap
 
         opts.on(
           "-t",
-          "--type TYPE",
-          "Project Type\n\tOne of #{PROJECT_TYPES.map(&.to_s).join(", ")}"
-        ) do |t|
-          project_def.type = t
+          "--runtime RUNTIME",
+          "Project Runtime\n\tOne of #{PROJECT_RUNTIMES.map(&.to_s).join(", ")}"
+        ) do |runtime|
+          project_def.runtime = runtime
         end
 
         opts.on(

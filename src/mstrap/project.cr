@@ -1,49 +1,70 @@
 module MStrap
   class Project
-    BOOTSTRAP_SCRIPT = File.join("script", "bootstrap")
-
+    extend Utils::Logging
+    include Utils::Logging
     include Utils::System
 
-    alias ProjectHash = Hash(String, Array(String) | String | Int32 | Nil)
+    BOOTSTRAP_SCRIPT = File.join("script", "bootstrap")
 
     @cname : String
+    @hostname : String
     @name : String
     @path : String
+    @port : Int32?
     @repo : String
     @run_scripts = true
-    @type : String
+    @runtime : String
+    @upstream : String?
+    @websocket : Bool
+    @web : Bool
 
-    getter :name, :cname, :path, :repo, :type
-    getter? :run_scripts
+    getter :cname, :hostname, :name, :path, :port, :repo, :runtime, :websocket
+    getter? :run_scripts, :web
 
     def self.for(project_def : Defs::ProjectDef)
-      case project_def.type
+      case project_def.runtime
       when "javascript"
         Projects::JavascriptProject
       when "python"
         Projects::PythonProject
-      when "rails"
-        Projects::RailsProject
       when "ruby"
         Projects::RubyProject
-      when "web"
-        Projects::WebProject
       else
+        project_def.runtime = "unknown"
         Project
       end.new(project_def)
     end
 
     def initialize(project_def : Defs::ProjectDef)
-      @name = project_def.name
       @cname = project_def.cname
+      @name = project_def.name
+      @hostname = project_def.hostname || "#{cname}.localhost"
       @path = File.join(MStrap::Paths::SRC_DIR, project_def.path_present? ? project_def.path.not_nil! : cname)
+      @port = project_def.port
       @repo = project_def.repo
       @run_scripts = project_def.run_scripts
-      @type = project_def.type
+      @runtime = project_def.runtime
+      @upstream = project_def.upstream
+      @websocket = project_def.websocket
+      @web = if project_def.web_present?
+        project_def.web
+      else
+        project_def.hostname_present? || project_def.port_present? || project_def.upstream_present?
+      end
     end
 
     def git_uri
       @git_uri ||= "git@github.com:#{repo}.git"
+    end
+
+    def upstream
+      @upstream ||= begin
+        if port = @port
+          "localhost:#{port}"
+        else
+          "unix:#{Paths::PROJECT_SOCKETS}/#{cname}"
+        end
+      end
     end
 
     def clone
@@ -87,15 +108,21 @@ module MStrap
 
     def bootstrap
       if File.exists?(File.join(path, BOOTSTRAP_SCRIPT)) && run_scripts?
+        logd "Found #{BOOTSTRAP_SCRIPT}, executing instead of using '#{runtime}' defaults."
         Dir.cd(path) do
           cmd BOOTSTRAP_SCRIPT
         end
       else
+        logd "Bootstrapping '#{name}' with runtime '#{runtime}' defaults."
         default_bootstrap
       end
     end
 
     protected def default_bootstrap
+      if web?
+        logd "'#{name}' is a web project. Running web bootstrapper."
+        WebBootstrapper.new(self).bootstrap
+      end
     end
   end
 end

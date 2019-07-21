@@ -1,7 +1,10 @@
 module MStrap
   module Defs
     class ProjectDef
-      GENERIC_TYPE = "generic"
+      DEFAULT_RUN_SCRIPTS = true
+      DEFAULT_RUNTIME = "unknown"
+      DEFAULT_WEB = false
+      DEFAULT_WEBSOCKET = false
 
       YAML.mapping(
         name: String,
@@ -22,15 +25,27 @@ module MStrap
         run_scripts: {
           type: Bool,
           nilable: false,
-          default: true,
+          default: DEFAULT_RUN_SCRIPTS,
         },
-        type: {
+        runtime: {
           type: String,
           nilable: false,
-          default: GENERIC_TYPE
+          default: DEFAULT_RUNTIME
         },
         upstream: {
           type: String?,
+          presence: true
+        },
+        websocket: {
+          type: Bool,
+          nilable: false,
+          default: DEFAULT_WEBSOCKET,
+          presence: true
+        },
+        web: {
+          type: Bool,
+          nilable: false,
+          default: DEFAULT_WEB,
           presence: true
         }
       )
@@ -39,8 +54,10 @@ module MStrap
         @name = ""
         @cname = ""
         @repo = ""
-        @type = GENERIC_TYPE
-        @run_scripts = true
+        @run_scripts = DEFAULT_RUN_SCRIPTS
+        @runtime = DEFAULT_RUNTIME
+        @websocket = DEFAULT_WEBSOCKET
+        @web = DEFAULT_WEB
       end
     end
   end

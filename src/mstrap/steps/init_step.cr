@@ -13,6 +13,22 @@ module MStrap
       create_brewfile_unless_exists
     end
 
+    private def update_strap_sh?
+      if File.exists?(MStrap::Paths::STRAP_SH_PATH)
+        strap_sh_age.days >= 30 || force?
+      else
+        true
+      end
+    end
+
+    private def strap_sh_age
+      if file_info = File.info?(MStrap::Paths::STRAP_SH_PATH)
+        Time.now - file_info.modification_time
+      else
+        Time::Span.zero
+      end
+    end
+
     private def force?
       !!options[:force]?
     end
@@ -22,7 +38,8 @@ module MStrap
     end
 
     private def fetch_strap_sh
-      unless File.exists?(MStrap::Paths::STRAP_SH_PATH) || force?
+      if update_strap_sh?
+        logw "---> Fetching latest strap.sh (older than 30 days or missing): "
         FileUtils.mkdir_p("#{MStrap::Paths::RC_DIR}/vendor")
 
         HTTP::Client.get(MStrap::Paths::STRAP_SH_URL) do |response|
@@ -32,8 +49,8 @@ module MStrap
     end
 
     private def create_brewfile_unless_exists
-      unless File.exists?(MStrap::Paths::BREWFILE) || force?
-        logw "---> No Brewfile found. Copying default to #{MStrap::Paths::BREWFILE}: "
+      if !File.exists?(MStrap::Paths::BREWFILE) || force?
+        logw "---> No Brewfile found or update requested with --force. Copying default to #{MStrap::Paths::BREWFILE}: "
         brewfile_contents = FS.get("Brewfile").gets_to_end
         File.write(MStrap::Paths::BREWFILE, brewfile_contents)
         success "OK"

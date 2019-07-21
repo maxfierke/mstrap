@@ -1,3 +1,5 @@
+tap 'github/bootstrap'
+
 # Useful utilities
 brew 'ack'
 brew 'autoconf'

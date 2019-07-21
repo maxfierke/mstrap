@@ -5,7 +5,6 @@ BDWGC_LIB_PATH    ?= $(shell pkg-config --libs-only-L bdw-gc | cut -c 3-)
 LIBEVENT_LIB_PATH ?= $(shell pkg-config --libs-only-L libevent | cut -c 3-)
 LIBPCRE_LIB_PATH  ?= $(shell pkg-config --libs-only-L libpcre | cut -c 3-)
 LIBYAML_LIB_PATH  ?= $(shell pkg-config --libs-only-L yaml-0.1 | cut -c 3-)
-OPENSSL_LIB_PATH  ?= $(shell brew --prefix)/opt/openssl/lib
 PREFIX      ?= /usr/local
 RELEASE     ?=
 STATIC      ?=

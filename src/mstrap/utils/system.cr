@@ -15,7 +15,7 @@ module MStrap
       )
         logd "+ #{env ? env : ""} #{command} #{args.join(" ")}"
 
-        status = Process.run(
+        child = Process.new(
           command,
           args.size > 0 ? args.to_a : nil,
           shell: shell,
@@ -24,6 +24,15 @@ module MStrap
           output: output,
           error: error
         )
+
+        at_exit {
+          # Cleanup this process when we exit, if it's still running. (e.g. receiving SIGINT)
+          unless !child || child.terminated?
+            child.kill
+          end
+        }
+
+        status = child.wait
         status.success?
       end
 

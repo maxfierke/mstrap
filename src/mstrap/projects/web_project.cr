@@ -7,22 +7,15 @@ module MStrap
 
       getter :hostname, :port
 
-      def initialize(project_config : YAML::Any)
-        super(project_config)
-        @hostname = project_config["hostname"]? ? project_config["hostname"].as_s : "#{cname}.localhost"
-        @port = project_config["port"]? ? project_config["port"].as_s.to_i : nil
-        @nginx_upstream = project_config["upstream"]? ? project_config["upstream"].as_s : nil
+      def initialize(project_def : Defs::ProjectDef)
+        super
+        @hostname = project_def.hostname || "#{cname}.localhost"
+        @port = project_def.port
+        @upstream = project_def.upstream
       end
 
-      def initialize(project_config : Project::ProjectHash)
-        super(project_config)
-        @hostname = project_config["hostname"]? ? project_config["hostname"].as(String) : "#{cname}.localhost"
-        @port = project_config["port"]? ? project_config["port"].as(Int32) : nil
-        @nginx_upstream = project_config["upstream"]?.as(String?)
-      end
-
-      def nginx_upstream
-        @nginx_upstream ||= begin
+      def upstream
+        @upstream ||= begin
           if port = @port
             "localhost:#{port}"
           else
@@ -45,7 +38,7 @@ module MStrap
         cmd(
           "brew",
           "setup-nginx-conf",
-          "--extra-val=upstream=#{nginx_upstream}",
+          "--extra-val=upstream=#{upstream}",
           hostname,
           path,
           rc_nginx_conf_path

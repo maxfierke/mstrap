@@ -10,25 +10,14 @@ module MStrap
     @name : String
     @path : String
     @repo : String
+    @run_scripts = true
+    @type : String
 
-    getter :name, :cname, :path, :repo
+    getter :name, :cname, :path, :repo, :type
+    getter? :run_scripts
 
-    def self.from_yaml(config_path)
-      config = YAML.parse(File.read(config_path))
-      raise "Not a valid project file" unless config["projects"]?
-      config["projects"].as_a.map { |project| self.for(project) }
-    end
-
-    def self.for(project : YAML::Any)
-      class_for(project["type"].as_s?).new(project)
-    end
-
-    def self.for(project : ProjectHash)
-      class_for(project["type"].as?(String)).new(project)
-    end
-
-    def self.class_for(project_type)
-      case project_type
+    def self.for(project_def : Defs::ProjectDef)
+      case project_def.type
       when "javascript"
         Projects::JavascriptProject
       when "python"
@@ -41,21 +30,16 @@ module MStrap
         Projects::WebProject
       else
         Project
-      end
+      end.new(project_def)
     end
 
-    def initialize(project_config : YAML::Any)
-      @name = project_config["name"].as_s
-      @cname = project_config["cname"].as_s
-      @path = File.join(MStrap::Paths::SRC_DIR, project_config["path"]? ? project_config["path"].as_s : cname)
-      @repo = project_config["repo"].as_s
-    end
-
-    def initialize(project_config : ProjectHash)
-      @name = project_config["name"].as(String)
-      @cname = project_config["cname"].as(String)
-      @path = File.join(MStrap::Paths::SRC_DIR, project_config["path"]? ? project_config["path"].as(String) : cname)
-      @repo = project_config["repo"].as(String)
+    def initialize(project_def : Defs::ProjectDef)
+      @name = project_def.name
+      @cname = project_def.cname
+      @path = File.join(MStrap::Paths::SRC_DIR, project_def.path_present? ? project_def.path.not_nil! : cname)
+      @repo = project_def.repo
+      @run_scripts = project_def.run_scripts
+      @type = project_def.type
     end
 
     def git_uri
@@ -101,8 +85,8 @@ module MStrap
       end
     end
 
-    def bootstrap(force_default = false)
-      if File.exists?(File.join(path, BOOTSTRAP_SCRIPT)) && !force_default
+    def bootstrap
+      if File.exists?(File.join(path, BOOTSTRAP_SCRIPT)) && run_scripts?
         Dir.cd(path) do
           cmd BOOTSTRAP_SCRIPT
         end

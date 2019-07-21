@@ -21,8 +21,6 @@ module MStrap
       is doing the equivalent of `source ~/.mstrap/env.sh` when the shell is initialized.
       MSG
 
-      getter :name, :email, :github
-
       def self.bootstrap(options)
         new(options).bootstrap
       end
@@ -31,17 +29,10 @@ module MStrap
         false
       end
 
-      def initialize(@options : CLIOptions)
-        super
-        @name     = options[:name].as(String)
-        @email    = options[:email].as(String)
-        @github   = options[:github].as(String)
-      end
-
       def bootstrap
         Dir.mkdir_p(MStrap::Paths::RC_DIR)
 
-        contents = EnvSh.new(name, email, github).to_s
+        contents = EnvSh.new(user.name, user.email, user.github).to_s
         File.write(env_sh_path, contents, perm: 0o600)
 
         unless mstrapped?

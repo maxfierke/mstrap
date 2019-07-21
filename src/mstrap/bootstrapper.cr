@@ -16,10 +16,12 @@ module MStrap
       #:migrations
     ]
 
+    @options : CLIOptions
     @step : Symbol?
 
-    def initialize(options = MStrap::CLIOptions.new)
-      @options = options
+    def initialize(config : Configuration)
+      @config = config
+      @options = config.cli
       @step_args = [] of String
     end
 
@@ -41,10 +43,10 @@ module MStrap
       logw "Remember to restart your terminal, as the contents of your environment may have shifted."
     end
 
-    private getter :options, :step_args
+    private getter :config, :options, :step_args
 
     private def config_path
-      @config_path ||= options[:config_path].as(String)
+      @config_path ||= options.config_path
     end
 
     private def step
@@ -65,9 +67,16 @@ module MStrap
     end
 
     private def run_step!(step)
-      Step.all[step].new(options.merge({
-        :step_args => step_args
-      })).bootstrap
+      # TODO: Refactor this
+      step_options = options.dup
+      step_options.step_args = step_args
+      step_configuration = Configuration.new(
+        cli: step_options,
+        profile: config.profile,
+        user: config.user
+      )
+
+      Step.all[step].new(step_configuration).bootstrap
     end
 
     private def tracker

@@ -9,14 +9,14 @@ module MStrap
       :web
     ]
 
-    getter :options
+    getter :project_def
 
     def self.run!(args)
       new(args).run!
     end
 
     def initialize(args)
-      @options = {} of String => Nil | Int32 | String | Array(String)
+      @project_def = Defs::ProjectDef.new
 
       OptionParser.new do |opts|
         opts.banner = "Usage: mstrap-project [options]"
@@ -25,7 +25,7 @@ module MStrap
           "--path PATH",
           "Project Path\n\te.g. my-app-repo/backend"
         ) do |path|
-          options["path"] = path
+          project_def.path = path
         end
 
         opts.on(
@@ -33,7 +33,7 @@ module MStrap
           "--port PORT",
           "Port Number\n\te.g. 3000"
         ) do |port|
-          options["port"] = port
+          project_def.port = port.to_i
         end
 
         opts.on(
@@ -41,7 +41,7 @@ module MStrap
           "--name NAME",
           "Friendly Project name\n\te.g. My Cool App"
         ) do |name|
-          options["name"] = name
+          project_def.name = name
         end
 
         opts.on(
@@ -49,7 +49,7 @@ module MStrap
           "--cname CNAME",
           "Project Canonical Name\n\te.g. my_cool_app"
         ) do |cname|
-          options["cname"] = cname
+          project_def.cname = cname
         end
 
         opts.on(
@@ -57,7 +57,7 @@ module MStrap
           "--type TYPE",
           "Project Type\n\tOne of #{PROJECT_TYPES.map(&.to_s).join(", ")}"
         ) do |t|
-          options["type"] = t
+          project_def.type = t
         end
 
         opts.on(
@@ -65,7 +65,7 @@ module MStrap
           "--hostname [HOSTNAME]",
           "Project Hostname (Default: CNAME.localhost)\n\te.g. my_cool_app.localhost"
         ) do |hostname|
-          options["hostname"] = hostname
+          project_def.hostname = hostname
         end
 
         opts.on(
@@ -73,7 +73,7 @@ module MStrap
           "--repo [REPO]",
           "Git Repository Name (Default: GITHUB_USERNAME/CNAME)",
         ) do |repo|
-          options["repo"] = repo
+          project_def.repo = repo
         end
 
         opts.on("--help", "Show this message") do
@@ -81,6 +81,10 @@ module MStrap
           exit 0
         end
       end.parse(args)
+
+      # Since we're likely running from a project script, we don't want to start
+      # a fork-bomb, now do we?
+      project_def.run_scripts = false
     end
 
     def run!
@@ -90,8 +94,8 @@ module MStrap
       # stty_save = %x`stty -g`.chomp
       # trap("INT") { print "\n"; system "stty", stty_save; exit 1 }
 
-      project = MStrap::Project.for(options)
-      project.bootstrap(force_default: true)
+      project = MStrap::Project.new(project_def)
+      project.bootstrap
     end
   end
 end

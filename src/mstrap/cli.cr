@@ -1,8 +1,10 @@
 module MStrap
-  alias CLIOptions = Hash(Symbol, Nil | Bool | String | Array(String))
   class CLI
     @options : CLIOptions
+    @name : String?
     @email : String?
+    @github : String?
+    @github_access_token : String?
 
     getter :options
 
@@ -11,14 +13,7 @@ module MStrap
     end
 
     def initialize(args)
-      @options = CLIOptions {
-        :argv => args.dup,
-        :force => false,
-        :config_path => MStrap::Paths::CONFIG_YML,
-        :skip_migrations => false,
-        :skip_project_update => false,
-        :skip_update => false,
-      }
+      @options = CLIOptions.new(argv: args.dup)
 
       OptionParser.new do |opts|
         opts.banner = "Usage: mstrap [options]"
@@ -28,7 +23,7 @@ module MStrap
         end
 
         opts.on("-f", "--force", "Force overwrite of existing config with reckless abandon") do |force|
-          options[:force] = true
+          options.force = true
         end
 
         opts.on(
@@ -36,7 +31,7 @@ module MStrap
           "--config-path [CONFIG_PATH]",
           "Path to configuration file\n\tDefault: #{MStrap::Paths::CONFIG_YML}"
         ) do |config_path|
-          options[:config_path] = config_path
+          options.config_path = config_path
         end
 
         opts.on(
@@ -44,7 +39,7 @@ module MStrap
           "--name NAME",
           "Your name (Default: prompt)\n\tCan also be specified by MSTRAP_USER_FULLNAME env var."
         ) do |name|
-          options[:name] = name
+          @name = name
         end
 
         opts.on(
@@ -52,7 +47,7 @@ module MStrap
           "--email EMAIL ADDRESS",
           "Email address\n\tCan also be specified by MSTRAP_USER_EMAIL env var.\n\tWill prompt if name was not given"
         ) do |email|
-          options[:email] = email
+          @email = email
         end
 
         opts.on(
@@ -60,7 +55,7 @@ module MStrap
           "--github GITHUB",
           "GitHub username (Default: prompt)\n\tCan also be specified by MSTRAP_USER_GITHUB env var."
         ) do |github|
-          options[:github] = github
+          @github = github
         end
 
         opts.on(
@@ -68,28 +63,28 @@ module MStrap
           "--github-access-token [GITHUB_ACCESS_TOKEN]",
           "GitHub access token\n\tCan also be specified by MSTRAP_GITHUB_ACCESS_TOKEN env var.\n\tRequired for automatic fetching of personal dotfiles and Brewfile\n\tCan be omitted. Will pull from `hub` config, if available."
         ) do |token|
-          options[:github_access_token] = token
+          @github_access_token = token
         end
 
         opts.on(
           "--skip-migrations",
           "Skip migrations"
         ) do |skip_migrations|
-          options[:skip_migrations] = true
+          options.skip_migrations = true
         end
 
         opts.on(
           "--skip-project-update",
           "Skip auto-update of projects"
         ) do |skip_project_update|
-          options[:skip_project_update] = true
+          options.skip_project_update = true
         end
 
         opts.on(
           "--skip-update",
           "Skip auto-update of mstrap"
         ) do |skip_update|
-          options[:skip_update] = true
+          options.skip_update = true
         end
 
         opts.on("-v", "--version", "Show version") do
@@ -104,31 +99,38 @@ module MStrap
       end.parse(args)
     end
 
+    def load_profile!
+      Defs::ProfileDef.from_yaml(File.read(options.config_path))
+    end
+
     def run!
-      MStrap::Bootstrapper.new(options.merge({
-        :name => name,
-        :email => email,
-        :github => github
-      })).bootstrap
+      profile = load_profile!
+      user = User.new(
+        name: name.not_nil!,
+        email: email.not_nil!,
+        github: github.not_nil!,
+        github_access_token: @github_access_token
+      )
+      configuration = Configuration.new(
+        cli: options,
+        profile: profile,
+        user: user,
+      )
+
+      MStrap::Bootstrapper.new(configuration).bootstrap
     end
 
     private def name
-      @name ||= options[:name]?.as(String?) ||
-        ENV["MSTRAP_USER_FULLNAME"]? ||
+      @name ||= ENV["MSTRAP_USER_FULLNAME"]? ||
         ask("What is your name (First and Last)?")
     end
 
     private def email
-      @email ||= begin
-        options[:email]?.as(String?) ||
-          ENV["MSTRAP_USER_EMAIL"]? ||
-          ask("What is your email?")
-      end
+      @email ||= ENV["MSTRAP_USER_EMAIL"]? || ask("What is your email?")
     end
 
     private def github
-      @github ||= options[:github]?.as(String?) ||
-        ENV["MSTRAP_USER_GITHUB"]? ||
+      @github ||= ENV["MSTRAP_USER_GITHUB"]? ||
         ask("What is your GitHub username?")
     end
 

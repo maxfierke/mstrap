@@ -1,11 +1,18 @@
 module MStrap
   abstract class Step
-    getter :options
-    getter :config_path
+    # BUG?: Why aren't these inferred correctly?
+    @options : CLIOptions
+    @profile : Defs::ProfileDef
+    @user : User
 
-    def initialize(options : CLIOptions)
-      @options = options
-      @config_path = options[:config_path].as(String)
+    getter :options
+    getter :profile
+    getter :user
+
+    def initialize(config : Configuration)
+      @options = config.cli
+      @profile = config.profile
+      @user = config.user
     end
 
     abstract def bootstrap

@@ -15,44 +15,22 @@ module MStrap
         brew_bundle
       end
 
-      private def github
-        options[:github].as(String)
-      end
-
-      private def github_access_token
-        (options[:github_access_token] ||= begin
-          if File.exists?(hub_config_path)
-            hub_config = File.open(hub_config_path) { |file| YAML.parse(file) }
-            if hub_config["github.com"]? && hub_config["github.com"].as_a.any?
-              hub_config["github.com"][0]["oauth_token"].as_s?
-            else
-              nil
-            end
-          end
-        end).as(String?)
-      end
-
       private def set_strap_env!
-        ENV["STRAP_GIT_NAME"]     = options[:name].as(String)
-        ENV["STRAP_GIT_EMAIL"]    = options[:email].as(String)
-        ENV["STRAP_GITHUB_USER"]  = github
-        ENV["STRAP_GITHUB_TOKEN"] = github_access_token
+        ENV["STRAP_GIT_NAME"]     = user.name
+        ENV["STRAP_GIT_EMAIL"]    = user.email
+        ENV["STRAP_GITHUB_USER"]  = user.github
+        ENV["STRAP_GITHUB_TOKEN"] = user.github_access_token
       end
 
       private def setup_hub_config
-        if github_access_token && !File.exists?(hub_config_path)
-          FileUtils.mkdir_p(config_path)
-          contents = Templates::HubYml.new(github: github, github_access_token: github_access_token).to_s
-          File.write(hub_config_path, contents, perm: 0o600)
+        github_access_token = user.github_access_token
+
+        if github_access_token && !File.exists?(Paths::HUB_CONFIG_XML)
+          Templates::HubYml.new(
+            github: user.github,
+            github_access_token: github_access_token
+          ).write_to_config!
         end
-      end
-
-      private def config_path
-        @config_path ||= "#{ENV["HOME"]}/.config"
-      end
-
-      private def hub_config_path
-        @hub_config_path ||= "#{config_path}/hub"
       end
 
       private def strap_sh

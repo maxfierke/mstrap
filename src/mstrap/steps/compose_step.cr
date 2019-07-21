@@ -10,7 +10,7 @@ module MStrap
       end
 
       private def args
-        options[:step_args].as?(Array(String)) || [] of String
+        options.step_args || [] of String
       end
 
       private def ensure_docker!

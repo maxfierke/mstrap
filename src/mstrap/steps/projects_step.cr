@@ -5,11 +5,6 @@ module MStrap
 
       @projects : Array(Project) | Nil
 
-      def initialize(options = CLIOptions)
-        super
-        @config_path = options[:config_path].as(String)
-      end
-
       def bootstrap
         Dir.mkdir_p(Paths::PROJECT_SOCKETS)
 
@@ -41,14 +36,14 @@ module MStrap
         end
       end
 
-      private getter :config_path
-
       private def skip_project_update?
-        !!options[:skip_project_update]?
+        options.skip_project_update?
       end
 
       private def projects
-        @projects ||= MStrap::Project.from_yaml(config_path)
+        @projects ||= profile.projects.map do |project_def|
+          MStrap::Project.for(project_def)
+        end
       end
     end
   end

@@ -3,7 +3,7 @@ upstream <%= name %> {
 }
 
 server {
-  access_log off;
+  access_log /dev/null;
   listen 8080;
   listen [::]:8080;
   root <%= root %>/public;

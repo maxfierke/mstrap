@@ -3,7 +3,7 @@ upstream <%= name %> {
 }
 
 server {
-  access_log <%= root %>/log/nginx.access.log;
+  access_log off;
   listen 8080;
   listen [::]:8080;
   root <%= root %>/public;

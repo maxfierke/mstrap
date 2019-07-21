@@ -4,6 +4,9 @@ module MStrap
     include Utils::Logging
     include Utils::System
 
+    ABSOLUTE_REPO_URL_REGEX = /\A(git|https?|ftps?|ssh|file):\/\//
+    SCP_REPO_REGEX = /\A(.+@)?[\w\d\.\-_]+:/
+
     BOOTSTRAP_SCRIPT = File.join("script", "bootstrap")
 
     @cname : String
@@ -54,7 +57,11 @@ module MStrap
     end
 
     def git_uri
-      @git_uri ||= "git@github.com:#{repo}.git"
+      @git_uri ||= if repo =~ ABSOLUTE_REPO_URL_REGEX || repo =~ SCP_REPO_REGEX
+        repo
+      else
+        "git@github.com:#{repo}.git"
+      end
     end
 
     def upstream

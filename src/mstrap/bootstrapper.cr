@@ -8,7 +8,7 @@ module MStrap
       :dependencies,
       :shell,
       :services,
-      #:projects,
+      :projects,
       #:elixir,
       #:node,
       #:python,

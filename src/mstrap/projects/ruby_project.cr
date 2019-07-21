@@ -1,6 +1,6 @@
 module MStrap
   module Projects
-    class RailsProject < WebProject
+    class RubyProject < Project
       include Utils::Rbenv
 
       def bootstrap(*args)
@@ -8,11 +8,11 @@ module MStrap
       end
 
       protected def default_bootstrap
+        super
+
         Dir.cd(path) do
           setup_rbenv
         end
-
-        super
       end
     end
   end

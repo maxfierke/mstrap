@@ -1,6 +1,13 @@
 module MStrap
   class ProjectCLI
-    PROJECT_TYPES = [:rails, :phoenix, :"ember-cli", :generic]
+    PROJECT_TYPES = [
+      :generic,
+      :javascript,
+      :python,
+      :rails,
+      :ruby,
+      :web
+    ]
 
     getter :options
 
@@ -84,7 +91,7 @@ module MStrap
       # trap("INT") { print "\n"; system "stty", stty_save; exit 1 }
 
       project = MStrap::Project.for(options)
-      MStrap::ProjectBootstrapper.new(project).bootstrap
+      project.bootstrap(force_default: true)
     end
   end
 end

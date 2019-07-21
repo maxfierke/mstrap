@@ -16,7 +16,8 @@ module MStrap
         :force => false,
         :config_path => MStrap::Paths::CONFIG_YML,
         :skip_migrations => false,
-        :skip_update => false
+        :skip_project_update => false,
+        :skip_update => false,
       }
 
       OptionParser.new do |opts|
@@ -75,6 +76,13 @@ module MStrap
           "Skip migrations"
         ) do |skip_migrations|
           options[:skip_migrations] = true
+        end
+
+        opts.on(
+          "--skip-project-update",
+          "Skip auto-update of projects"
+        ) do |skip_update|
+          options[:skip_project_update] = true
         end
 
         opts.on(

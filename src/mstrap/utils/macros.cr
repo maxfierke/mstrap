@@ -4,6 +4,25 @@ module MStrap
     # https://github.com/rbenv/rbenv/issues/904
     macro define_language_env(module_name, tool_name, language_name)
       module {{module_name}}
+        def setup_{{tool_name.id}}
+          with_project_{{language_name.id}} do
+            {% if language_name.id == "node" %}
+              cmd "brew bootstrap-nodenv-node"
+            {% elsif language_name.id == "ruby" %}
+              cmd "brew bootstrap-rbenv-ruby"
+            {% elsif language_name.id == "python" %}
+              cmd "pyenv install #{python_version} --skip-existing"
+              cmd "pyenv rehash"
+
+              if File.exists?("requirements.txt")
+                cmd "pip install -r requirements.txt"
+              end
+            {% else %}
+              {{raise "BUG: No procedure defined for {{language_name.id}} setup"}}
+            {% end %}
+          end
+        end
+
         def {{language_name.id}}_version
           version_path = File.join(path, ".{{language_name.id}}-version")
           version = if File.exists?(version_path)
@@ -14,7 +33,7 @@ module MStrap
         end
 
         def with_project_{{language_name.id}}
-          with_clean_rbenv do
+          with_clean_{{tool_name.id}} do
             current_version = ENV["{{tool_name.id.upcase}}_VERSION"]?
             begin
               ENV["{{tool_name.id.upcase}}_VERSION"] = {{language_name.id}}_version

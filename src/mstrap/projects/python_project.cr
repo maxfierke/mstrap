@@ -1,18 +1,18 @@
 module MStrap
   module Projects
-    class RailsProject < WebProject
-      include Utils::Rbenv
+    class PythonProject < Project
+      include Utils::Pyenv
 
       def bootstrap(*args)
-        with_project_ruby { super }
+        with_project_python { super }
       end
 
       protected def default_bootstrap
-        Dir.cd(path) do
-          setup_rbenv
-        end
-
         super
+
+        Dir.cd(path) do
+          setup_pyenv
+        end
       end
     end
   end

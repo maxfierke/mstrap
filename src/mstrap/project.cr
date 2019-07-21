@@ -8,6 +8,7 @@ module MStrap
     SCP_REPO_REGEX = /\A(.+@)?[\w\d\.\-_]+:/
 
     BOOTSTRAP_SCRIPT = File.join("script", "bootstrap")
+    SETUP_SCRIPT = File.join("script", "setup")
 
     @cname : String
     @hostname : String
@@ -74,6 +75,12 @@ module MStrap
       end
     end
 
+    def has_scripts?
+      [BOOTSTRAP_SCRIPT, SETUP_SCRIPT].any? do |script_path|
+        File.exists?(File.join(path, script_path))
+      end
+    end
+
     def clone
       cmd("git", "clone", git_uri, path)
     end
@@ -96,28 +103,12 @@ module MStrap
       end
     end
 
-    def current_branch
-      `git rev-parse --abbrev-ref HEAD`.chomp
-    end
-
-    def git_checkpoint
-      stash_message = "MSTRAP CHECKPOINT #{Time.now.to_unix}"
-
-      begin
-        cmd("git", "stash", "push", "-u", "-m", stash_message)
-        yield
-      ensure
-        if cmd("git stash list | grep '#{stash_message}'")
-          cmd "git stash pop"
-        end
-      end
-    end
-
     def bootstrap
-      if File.exists?(File.join(path, BOOTSTRAP_SCRIPT)) && run_scripts?
-        logd "Found #{BOOTSTRAP_SCRIPT}, executing instead of using '#{runtime}' defaults."
+      if has_scripts? && run_scripts?
+        logd "Found bootstrapping scripts, executing instead of using '#{runtime}' defaults."
         Dir.cd(path) do
-          cmd BOOTSTRAP_SCRIPT
+          cmd BOOTSTRAP_SCRIPT if File.exists?(BOOTSTRAP_SCRIPT)
+          cmd SETUP_SCRIPT if File.exists?(SETUP_SCRIPT)
         end
       else
         logd "Bootstrapping '#{name}' with runtime '#{runtime}' defaults."
@@ -129,6 +120,23 @@ module MStrap
       if web?
         logd "'#{name}' is a web project. Running web bootstrapper."
         WebBootstrapper.new(self).bootstrap
+      end
+    end
+
+    private def current_branch
+      `git rev-parse --abbrev-ref HEAD`.chomp
+    end
+
+    private def git_checkpoint
+      stash_message = "MSTRAP CHECKPOINT #{Time.now.to_unix}"
+
+      begin
+        cmd("git", "stash", "push", "-u", "-m", stash_message)
+        yield
+      ensure
+        if cmd("git stash list | grep '#{stash_message}'")
+          cmd "git stash pop"
+        end
       end
     end
   end

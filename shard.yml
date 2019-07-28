@@ -9,10 +9,16 @@ dependencies:
     github: schovi/baked_file_system
     version: 0.9.8
 
+development_dependencies:
+  minitest:
+    github: ysbaddaden/minitest.cr
+
 targets:
   mstrap:
     main: src/cli.cr
+  mstrap-project:
+    main: src/project_cli.cr
 
-crystal: 0.27.0
+crystal: 0.29.0
 
 license: MIT

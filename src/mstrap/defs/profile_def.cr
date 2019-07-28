@@ -13,6 +13,11 @@ module MStrap
           default: [] of ProjectDef
         }
       )
+
+      def initialize
+        @package_globals = GlobalPkgDef.new
+        @projects = [] of ProjectDef
+      end
     end
   end
 end

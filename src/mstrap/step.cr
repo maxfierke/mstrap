@@ -5,11 +5,13 @@ module MStrap
     @profile : Defs::ProfileDef
     @user : User
 
+    getter :config
     getter :options
     getter :profile
     getter :user
 
     def initialize(config : Configuration)
+      @config = config
       @options = config.cli
       @profile = config.profile
       @user = config.user

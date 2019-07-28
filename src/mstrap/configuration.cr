@@ -4,9 +4,21 @@ module MStrap
     @profile : Defs::ProfileDef
     @user : User
 
-    getter :cli, :profile, :user
+    getter :cli, :user
+    getter! :profile
 
-    def initialize(@cli, @profile, @user)
+    def initialize(cli : CLIOptions, user : User, profile = Defs::ProfileDef.new)
+      @cli = cli
+      @user = user
+      @profile = profile
     end
+
+    def load_profile!
+      profile_yaml = File.read(cli.config_path)
+      self.profile = Defs::ProfileDef.from_yaml(profile_yaml)
+      self
+    end
+
+    private setter :profile
   end
 end

@@ -99,12 +99,7 @@ module MStrap
       end.parse(args)
     end
 
-    def load_profile!
-      Defs::ProfileDef.from_yaml(File.read(options.config_path))
-    end
-
     def run!
-      profile = load_profile!
       user = User.new(
         name: name.not_nil!,
         email: email.not_nil!,
@@ -113,9 +108,10 @@ module MStrap
       )
       configuration = Configuration.new(
         cli: options,
-        profile: profile,
         user: user,
       )
+
+      configuration.load_profile!
 
       MStrap::Bootstrapper.new(configuration).bootstrap
     end

@@ -13,6 +13,7 @@ module MStrap
         setup_hub_config
         strap_sh
         brew_bundle
+        load_profile!
       end
 
       private def set_strap_env!
@@ -46,6 +47,12 @@ module MStrap
         unless cmd "brew bundle --file=#{MStrap::Paths::BREWFILE} #{debug? ? "--verbose" : ""}"
           logc "Uhh oh, something went wrong in homebrewland. Check above or in #{MStrap::Paths::LOG_FILE}."
         end
+        success "OK"
+      end
+
+      private def load_profile!
+        log "---> Reloading profile: "
+        config.load_profile!
         success "OK"
       end
     end

@@ -39,6 +39,7 @@ deps: shard.yml shard.lock
 clean:
 	rm -f ./bin/mstrap*
 	rm -rf ./dist
+	rm -rf ./vendor/*.a
 
 .PHONY: test
 test: deps $(SOURCES)
@@ -56,18 +57,18 @@ install: bin/mstrap bin/mstrap-project
 reinstall: bin/mstrap bin/mstrap-project
 	cp ./bin/mstrap* $(MSTRAP_BIN) -rf
 
-vendor/libevent.a:
+vendor/libevent.a: $(LIBEVENT_LIB_PATH)/libevent.a
 	mkdir -p $(STATIC_LIBS_DIR)
 	cp -f $(LIBEVENT_LIB_PATH)/libevent.a $(STATIC_LIBS_DIR)
 
-vendor/libgc.a:
+vendor/libgc.a: $(BDWGC_LIB_PATH)/libgc.a
 	mkdir -p $(STATIC_LIBS_DIR)
 	cp -f $(BDWGC_LIB_PATH)/libgc.a $(STATIC_LIBS_DIR)
 
-vendor/libpcre.a:
+vendor/libpcre.a: $(LIBPCRE_LIB_PATH)/libpcre.a
 	mkdir -p $(STATIC_LIBS_DIR)
 	cp -f $(LIBPCRE_LIB_PATH)/libpcre.a $(STATIC_LIBS_DIR)
 
-vendor/libyaml.a:
+vendor/libyaml.a: $(LIBYAML_LIB_PATH)/libyaml.a
 	mkdir -p $(STATIC_LIBS_DIR)
 	cp -f $(LIBYAML_LIB_PATH)/libyaml.a $(STATIC_LIBS_DIR)

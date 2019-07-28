@@ -29,6 +29,10 @@ module MStrap
         false
       end
 
+      def self.requires_shell_restart?
+        true
+      end
+
       def bootstrap
         Dir.mkdir_p(MStrap::Paths::RC_DIR)
 

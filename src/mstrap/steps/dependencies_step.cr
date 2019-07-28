@@ -8,6 +8,10 @@ module MStrap
         false
       end
 
+      def self.requires_shell_restart?
+        true
+      end
+
       def bootstrap
         set_strap_env!
         setup_hub_config

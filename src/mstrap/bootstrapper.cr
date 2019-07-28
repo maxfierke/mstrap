@@ -33,14 +33,14 @@ module MStrap
         run_step!(step_key, args)
         tracker.track("Single Step Run: #{step_key}", { step: step_key.to_s })
         success "`mstrap #{step_key}` has completed successfully!"
+        print_shell_reload_warning if Step.all[step_key].requires_shell_restart?
       else
         logw "Strap in!"
         DEFAULT_STEPS.each { |s| run_step!(s) }
         tracker.track("Full Run")
         success "mstrap has completed successfully!"
+        print_shell_reload_warning
       end
-
-      logw "Remember to restart your terminal, as the contents of your environment may have shifted."
     end
 
     private getter :config, :options
@@ -74,6 +74,10 @@ module MStrap
 
     private def tracker
       @tracker ||= MStrap::Tracker.for(options)
+    end
+
+    private def print_shell_reload_warning
+      logw "Remember to restart your terminal, as the contents of your environment may have shifted."
     end
   end
 end

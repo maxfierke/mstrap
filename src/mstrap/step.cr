@@ -22,6 +22,10 @@ module MStrap
       true
     end
 
+    def self.requires_shell_restart?
+      false
+    end
+
     macro finished
       def self.all
         @@step ||= {

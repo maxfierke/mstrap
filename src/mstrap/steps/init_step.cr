@@ -8,13 +8,15 @@ module MStrap
     end
 
     def bootstrap
+      logn "==> Initializing mstrap"
       create_rc_dir
       fetch_strap_sh
+      fetch_profile_if_url
       create_brewfile_unless_exists
     end
 
     private def update_strap_sh?
-      if File.exists?(MStrap::Paths::STRAP_SH_PATH)
+      if File.exists?(Paths::STRAP_SH_PATH)
         strap_sh_age.days >= 30 || force?
       else
         true
@@ -22,7 +24,7 @@ module MStrap
     end
 
     private def strap_sh_age
-      if file_info = File.info?(MStrap::Paths::STRAP_SH_PATH)
+      if file_info = File.info?(Paths::STRAP_SH_PATH)
         Time.now - file_info.modification_time
       else
         Time::Span.zero
@@ -34,25 +36,44 @@ module MStrap
     end
 
     private def create_rc_dir
-      FileUtils.mkdir_p(MStrap::Paths::RC_DIR, 0o755)
+      FileUtils.mkdir_p(Paths::RC_DIR, 0o755)
     end
 
     private def fetch_strap_sh
       if update_strap_sh?
-        logw "---> Fetching latest strap.sh (older than 30 days or missing): "
-        FileUtils.mkdir_p("#{MStrap::Paths::RC_DIR}/vendor")
+        log "---> Fetching latest strap.sh (older than 30 days or missing): "
+        FileUtils.mkdir_p("#{Paths::RC_DIR}/vendor")
 
-        HTTP::Client.get(MStrap::Paths::STRAP_SH_URL) do |response|
-          File.write(MStrap::Paths::STRAP_SH_PATH, response.body_io.gets_to_end)
+        HTTP::Client.get(Paths::STRAP_SH_URL) do |response|
+          File.write(Paths::STRAP_SH_PATH, response.body_io.gets_to_end)
         end
+
+        success "OK"
+      end
+    end
+
+    private def fetch_profile_if_url
+      if options.config_path.starts_with?("https://")
+        log "---> Fetching profile: "
+
+        if File.exists?(Paths::CONFIG_YML) && !force?
+          logc "#{Paths::CONFIG_YML} already exists. Please remove or run with --force to overwrite."
+        else
+          HTTP::Client.get(options.config_path) do |response|
+            File.write(Paths::CONFIG_YML, response.body_io.gets_to_end)
+          end
+        end
+
+        success "OK"
       end
     end
 
     private def create_brewfile_unless_exists
-      if !File.exists?(MStrap::Paths::BREWFILE) || force?
-        logw "---> No Brewfile found or update requested with --force. Copying default to #{MStrap::Paths::BREWFILE}: "
+      if !File.exists?(Paths::BREWFILE) || force?
+        logw "No Brewfile found or update requested with --force"
+        log "---> Copying default Brewfile to #{Paths::BREWFILE}: "
         brewfile_contents = FS.get("Brewfile").gets_to_end
-        File.write(MStrap::Paths::BREWFILE, brewfile_contents)
+        File.write(Paths::BREWFILE, brewfile_contents)
         success "OK"
       end
     end

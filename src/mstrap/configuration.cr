@@ -14,8 +14,11 @@ module MStrap
     end
 
     def load_profile!
-      profile_yaml = File.read(cli.config_path)
-      self.profile = Defs::ProfileDef.from_yaml(profile_yaml)
+      if !cli.config_path.starts_with?("https://")
+        profile_yaml = File.read(cli.config_path)
+        self.profile = Defs::ProfileDef.from_yaml(profile_yaml)
+      end
+
       self
     end
 

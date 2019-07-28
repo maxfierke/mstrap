@@ -4,6 +4,10 @@ module MStrap
       include Utils::Logging
       include Utils::System
 
+      def self.description
+        "(Re)creates mstrap-managed docker-compose services"
+      end
+
       def bootstrap
         logn "==> Setting up managed services"
 

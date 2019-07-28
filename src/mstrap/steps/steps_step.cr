@@ -2,6 +2,10 @@ module MStrap
   class StepsStep < Step
     include Utils::Logging
 
+    def self.description
+      "Prints available steps"
+    end
+
     def self.requires_mstrap?
       false
     end

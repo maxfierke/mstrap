@@ -2,6 +2,10 @@
 module MStrap
   module Steps
     class DebugStep < Step
+      def self.description
+        "Prints debug information"
+      end
+
       def self.requires_mstrap?
         false
       end

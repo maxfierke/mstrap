@@ -4,6 +4,10 @@ module MStrap
       include Utils::Logging
       include Utils::System
 
+      def self.description
+        "Basic machine bootstrapping with strap.sh, hub, and brew bundle."
+      end
+
       def self.requires_mstrap?
         false
       end

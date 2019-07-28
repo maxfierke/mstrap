@@ -25,6 +25,10 @@ module MStrap
         new(options).bootstrap
       end
 
+      def self.description
+        "Injects mstrap's env.sh into the running shell's config"
+      end
+
       def self.requires_mstrap?
         false
       end

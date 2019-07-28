@@ -18,6 +18,10 @@ module MStrap
 
     abstract def bootstrap
 
+    def self.description
+      raise "Must specify in sub-class"
+    end
+
     def self.requires_mstrap?
       true
     end

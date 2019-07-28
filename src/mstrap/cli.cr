@@ -16,7 +16,7 @@ module MStrap
       @options = CLIOptions.new(argv: args.dup)
 
       OptionParser.new do |opts|
-        opts.banner = "Usage: mstrap [options]"
+        opts.banner = "Usage: mstrap [options] <command> -- [<arguments>]"
 
         opts.on("-d", "--debug", "Run with debug messaging") do |debug|
           MStrap.debug = true
@@ -29,7 +29,7 @@ module MStrap
         opts.on(
           "-c",
           "--config-path [CONFIG_PATH]",
-          "Path to configuration file\n\tDefault: #{MStrap::Paths::CONFIG_YML}"
+          "Path to configuration file\n\tDefault: #{MStrap::Paths::CONFIG_YML}. Can also be an HTTPS URL."
         ) do |config_path|
           options.config_path = config_path
         end
@@ -45,7 +45,7 @@ module MStrap
         opts.on(
           "-e",
           "--email EMAIL ADDRESS",
-          "Email address\n\tCan also be specified by MSTRAP_USER_EMAIL env var.\n\tWill prompt if name was not given"
+          "Email address (Default: prompt)\n\tCan also be specified by MSTRAP_USER_EMAIL env var."
         ) do |email|
           @email = email
         end
@@ -93,7 +93,15 @@ module MStrap
         end
 
         opts.on("-h", "--help", "Show this message") do
+          puts "mstrap is a tool for bootstrapping development machines\n\n"
           puts opts
+          puts "\nCOMMANDS"
+          Step.all.each do |key, value|
+            puts "    #{key}#{" " * (21 - key.to_s.size)}#{value.description}"
+          end
+
+          puts "\nRunning mstrap without a command will do a full bootstrap."
+
           exit
         end
       end.parse(args)

@@ -5,6 +5,10 @@ module MStrap
 
       @projects : Array(Project) | Nil
 
+      def self.description
+        "Bootstraps configured projects"
+      end
+
       def bootstrap
         logn "==> Bootstrapping projects"
         projects.not_nil!.each do |project|

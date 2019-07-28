@@ -3,6 +3,10 @@ module MStrap
     include Utils::Logging
     include Utils::System
 
+    def self.description
+      "Initializes #{Paths::RC_DIR}"
+    end
+
     def self.requires_mstrap?
       false
     end

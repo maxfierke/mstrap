@@ -4,6 +4,10 @@ module MStrap
       include Utils::Logging
       include Utils::System
 
+      def self.description
+        "Wrapper around `docker-compose -f #{MStrap::Paths::SERVICES_YML}`"
+      end
+
       def bootstrap
         ensure_docker!
         Process.exec("docker-compose", ["-f", MStrap::Paths::SERVICES_YML] + args)

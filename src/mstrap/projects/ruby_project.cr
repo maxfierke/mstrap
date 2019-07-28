@@ -3,7 +3,7 @@ module MStrap
     class RubyProject < Project
       include Utils::Rbenv
 
-      def bootstrap(*args)
+      def bootstrap
         with_project_ruby { super }
       end
 

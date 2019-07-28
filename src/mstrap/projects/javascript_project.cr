@@ -3,7 +3,7 @@ module MStrap
     class JavascriptProject < Project
       include Utils::Nodenv
 
-      def bootstrap(*args)
+      def bootstrap
         with_project_node { super }
       end
 

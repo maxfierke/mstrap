@@ -3,7 +3,7 @@ module MStrap
     class PythonProject < Project
       include Utils::Pyenv
 
-      def bootstrap(*args)
+      def bootstrap
         with_project_python { super }
       end
 

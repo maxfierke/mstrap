@@ -1,3 +1,4 @@
+{% skip_file if flag?(:release) %}
 module MStrap
   module Steps
     class DebugStep < Step

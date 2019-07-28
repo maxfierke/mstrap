@@ -8,10 +8,11 @@ module MStrap
       @packages : Array(Defs::NpmPkgDef)?
 
       def self.description
-        "Set default global Node version and installs NPM globals"
+        "Set default global Node version and installs global NPM packages"
       end
 
       def bootstrap
+        return if node_versions.empty?
         logn "==> Bootstrapping Node"
         set_default_to_latest
         install_npm_globals
@@ -34,14 +35,14 @@ module MStrap
       private def install_npm_globals
         return if packages.empty?
 
-        logn "---> Installing NPM globals for installed Node versions: "
+        logn "---> Installing NPM package globals for installed Node versions: "
         node_versions.each do |version|
           package_names = packages.map(&.name)
           log "Installing #{package_names.join(", ")} for Node #{version}: "
           nodenv_env = { "NODENV_VERSION" => version }
           nodenv_args = ["exec", "npm", "install", "-g"] + package_names
           unless cmd(nodenv_env, "nodenv", nodenv_args, quiet: true)
-            logc "Could not install NPM global packages for #{version}"
+            logc "Could not install global NPM packages for #{version}"
           end
           success "OK"
         end

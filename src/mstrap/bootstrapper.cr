@@ -9,9 +9,9 @@ module MStrap
       :shell,
       :services,
       :projects,
-      #:node,
+      :node,
       #:python,
-      #:ruby,
+      :ruby,
       #:migrations
     ]
 

@@ -10,7 +10,7 @@ module MStrap
       :services,
       :projects,
       :node,
-      #:python,
+      :python,
       :ruby,
       #:migrations
     ]

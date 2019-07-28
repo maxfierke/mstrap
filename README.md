@@ -5,12 +5,15 @@ It is a [convention-over-configuration](https://en.wikipedia.org/wiki/Convention
 tool, which aims to leverage existing ecosystem tools to provide a one-command provisioning
 experience for a new machine.
 
+The approach is based on the [`chirpstrap`](https://medium.com/intensive-code-unit/provisioning-engineers-with-chirpstrap-ecae874453d0) tool built at Iora Health, but is built and maintained in my personal capacity and is not associated with Iora Health.
+
 ### Aims
 
 * Run on a new machine with no development tools installed
 * Leverage existing ecosystem tools, when possible
   * Avoid vendoring or overriding tool defaults
 * Hook into standard [scripts-to-rule-them-all](https://github.com/github/scripts-to-rule-them-all)
+  * Currently hooks into a project's `script/bootstrap` and `script/setup`
 
 #### Platform Support
 
@@ -20,6 +23,27 @@ the same platforms officially supported by Homebrew:
 * [X] macOS
 * [ ] Linux _(planned)_
 * [ ] WSL2 (Windows Subsystem for Linux) _(planned)_
+
+#### Language Runtime Support
+
+`mstrap` comes with built-in support bootstrapping JavaScript, Python, and Ruby
+projects, including support for install project-specific runtime versions and
+installing dependencies.
+
+Current support:
+
+* [X] JavaScript (via [nodenv](https://github.com/nodenv/nodenv))
+* [X] Python (via [pyenv](https://github.com/pyenv/pyenv/))
+* [X] Ruby (via [rbenv](https://github.com/rbenv/rbenv/))
+
+Planned:
+
+* [ ] .NET (via [dotnet](https://aka.ms/dotnet-cli-docs))
+* [ ] Elixir
+* [ ] PHP
+
+Bootstrapping other runtimes, while not supported directly, can still be done
+through a project's `script/bootstrap`.
 
 ## Installation
 
@@ -62,11 +86,14 @@ Usage: mstrap [options] <command> -- [<arguments>]
     -h, --help                       Show this message
 
 COMMANDS
-    compose              Wrapper around `docker-compose -f $HOME/.mstrap/services.yml`
+    compose              Wrapper around `docker-compose -f /Users/mfierke/.mstrap/services.yml`
     debug                Prints debug information
-    dependencies         Basic machine bootstrapping with strap.sh, git config, and brew bundle.
-    init                 Initializes $HOME/.mstrap
+    dependencies         Basic machine bootstrapping with strap.sh, hub, and brew bundle.
+    init                 Initializes /Users/mfierke/.mstrap
+    node                 Set default global Node version and installs global NPM packages
     projects             Bootstraps configured projects
+    python               Set default global Python version and installs global pip packages
+    ruby                 Set default global Ruby version and installs global Ruby gems
     services             (Re)creates mstrap-managed docker-compose services
     shell                Injects mstrap's env.sh into the running shell's config
     steps                Prints available steps

@@ -4,6 +4,6 @@ describe MStrap do
   # TODO: Write tests
 
   it "works" do
-    false.should eq(true)
+    expect(false).must_equal(true)
   end
 end

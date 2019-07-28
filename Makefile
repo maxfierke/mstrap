@@ -43,7 +43,7 @@ clean:
 
 .PHONY: test
 test: deps $(SOURCES)
-	$(CRYSTAL_BIN) spec
+	$(CRYSTAL_BIN) spec -Dmt_no_expectations
 
 .PHONY: spec
 spec: test

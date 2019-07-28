@@ -5,6 +5,10 @@ module MStrap
         MStrap.debug?
       end
 
+      def logger
+        MStrap.logger
+      end
+
       def mstrapped?
         ENV["MSTRAP"]? == "true"
       end

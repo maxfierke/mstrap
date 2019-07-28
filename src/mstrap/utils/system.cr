@@ -11,19 +11,35 @@ module MStrap
         shell = true,
         input = Process::Redirect::Inherit,
         output = Process::Redirect::Inherit,
-        error = Process::Redirect::Inherit
+        error = Process::Redirect::Inherit,
+        quiet = false
       )
         logd "+ #{env ? env : ""} #{command} #{args.join(" ")}"
 
-        child = Process.new(
-          command,
-          args.size > 0 ? args.to_a : nil,
+        command_args = args.size > 0 ? args.to_a : nil
+        named = {
           shell: shell,
           env: env,
           input: input,
           output: output,
           error: error
-        )
+        }
+
+        if debug?
+          named = named.merge({
+            input: Process::Redirect::Inherit,
+            output: Process::Redirect::Inherit,
+            error: Process::Redirect::Inherit
+          })
+        elsif quiet
+          named = named.merge({
+            input: Process::Redirect::Close,
+            output: Process::Redirect::Close,
+            error: Process::Redirect::Close
+          })
+        end
+
+        child = Process.new(command, command_args, **named)
 
         at_exit {
           # Cleanup this process when we exit, if it's still running. (e.g. receiving SIGINT)

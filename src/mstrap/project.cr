@@ -82,16 +82,16 @@ module MStrap
     end
 
     def clone
-      cmd("git", "clone", git_uri, path)
+      cmd("git", "clone", git_uri, path, quiet: true)
     end
 
     def pull
       Dir.cd(path) do
         git_checkpoint do
           success = if current_branch != "master"
-            cmd("git checkout master") && cmd("git pull origin master --rebase") && cmd("git checkout -")
+            cmd("git checkout master", quiet: true) && cmd("git pull origin master --rebase", quiet: true) && cmd("git checkout -", quiet: true)
           else
-            cmd "git pull origin master --rebase"
+            cmd "git pull origin master --rebase", quiet: true
           end
 
           unless success
@@ -131,11 +131,11 @@ module MStrap
       stash_message = "MSTRAP CHECKPOINT #{Time.now.to_unix}"
 
       begin
-        cmd("git", "stash", "push", "-u", "-m", stash_message)
+        cmd("git", "stash", "push", "-u", "-m", stash_message, quiet: true)
         yield
       ensure
-        if cmd("git stash list | grep '#{stash_message}'")
-          cmd "git stash pop"
+        if cmd("git stash list | grep '#{stash_message}'", quiet: true)
+          cmd "git stash pop", quiet: true
         end
       end
     end

@@ -6,14 +6,15 @@ module MStrap
       @projects : Array(Project) | Nil
 
       def bootstrap
-        logn "==> Fetching, updating, and bootstrapping projects"
+        logn "==> Bootstrapping projects"
         projects.not_nil!.each do |project|
-          log "---> Fetching #{project.name}: "
+          logn "#### #{project.name}"
+          log "---> Fetching: "
 
           if Dir.exists?(project.path)
-            logw "Already fetched #{project.name}"
+            logw "Already fetched"
             unless skip_project_update?
-              log "---> Updating #{project.name}: "
+              log "---> Updating: "
               if project.pull
                 success "OK"
               else
@@ -28,7 +29,7 @@ module MStrap
             end
           end
 
-          log "---> Bootstrapping #{project.name}: "
+          log "---> Bootstrapping: "
           project.bootstrap
           success "OK"
         end

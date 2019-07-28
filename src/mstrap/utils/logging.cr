@@ -34,6 +34,7 @@ module MStrap
           abort msg.colorize(:red)
         else
           puts "!!! #{msg}".colorize(:red)
+          puts "!!! Check #{MStrap::Paths::LOG_FILE} and/or run with --debug for more detail."
           exit 1
         end
       end

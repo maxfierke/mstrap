@@ -7,16 +7,15 @@ module MStrap
       def cmd(
         env : Hash?,
         command : String,
-        *args,
+        args : Array(String)?,
         shell = true,
         input = Process::Redirect::Inherit,
         output = Process::Redirect::Inherit,
         error = Process::Redirect::Inherit,
         quiet = false
       )
-        logd "+ #{env ? env : ""} #{command} #{args.join(" ")}"
+        logd "+ #{env ? env : ""} #{command} #{args ? args.join(" ") : ""}"
 
-        command_args = args.size > 0 ? args.to_a : nil
         named = {
           shell: shell,
           env: env,
@@ -39,7 +38,7 @@ module MStrap
           })
         end
 
-        child = Process.new(command, command_args, **named)
+        child = Process.new(command, args, **named)
 
         at_exit {
           # Cleanup this process when we exit, if it's still running. (e.g. receiving SIGINT)
@@ -50,6 +49,28 @@ module MStrap
 
         status = child.wait
         status.success?
+      end
+
+      def cmd(env : Hash?, command, *args, **kwargs)
+        # TODO: I hate this
+        command_args = if !args.empty?
+          first_arg = args.first?
+          if first_arg && first_arg.is_a?(Array(String))
+            first_arg
+          else
+            arr_args = args.to_a
+
+            if arr_args.is_a?(Array(NoReturn))
+              nil
+            else
+              arr_args.as(Array(String))
+            end
+          end
+        else
+          nil
+        end
+
+        cmd(env, command, command_args, **kwargs)
       end
 
       def cmd(command, *args, **kwargs)

@@ -9,7 +9,6 @@ module MStrap
       :shell,
       :services,
       :projects,
-      #:elixir,
       #:node,
       #:python,
       #:ruby,

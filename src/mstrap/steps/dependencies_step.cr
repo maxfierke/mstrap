@@ -35,7 +35,7 @@ module MStrap
       end
 
       private def strap_sh
-        logn "==> Running strap.sh: "
+        logn "==> Running strap.sh"
         unless cmd "sh #{MStrap::Paths::STRAP_SH_PATH} #{debug? ? "--debug" : ""}"
           logc "Uhh oh, something went wrong in strap.sh-land. Check above or in #{MStrap::Paths::LOG_FILE}."
         end

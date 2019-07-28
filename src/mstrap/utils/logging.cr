@@ -24,7 +24,7 @@ module MStrap
       end
 
       def logw(msg)
-        puts msg.colorize(:yellow)
+        puts "! #{msg}".colorize(:yellow)
         logger.warn(msg)
       end
 
@@ -33,7 +33,7 @@ module MStrap
         if debug?
           abort msg.colorize(:red)
         else
-          puts msg.colorize(:red)
+          puts "!!! #{msg}".colorize(:red)
           exit 1
         end
       end

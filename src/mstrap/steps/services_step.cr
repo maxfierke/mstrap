@@ -5,13 +5,14 @@ module MStrap
       include Utils::System
 
       def bootstrap
-        unless File.exists?(MStrap::Paths::SERVICES_YML)
-          logw "---> No services.yml found. Please create a configuration at #{MStrap::Paths::SERVICES_YML} to manage Docker services with mstrap."
-          return
-        end
+        logn "==> Setting up managed services"
 
-        ensure_docker!
-        bootstrap_services!
+        if File.exists?(MStrap::Paths::SERVICES_YML)
+          ensure_docker!
+          bootstrap_services!
+        else
+          logw "No services.yml found. Please create a configuration at #{MStrap::Paths::SERVICES_YML} to manage Docker services with mstrap."
+        end
       end
 
       private def ensure_docker!

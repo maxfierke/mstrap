@@ -37,10 +37,14 @@ module MStrap
 
         unless mstrapped?
           if supported_shell?
+            logn "==> Injecting magic shell scripts into your #{shell_file}: "
             `touch #{shell_file_path} && echo '#{SHELL_LINE}' >> #{shell_file_path}`
-            logn SUPPORTED_SHELL_MSG
+            success "OK"
+            logw SUPPORTED_SHELL_MSG
           else
-            logn UNSUPPORTED_SHELL_MSG
+            log "==> Injecting magic shell scripts into your shell config: "
+            logn "FAIL".colorize(:red)
+            logw UNSUPPORTED_SHELL_MSG
           end
           exit
         end

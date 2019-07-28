@@ -1,16 +1,15 @@
 module MStrap
   abstract class Step
+    @args : Array(String)
     # BUG?: Why aren't these inferred correctly?
     @options : CLIOptions
     @profile : Defs::ProfileDef
     @user : User
 
-    getter :config
-    getter :options
-    getter :profile
-    getter :user
+    getter :args, :config, :options, :profile, :user
 
-    def initialize(config : Configuration)
+    def initialize(config : Configuration, args = [] of String)
+      @args = args
       @config = config
       @options = config.cli
       @profile = config.profile

@@ -1,7 +1,6 @@
 module MStrap
   class CLIOptions
     @argv : Array(String)
-    @step_args : Array(String)?
     @force = false
     @config_path = MStrap::Paths::CONFIG_YML
     @skip_migrations = false
@@ -9,7 +8,7 @@ module MStrap
     @skip_update = false
 
     getter :argv
-    property :config_path, :step_args
+    property :config_path
     property? :force,
       :skip_migrations,
       :skip_project_update,

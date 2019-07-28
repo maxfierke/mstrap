@@ -9,10 +9,6 @@ module MStrap
         Process.exec("docker-compose", ["-f", MStrap::Paths::SERVICES_YML] + args)
       end
 
-      private def args
-        options.step_args || [] of String
-      end
-
       private def ensure_docker!
         unless cmd "docker-compose version"
           logw "Could not find 'docker-compose'."

@@ -22,15 +22,15 @@ module MStrap
     def initialize(config : Configuration)
       @config = config
       @options = config.cli
-      @step_args = [] of String
     end
 
     def bootstrap
       tracker.identify
 
       if step_key = step
+        args = ARGV.dup
         validate_step!(step_key)
-        run_step!(step_key)
+        run_step!(step_key, args)
         tracker.track("Single Step Run: #{step_key}", { step: step_key.to_s })
         success "`mstrap #{step_key}` has completed successfully!"
       else
@@ -43,7 +43,7 @@ module MStrap
       logw "Remember to restart your terminal, as the contents of your environment may have shifted."
     end
 
-    private getter :config, :options, :step_args
+    private getter :config, :options
 
     private def config_path
       @config_path ||= options.config_path
@@ -51,7 +51,6 @@ module MStrap
 
     private def step
       @step ||= if step_arg = ARGV.shift?
-        @step_args = ARGV.dup
         Step.all.keys.find { |step| step.to_s == step_arg }
       else
         nil
@@ -66,17 +65,11 @@ module MStrap
       end
     end
 
-    private def run_step!(step)
-      # TODO: Refactor this
-      step_options = options.dup
-      step_options.step_args = step_args
-      step_configuration = Configuration.new(
-        cli: step_options,
-        profile: config.profile,
-        user: config.user
-      )
-
-      Step.all[step].new(step_configuration).bootstrap
+    private def run_step!(step, args = [] of String)
+      Step.all[step].new(
+        config,
+        args: args
+      ).bootstrap
     end
 
     private def tracker

@@ -8,14 +8,14 @@ module MStrap
         "(Re)creates mstrap-managed docker-compose services"
       end
 
-      def bootstrap
-        logn "==> Setting up managed services"
+      def bootstrap(services_yml = MStrap::Paths::SERVICES_YML)
+        logn "==> Setting up managed services (from #{services_yml})"
 
-        if File.exists?(MStrap::Paths::SERVICES_YML)
+        if File.exists?(services_yml)
           ensure_docker!
-          bootstrap_services!
+          bootstrap_services!(services_yml)
         else
-          logw "No services.yml found. Please create a configuration at #{MStrap::Paths::SERVICES_YML} to manage Docker services with mstrap."
+          logw "No services.yml found. Please create a configuration at #{services_yml} to manage Docker services with mstrap."
         end
       end
 
@@ -38,25 +38,25 @@ module MStrap
         end
       end
 
-      private def bootstrap_services!
+      private def bootstrap_services!(services_yml)
         log "---> Starting up docker services: "
-        unless start_services
+        unless start_services(services_yml)
           logc "Could not start up docker services. Check #{MStrap::Paths::LOG_FILE}"
         end
         success "OK"
       end
 
-      private def start_services
+      private def start_services(services_yml)
         cmd(
           "docker-compose",
-          "-f", MStrap::Paths::SERVICES_YML,
+          "-f", services_yml,
           "up", "-d"
         )
       end
 
       private def docker_app_path
-        @docker_app_path ||= if Dir.exists?("/Application/Docker.app")
-          "/Application/Docker.app"
+        @docker_app_path ||= if Dir.exists?("/Applications/Docker.app")
+          "/Applications/Docker.app"
         elsif Dir.exists?("#{ENV["HOME"]}/Applications/Docker.app")
           "#{ENV["HOME"]}/Applications/Docker.app"
         else

@@ -16,14 +16,14 @@ module MStrap
     @path : String
     @port : Int32?
     @repo : String
-    @run_scripts = true
+    @run_scripts : Bool
     @runtime : String
     @upstream : String?
     @websocket : Bool
     @web : Bool
 
-    getter :cname, :hostname, :name, :path, :port, :repo, :runtime, :websocket
-    getter? :run_scripts, :web
+    getter :cname, :hostname, :name, :path, :port, :repo, :runtime
+    getter? :run_scripts, :web, :websocket
 
     def self.for(project_def : Defs::ProjectDef)
       case project_def.runtime
@@ -68,7 +68,7 @@ module MStrap
     def upstream
       @upstream ||= begin
         if port = @port
-          "localhost:#{port}"
+          "host.docker.internal:#{port}"
         else
           "unix:#{Paths::PROJECT_SOCKETS}/#{cname}"
         end

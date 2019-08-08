@@ -1,13 +1,14 @@
-upstream <%= name %> {
-  server <%= upstream %>;
+upstream <%= project.cname %> {
+  server <%= project.upstream %>;
 }
 
 server {
-  access_log /dev/null;
+  access_log /dev/stdout;
+  error_log /dev/stderr;
   listen 8080;
   listen [::]:8080;
-  root <%= root %>/public;
-  server_name <%= name %> *.<%= name %>;
+  root <%= project.path %>/public;
+  server_name <%= project.hostname %> *.<%= project.hostname %>;
 
   client_max_body_size 50M;
   error_page 500 502 503 504 /50x.html;
@@ -16,18 +17,18 @@ server {
     root html;
   }
 
-  try_files $uri/index.html $uri @<%= name %>;
-  location @<%= name %> {
-    <% if defined?(websocket) && websocket == 'true' %>
+  try_files $uri/index.html $uri @<%= project.cname %>;
+  location @<%= project.cname %> {
+    <%- if project.websocket? -%>
     proxy_http_version 1.1;
     proxy_set_header Upgrade $http_upgrade;
     proxy_set_header Connection "upgrade";
-    <% end %>
+    <%- end -%>
 
     proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     proxy_set_header Host $http_host;
     proxy_read_timeout 300s;
     proxy_redirect off;
-    proxy_pass http://<%= name %>;
+    proxy_pass http://<%= project.cname %>;
   }
 }

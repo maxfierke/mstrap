@@ -3,6 +3,7 @@ module MStrap
     class ProjectsStep < Step
       include Utils::Logging
 
+      @has_web_projects = false
       @projects : Array(Project) | Nil
 
       def self.description
@@ -11,7 +12,10 @@ module MStrap
 
       def bootstrap
         logn "==> Bootstrapping projects"
-        projects.not_nil!.each do |project|
+
+        create_services_internal_yml! if has_web_projects?
+
+        projects.each do |project|
           logn "#### #{project.name}"
           log "---> Fetching: "
 
@@ -37,6 +41,8 @@ module MStrap
           project.bootstrap
           success "OK"
         end
+
+        restart_internal_services! if has_web_projects?
       end
 
       private def skip_project_update?
@@ -46,7 +52,22 @@ module MStrap
       private def projects
         @projects ||= profile.projects.map do |project_def|
           MStrap::Project.for(project_def)
-        end
+        end.not_nil!
+      end
+
+      private def has_web_projects?
+        @has_web_projects ||= projects.any? { |p| p.web? }
+      end
+
+      private def create_services_internal_yml!
+        log "---> Creating/updating default services-internal.yml for web projects: "
+        Templates::ServicesInternalYml.new.write_to_config!
+      end
+
+      private def restart_internal_services!
+        ServicesStep.new(config).bootstrap(
+          services_yml: Paths::SERVICES_INTERNAL_YML
+        )
       end
     end
   end

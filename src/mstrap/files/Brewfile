@@ -23,5 +23,5 @@ brew 'nodenv'
 brew 'pyenv'
 brew 'rbenv'
 
-# Services
-brew 'nginx', restart_service: :changed
+# Resolve *.localhost
+brew "launchdns", restart_service: true

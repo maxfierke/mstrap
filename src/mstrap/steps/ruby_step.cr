@@ -26,7 +26,7 @@ module MStrap
         latest_ruby = ruby_versions.last
         logn "---> Setting default Ruby version to latest: "
         log "Setting default Ruby version to #{latest_ruby}: "
-        unless cmd "rbenv global #{latest_ruby}", quiet: true
+        unless cmd "asdf global ruby #{latest_ruby}", quiet: true
           logc "Could not set global Ruby version to #{latest_ruby}"
         end
         success "OK"
@@ -39,9 +39,9 @@ module MStrap
         ruby_versions.each do |version|
           gem_names = gems.map(&.name)
           log "Installing #{gem_names.join(", ")} for Ruby #{version}: "
-          rbenv_env = { "RBENV_VERSION" => version }
+          rbenv_env = { "ASDF_RUBY_VERSION" => version }
           rbenv_args = ["exec", "gem", "install"] + gem_names
-          unless cmd(rbenv_env, "rbenv", rbenv_args, quiet: true)
+          unless cmd(rbenv_env, "asdf", rbenv_args, quiet: true)
             logc "Could not install global Ruby gems for #{version}"
           end
           success "OK"
@@ -49,7 +49,12 @@ module MStrap
       end
 
       private def ruby_versions
-        @ruby_versions ||= `rbenv versions --bare 2>&1`.chomp.split("\n").not_nil!
+        @ruby_versions ||= `asdf list ruby 2>&1`.
+          chomp.
+          split("\n").
+          map(&.strip).
+          reject(&.blank?).
+          not_nil!
       end
     end
   end

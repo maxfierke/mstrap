@@ -1,7 +1,9 @@
 module MStrap
   class Project
-    extend Utils::Logging
     include Utils::Logging
+    include Utils::Node
+    include Utils::Python
+    include Utils::Ruby
     include Utils::System
 
     ABSOLUTE_REPO_URL_REGEX = /\A(git|https?|ftps?|ssh|file):\/\//
@@ -26,20 +28,10 @@ module MStrap
     getter? :run_scripts, :web, :websocket
 
     def self.for(project_def : Defs::ProjectDef)
-      case project_def.runtime
-      when "javascript"
-        Projects::JavascriptProject
-      when "python"
-        Projects::PythonProject
-      when "ruby"
-        Projects::RubyProject
-      else
-        project_def.runtime = "unknown"
-        Project
-      end.new(project_def)
+      Project.new(project_def)
     end
 
-    def initialize(project_def : Defs::ProjectDef)
+    protected def initialize(project_def : Defs::ProjectDef)
       @cname = project_def.cname
       @name = project_def.name
       @hostname = project_def.hostname || "#{cname}.localhost"
@@ -117,6 +109,21 @@ module MStrap
     end
 
     protected def default_bootstrap
+      if node?
+        logd "Detected Node. Installing Node."
+        with_project_node { setup_node }
+      end
+
+      if python?
+        logd "Detected Python. Installing Python and any pip dependencies."
+        with_project_python { setup_python }
+      end
+
+      if ruby?
+        logd "Detected Ruby. Installing Ruby and bundler."
+        with_project_ruby { setup_ruby }
+      end
+
       if web?
         logd "'#{name}' is a web project. Running web bootstrapper."
         WebBootstrapper.new(self).bootstrap
@@ -136,6 +143,46 @@ module MStrap
       ensure
         if cmd("git stash list | grep '#{stash_message}'", quiet: true)
           cmd "git stash pop", quiet: true
+        end
+      end
+    end
+
+    private def node?
+      return true if runtime == "node"
+      Dir.cd(path) do
+        [
+          "yarn.lock",
+          "package.json",
+          "npm-shrinkwrap.json",
+          ".node-version"
+        ].any? do |file|
+          File.exists?(file)
+        end
+      end
+    end
+
+    private def ruby?
+      return true if runtime == "ruby"
+      Dir.cd(path) do
+        [
+          "Gemfile.lock",
+          "Gemfile",
+          "gems.rb",
+          ".ruby-version"
+        ].any? do |file|
+          File.exists?(file)
+        end
+      end
+    end
+
+    private def python?
+      return true if runtime == "python"
+      Dir.cd(path) do
+        [
+          "requirements.txt",
+          ".python-version"
+        ].any? do |file|
+          File.exists?(file)
         end
       end
     end

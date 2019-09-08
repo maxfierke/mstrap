@@ -92,7 +92,7 @@ module MStrap
       # stty_save = %x`stty -g`.chomp
       # trap("INT") { print "\n"; system "stty", stty_save; exit 1 }
 
-      project = MStrap::Project.new(project_def)
+      project = MStrap::Project.for(project_def)
       project.bootstrap
     end
   end

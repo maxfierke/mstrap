@@ -3,6 +3,7 @@ tap 'github/bootstrap'
 # Useful utilities
 brew 'ack'
 brew 'autoconf'
+brew 'automake'
 brew 'bash-completion'
 brew 'coreutils'
 brew 'curl'
@@ -13,15 +14,16 @@ brew 'gnu-sed'
 brew 'gnu-tar'
 brew 'hub'
 brew 'jq'
+brew 'libxslt'
+brew 'libyaml'
 brew 'openssl'
 brew 'pkg-config'
 brew 'readline'
+brew 'unixodbc'
 brew 'zlib'
 
 # Language runtime managers
-brew 'nodenv'
-brew 'pyenv'
-brew 'rbenv'
+brew 'asdf'
 
 # Resolve *.localhost
 brew "launchdns", restart_service: true

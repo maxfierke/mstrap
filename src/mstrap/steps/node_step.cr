@@ -39,7 +39,7 @@ module MStrap
         node_versions.each do |version|
           package_names = packages.map(&.name)
           log "Installing #{package_names.join(", ")} for Node #{version}: "
-          nodenv_env = { "ASDF_NODE_VERSION" => version }
+          nodenv_env = { "ASDF_NODEJS_VERSION" => version }
           nodenv_args = ["exec", "npm", "install", "-g"] + package_names
           unless cmd(nodenv_env, "asdf", nodenv_args, quiet: true)
             logc "Could not install global NPM packages for #{version}"

@@ -8,23 +8,84 @@ module MStrap
           with_project_{{language_name.id}} do
             cmd "asdf install {{plugin_name.id}} #{{{language_name.id}}_version}"
 
-            {% if language_name.id == "node" %}
-              if File.exists?("yarn.lock")
-                cmd "brew install yarn"
-                cmd "yarn install"
-              elsif File.exists?("package.json")
-                cmd "npm install"
-              end
-            {% elsif language_name.id == "ruby" %}
-              cmd "gem install bundler -v '<2'"
-              cmd "gem install bundler"
-              cmd "bundle install" if File.exists?('Gemfile')
-            {% elsif language_name.id == "python" %}
-              if File.exists?("requirements.txt")
-                cmd "pip install -r requirements.txt"
-              end
-            {% end %}
+            Dir.cd(path) do
+              {% if language_name.id == "node" %}
+                if File.exists?("yarn.lock")
+                  cmd "brew install yarn"
+                  cmd "yarn install"
+                elsif File.exists?("package.json")
+                  cmd "npm install"
+                end
+              {% elsif language_name.id == "ruby" %}
+                if File.exists?("gems.rb")
+                  cmd "gem install bundler"
+                  cmd "bundle install"
+                elsif File.exists?("Gemfile")
+                  cmd "gem install bundler -v '<2'"
+                  cmd "bundle install"
+                end
+              {% elsif language_name.id == "php" %}
+                if File.exists?("composer.json")
+                  cmd "brew install composer"
+                  cmd "composer install"
+                end
+              {% elsif language_name.id == "python" %}
+                if File.exists?("requirements.txt")
+                  cmd "pip install -r requirements.txt"
+                end
+              {% end %}
+            end
           end
+        end
+
+        def {{language_name.id}}?
+          return true if runtime == "{{language_name.id}}"
+
+          {% if language_name.id == "node" %}
+            Dir.cd(path) do
+              [
+                "yarn.lock",
+                "package.json",
+                "npm-shrinkwrap.json",
+                ".node-version"
+              ].any? do |file|
+                File.exists?(file)
+              end
+            end
+          {% elsif language_name.id == "php" %}
+            Dir.cd(path) do
+              [
+                "composer.json",
+                "composer.lock",
+                ".php-version"
+              ].any? do |file|
+                File.exists?(file)
+              end
+            end
+          {% elsif language_name.id == "python" %}
+            Dir.cd(path) do
+              [
+                "requirements.txt",
+                ".python-version"
+              ].any? do |file|
+                File.exists?(file)
+              end
+            end
+          {% elsif language_name.id == "ruby" %}
+            Dir.cd(path) do
+              [
+                "Gemfile.lock",
+                "Gemfile",
+                "gems.rb",
+                "gems.locked",
+                ".ruby-version"
+              ].any? do |file|
+                File.exists?(file)
+              end
+            end
+          {% else %}
+            {{raise "Please define language detection criteria here."}}
+          {% end %}
         end
 
         def {{language_name.id}}_version

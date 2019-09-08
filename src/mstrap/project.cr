@@ -2,6 +2,7 @@ module MStrap
   class Project
     include Utils::Logging
     include Utils::Node
+    include Utils::Php
     include Utils::Python
     include Utils::Ruby
     include Utils::System
@@ -111,17 +112,22 @@ module MStrap
     protected def default_bootstrap
       if node?
         logd "Detected Node. Installing Node."
-        with_project_node { setup_node }
+        setup_node
+      end
+
+      if php?
+        logd "Detected PHP. Installing PHP and any composer dependencies."
+        setup_php
       end
 
       if python?
         logd "Detected Python. Installing Python and any pip dependencies."
-        with_project_python { setup_python }
+        setup_python
       end
 
       if ruby?
-        logd "Detected Ruby. Installing Ruby and bundler."
-        with_project_ruby { setup_ruby }
+        logd "Detected Ruby. Installing Ruby, bundler, and any Gemfile dependencies."
+        setup_ruby
       end
 
       if web?
@@ -143,46 +149,6 @@ module MStrap
       ensure
         if cmd("git stash list | grep '#{stash_message}'", quiet: true)
           cmd "git stash pop", quiet: true
-        end
-      end
-    end
-
-    private def node?
-      return true if runtime == "node"
-      Dir.cd(path) do
-        [
-          "yarn.lock",
-          "package.json",
-          "npm-shrinkwrap.json",
-          ".node-version"
-        ].any? do |file|
-          File.exists?(file)
-        end
-      end
-    end
-
-    private def ruby?
-      return true if runtime == "ruby"
-      Dir.cd(path) do
-        [
-          "Gemfile.lock",
-          "Gemfile",
-          "gems.rb",
-          ".ruby-version"
-        ].any? do |file|
-          File.exists?(file)
-        end
-      end
-    end
-
-    private def python?
-      return true if runtime == "python"
-      Dir.cd(path) do
-        [
-          "requirements.txt",
-          ".python-version"
-        ].any? do |file|
-          File.exists?(file)
         end
       end
     end

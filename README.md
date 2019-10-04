@@ -5,7 +5,7 @@ It is a [convention-over-configuration](https://en.wikipedia.org/wiki/Convention
 tool, which aims to leverage existing ecosystem tools to provide a one-command provisioning
 experience for a new machine.
 
-The approach is based on the [`chirpstrap`](https://medium.com/intensive-code-unit/provisioning-engineers-with-chirpstrap-ecae874453d0) tool built at Iora Health, but is built and maintained in my personal capacity and is not associated with Iora Health.
+The approach is inspired by the [`chirpstrap`](https://medium.com/intensive-code-unit/provisioning-engineers-with-chirpstrap-ecae874453d0) tool built at Iora Health, but is built and maintained in my personal capacity and is not associated with Iora Health.
 
 ### Aims
 
@@ -14,6 +14,8 @@ The approach is based on the [`chirpstrap`](https://medium.com/intensive-code-un
   * Avoid vendoring or overriding tool defaults
 * Hook into standard [scripts-to-rule-them-all](https://github.com/github/scripts-to-rule-them-all)
   * Currently hooks into a project's `script/bootstrap` and `script/setup`
+* Eventually leverage `mruby` for user-defined extensions written in Ruby, such
+  as environment migrations.
 
 #### Platform Support
 
@@ -26,24 +28,26 @@ the same platforms officially supported by Homebrew:
 
 #### Language Runtime Support
 
-`mstrap` comes with built-in support bootstrapping JavaScript, Python, and Ruby
-projects, including support for install project-specific runtime versions and
-installing dependencies.
+`mstrap` comes with built-in support for bootstrapping projects in a number of
+different language runtimes, including support for installing project-specific
+runtime versions and installing dependencies, via [ASDF](https://asdf-vm.com).
 
 Current support:
 
-* [X] JavaScript (via [nodenv](https://github.com/nodenv/nodenv))
-* [X] Python (via [pyenv](https://github.com/pyenv/pyenv/))
-* [X] Ruby (via [rbenv](https://github.com/rbenv/rbenv/))
+* [X] JavaScript
+* [X] PHP
+* [X] Python
+* [X] Ruby
 
 Planned:
 
-* [ ] .NET (via [dotnet](https://aka.ms/dotnet-cli-docs))
+* [ ] .NET
 * [ ] Elixir
-* [ ] PHP
+* [ ] Go
+* [ ] Rust
 
-Bootstrapping other runtimes, while not supported directly, can still be done
-through a project's `script/bootstrap`.
+Bootstrapping other runtimes, while not directly supported, can still be done
+through a project's `script/bootstrap` or `script/setup`.
 
 ## Installation
 

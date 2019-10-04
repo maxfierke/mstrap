@@ -4,14 +4,12 @@ on: [push]
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
-
-    container:
-      image: crystallang/crystal
+    runs-on: macOS-latest
 
     steps:
     - uses: actions/checkout@v1
+    - name: Install crystal
+      run: brew install crystal-lang
     - name: Install dependencies
       run: shards install
     - name: Run tests

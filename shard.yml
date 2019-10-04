@@ -19,6 +19,6 @@ targets:
   mstrap-project:
     main: src/project_cli.cr
 
-crystal: 0.29.0
+crystal: 0.31.1
 
 license: MIT

@@ -26,7 +26,7 @@ module MStrap
         latest_python = python_versions.last
         logn "---> Setting default Python version to latest: "
         log "Setting default Python version to #{latest_python}: "
-        unless cmd "pyenv global #{latest_python}", quiet: true
+        unless cmd "asdf global python #{latest_python}", quiet: true
           logc "Could not set global Python version to #{latest_python}"
         end
         success "OK"
@@ -39,9 +39,9 @@ module MStrap
         python_versions.each do |version|
           package_names = packages.map(&.name)
           log "Installing #{package_names.join(", ")} for Python #{version}: "
-          pyenv_env = { "PYENV_VERSION" => version }
+          pyenv_env = { "ASDF_PYTHON_VERSION" => version }
           pyenv_args = ["exec", "pip", "install", "-U"] + package_names
-          unless cmd(pyenv_env, "pyenv", pyenv_args, quiet: true)
+          unless cmd(pyenv_env, "asdf", pyenv_args, quiet: true)
             logc "Could not install global pip packages for #{version}"
           end
           success "OK"
@@ -49,7 +49,12 @@ module MStrap
       end
 
       private def python_versions
-        @python_versions ||= `pyenv versions --bare 2>&1`.chomp.split("\n").not_nil!
+        @python_versions ||= `asdf list python 2>&1`.
+          chomp.
+          split("\n").
+          map(&.strip).
+          reject(&.blank?).
+          not_nil!
       end
     end
   end

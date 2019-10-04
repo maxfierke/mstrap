@@ -1,7 +1,10 @@
 module MStrap
   class Project
-    extend Utils::Logging
     include Utils::Logging
+    include Utils::Node
+    include Utils::Php
+    include Utils::Python
+    include Utils::Ruby
     include Utils::System
 
     ABSOLUTE_REPO_URL_REGEX = /\A(git|https?|ftps?|ssh|file):\/\//
@@ -26,20 +29,10 @@ module MStrap
     getter? :run_scripts, :web, :websocket
 
     def self.for(project_def : Defs::ProjectDef)
-      case project_def.runtime
-      when "javascript"
-        Projects::JavascriptProject
-      when "python"
-        Projects::PythonProject
-      when "ruby"
-        Projects::RubyProject
-      else
-        project_def.runtime = "unknown"
-        Project
-      end.new(project_def)
+      Project.new(project_def)
     end
 
-    def initialize(project_def : Defs::ProjectDef)
+    protected def initialize(project_def : Defs::ProjectDef)
       @cname = project_def.cname
       @name = project_def.name
       @hostname = project_def.hostname || "#{cname}.localhost"
@@ -117,6 +110,26 @@ module MStrap
     end
 
     protected def default_bootstrap
+      if node?
+        logd "Detected Node. Installing Node."
+        setup_node
+      end
+
+      if php?
+        logd "Detected PHP. Installing PHP and any composer dependencies."
+        setup_php
+      end
+
+      if python?
+        logd "Detected Python. Installing Python and any pip dependencies."
+        setup_python
+      end
+
+      if ruby?
+        logd "Detected Ruby. Installing Ruby, bundler, and any Gemfile dependencies."
+        setup_ruby
+      end
+
       if web?
         logd "'#{name}' is a web project. Running web bootstrapper."
         WebBootstrapper.new(self).bootstrap

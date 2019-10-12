@@ -29,7 +29,7 @@ module MStrap
 
     private def strap_sh_age
       if file_info = File.info?(Paths::STRAP_SH_PATH)
-        Time.now - file_info.modification_time
+        Time.local - file_info.modification_time
       else
         Time::Span.zero
       end

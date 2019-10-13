@@ -12,7 +12,7 @@ module MStrap
       @args = args
       @config = config
       @options = config.cli
-      @profile = config.profile
+      @profile = config.resolved_profile
       @user = config.user
     end
 

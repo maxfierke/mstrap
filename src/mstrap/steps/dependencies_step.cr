@@ -60,7 +60,7 @@ module MStrap
 
       private def load_profile!
         log "---> Reloading profile: "
-        config.load_profile!
+        config.load_profiles!
         success "OK"
       end
     end

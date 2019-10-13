@@ -6,8 +6,10 @@ module MStrap
 
     BREWFILE = File.join(RC_DIR, "Brewfile")
     CONFIG_YML = File.join(RC_DIR, "config.yml")
+    PROFILE_YML = File.join(RC_DIR, "profile.yml")
     HUB_CONFIG_XML = File.join(XDG_CONFIG_DIR, "hub")
     LOG_FILE = File.join(RC_DIR, "mstrap.log")
+    PROFILES_DIR = File.join(RC_DIR, "profiles")
     PROJECT_SITES = File.join(RC_DIR, "project-sites")
     PROJECT_SOCKETS = File.join(PROJECT_SITES, "sockets")
     SERVICES_INTERNAL_YML = File.join(RC_DIR, "services-internal.yml")

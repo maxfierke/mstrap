@@ -72,11 +72,11 @@ Usage: mstrap [options] <command> -- [<arguments>]
     -f, --force                      Force overwrite of existing config with reckless abandon
     -c, --config-path [CONFIG_PATH]  Path to configuration file
                                      Default: $HOME/.mstrap/config.yml. Can also be an HTTPS URL.
-    -n, --name NAME                  Your name (Default: prompt)
-                                     Can also be specified by MSTRAP_USER_FULLNAME env var.
-    -e, --email EMAIL ADDRESS        Email address (Default: prompt)
+    -n, --name NAME                  Your name (Default: config or prompt)
+                                     Can also be specified by MSTRAP_USER_NAME env var.
+    -e, --email EMAIL ADDRESS        Email address (Default: config or prompt)
                                      Can also be specified by MSTRAP_USER_EMAIL env var.
-    -g, --github GITHUB              GitHub username (Default: prompt)
+    -g, --github GITHUB              GitHub username (Default: config or prompt)
                                      Can also be specified by MSTRAP_USER_GITHUB env var.
     -a, --github-access-token [GITHUB_ACCESS_TOKEN]
                                      GitHub access token

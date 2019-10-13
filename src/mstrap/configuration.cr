@@ -9,7 +9,7 @@ module MStrap
     @user : User
 
     DEFAULT_PROFILE_DEF = Defs::ProfileConfigDef.new(
-      name: "Default",
+      name: "default",
       path: Paths::PROFILE_YML
     )
 

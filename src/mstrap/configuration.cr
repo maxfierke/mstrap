@@ -1,8 +1,14 @@
 module MStrap
   class Configuration
     class ConfigurationLoadError < Exception; end
+    class ConfigurationNotFoundError < ConfigurationLoadError
+      def initialize(path : String)
+        super("#{path} does not exist or is not accessible.")
+      end
+    end
 
     @cli : CLIOptions
+    @config_yaml_def : Defs::ConfigDef
     @profile_configs : Array(Defs::ProfileConfigDef)
     @profiles : Array(Defs::ProfileDef)
     @resolved_profile : Defs::ProfileDef
@@ -17,15 +23,12 @@ module MStrap
 
     def initialize(cli : CLIOptions, config : Defs::ConfigDef, github_access_token : String? = nil)
       @cli = cli
+      @config_yaml_def = config
       @profile_configs = [DEFAULT_PROFILE_DEF] + config.profiles
       @profiles = [] of Defs::ProfileDef
       @resolved_profile = Defs::ProfileDef.new
-      @user = User.new(
-        name: config.user.name.not_nil!,
-        email: config.user.email.not_nil!,
-        github: config.user.github.not_nil!,
-        github_access_token: github_access_token
-      )
+      @github_access_token = github_access_token
+      @user = User.new(user: config.user, github_access_token: github_access_token)
     end
 
     def load_profiles!
@@ -38,13 +41,11 @@ module MStrap
           )
         end
 
-        path = profile_config.path
+        path = profile_config.path.not_nil!
 
-        if !path || !File.exists?(path)
+        if !File.exists?(path)
           next if profile_config == DEFAULT_PROFILE_DEF
-          raise ConfigurationLoadError.new(
-            "#{profile_config.name}: #{path} does not exist or is not accessible."
-          )
+          raise ConfigurationNotFoundError.new(path)
         end
 
         profile_yaml = File.read(path)
@@ -55,6 +56,30 @@ module MStrap
 
       self
     end
+
+    def reload!
+      if File.exists?(Paths::CONFIG_YML)
+        config_yaml = File.read(Paths::CONFIG_YML)
+        config = Defs::ConfigDef.from_yaml(config_yaml)
+
+        # TODO: DRY this up?
+        @config_yaml_def = config
+        @profile_configs = [DEFAULT_PROFILE_DEF] + config.profiles
+        @profiles = [] of Defs::ProfileDef
+        @resolved_profile = Defs::ProfileDef.new
+        @user = User.new(user: config.user, github_access_token: github_access_token)
+        load_profiles!
+      else
+        raise ConfigurationNotFoundError.new(Paths::CONFIG_YML)
+      end
+    end
+
+    def save!
+      config_yaml = @config_yaml_def.to_yaml
+      File.write(Paths::CONFIG_YML, config_yaml, perm: 0o600)
+    end
+
+    private getter :github_access_token
 
     private def resolve_profile!
       # TODO: cleanup this godawful merging code

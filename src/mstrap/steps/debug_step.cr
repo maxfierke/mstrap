@@ -13,7 +13,6 @@ module MStrap
       def bootstrap
         puts "mstrap v#{MStrap::VERSION}"
         puts "Loaded Profiles:"
-        puts "  * Default (#{Paths::PROFILE_YML})"
         config.profile_configs.each do |profile|
           puts "  * #{profile.name} (#{profile.path})"
         end

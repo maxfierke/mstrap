@@ -22,6 +22,9 @@ module MStrap
           default: nil
         }
       )
+
+      def initialize(@name = nil, @path = nil, @revision = nil, @url = nil)
+      end
     end
   end
 end

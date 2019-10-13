@@ -1,16 +1,23 @@
 module MStrap
   class Configuration
+    class ConfigurationLoadError < Exception; end
+
     @cli : CLIOptions
     @profile_configs : Array(Defs::ProfileConfigDef)
     @profiles : Array(Defs::ProfileDef)
     @resolved_profile : Defs::ProfileDef
     @user : User
 
+    DEFAULT_PROFILE_DEF = Defs::ProfileConfigDef.new(
+      name: "Default",
+      path: Paths::PROFILE_YML
+    )
+
     getter :cli, :profile_configs, :profiles, :resolved_profile, :user
 
     def initialize(cli : CLIOptions, config : Defs::ConfigDef, github_access_token : String? = nil)
       @cli = cli
-      @profile_configs = config.profiles
+      @profile_configs = [DEFAULT_PROFILE_DEF] + config.profiles
       @profiles = [] of Defs::ProfileDef
       @resolved_profile = Defs::ProfileDef.new
       @user = User.new(
@@ -22,17 +29,25 @@ module MStrap
     end
 
     def load_profiles!
-      if File.exists?(Paths::PROFILE_YML)
-        profile_yaml = File.read(Paths::PROFILE_YML)
-        profiles << Defs::ProfileDef.from_yaml(profile_yaml)
-      end
-
       profile_configs.each do |profile_config|
         if profile_config.url
           ProfileFetcher.new(profile_config).fetch!
+        elsif !profile_config.path
+          raise ConfigurationLoadError.new(
+            "#{profile_config.name}: A url or path must be specified"
+          )
         end
 
-        profile_yaml = File.read(profile_config.path.not_nil!)
+        path = profile_config.path
+
+        if !path || !File.exists?(path)
+          next if profile_config == DEFAULT_PROFILE_DEF
+          raise ConfigurationLoadError.new(
+            "#{profile_config.name}: #{path} does not exist or is not accessible."
+          )
+        end
+
+        profile_yaml = File.read(path)
         profiles << Defs::ProfileDef.from_yaml(profile_yaml)
       end
 

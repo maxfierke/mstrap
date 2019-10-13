@@ -15,6 +15,7 @@ module MStrap
       logn "==> Initializing mstrap"
       create_rc_dir
       fetch_strap_sh
+      fetch_config_if_url
       create_brewfile_unless_exists
     end
 
@@ -51,6 +52,26 @@ module MStrap
           File.write(Paths::STRAP_SH_PATH, response.body_io.gets_to_end)
         end
 
+        success "OK"
+      end
+    end
+
+    private def fetch_config_if_url
+      if options.config_path.starts_with?("https://")
+        log "---> Fetching config: "
+
+        if File.exists?(Paths::CONFIG_YML) && !force?
+          logc "#{Paths::CONFIG_YML} already exists. Please remove or run with --force to overwrite."
+        else
+          HTTP::Client.get(options.config_path) do |response|
+            File.write(Paths::CONFIG_YML, response.body_io.gets_to_end, perm: 0o600)
+          end
+        end
+
+        success "OK"
+
+        log "---> Reloading config: "
+        config.reload!
         success "OK"
       end
     end

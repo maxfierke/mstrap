@@ -50,8 +50,8 @@ module MStrap
     end
 
     def reload!
-      if File.exists?(Paths::CONFIG_YML)
-        config_yaml = File.read(Paths::CONFIG_YML)
+      if File.exists?(cli.config_path)
+        config_yaml = File.read(cli.config_path)
         config = Defs::ConfigDef.from_yaml(config_yaml)
 
         # TODO: DRY this up?
@@ -62,13 +62,20 @@ module MStrap
         @user = User.new(user: config.user, github_access_token: github_access_token)
         load_profiles!
       else
-        raise ConfigurationNotFoundError.new(Paths::CONFIG_YML)
+        raise ConfigurationNotFoundError.new(cli.config_path)
       end
     end
 
     def save!
       config_yaml = @config_yaml_def.to_yaml
-      File.write(Paths::CONFIG_YML, config_yaml, perm: 0o600)
+
+      if cli.config_path.starts_with?("https://")
+        path = Paths::SERVICES_YML
+      else
+        path = cli.config_path
+      end
+
+      File.write(path, config_yaml, perm: 0o600)
     end
 
     private getter :github_access_token

@@ -14,6 +14,12 @@ module MStrap
         }
       )
 
+      def self.from_url(url : String)
+        HTTP::Client.get(url) do |response|
+          self.from_yaml(response.body_io.gets_to_end)
+        end
+      end
+
       def initialize(@user = UserDef.new, @profiles = Array(ProfileConfigDef).new)
       end
     end

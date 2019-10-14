@@ -120,8 +120,10 @@ module MStrap
     end
 
     private def config_def
-      @config_def ||= if File.exists?(Paths::CONFIG_YML)
-        config_yaml = File.read(Paths::CONFIG_YML)
+      @config_def ||= if options.config_path.starts_with?("https://")
+        Defs::ConfigDef.from_url(options.config_path)
+      elsif File.exists?(options.config_path)
+        config_yaml = File.read(options.config_path)
         Defs::ConfigDef.from_yaml(config_yaml)
       else
         Defs::ConfigDef.new(

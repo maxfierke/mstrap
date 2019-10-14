@@ -40,8 +40,6 @@ module MStrap
         success "mstrap has completed successfully!"
         print_shell_reload_warning
       end
-
-      config.save!
     end
 
     private getter :config, :options

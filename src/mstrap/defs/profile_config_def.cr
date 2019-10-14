@@ -6,11 +6,6 @@ module MStrap
           type: String,
           nilable: false
         },
-        path: {
-          type: String,
-          nilable: true,
-          default: nil
-        },
         revision: {
           type: String,
           nilable: true,
@@ -18,12 +13,11 @@ module MStrap
         },
         url: {
           type: String,
-          nilable: true,
-          default: nil
+          nilable: false
         }
       )
 
-      def initialize(@name = nil, @path = nil, @revision = nil, @url = nil)
+      def initialize(@name, @url, @revision = nil)
       end
 
       def merge!(other : self)
@@ -31,6 +25,14 @@ module MStrap
         self.path = other.path if other.path
         self.revision = other.revision if other.revision
         self.url = other.url if other.url
+      end
+
+      def dir
+        @dir ||= File.join(Paths::PROFILES_DIR, name)
+      end
+
+      def path
+        @path ||= File.join(dir, "profile.yml")
       end
     end
   end

@@ -16,7 +16,7 @@ module MStrap
 
     DEFAULT_PROFILE_DEF = Defs::ProfileConfigDef.new(
       name: "default",
-      path: Paths::PROFILE_YML
+      url: "file://profile.yml"
     )
 
     getter :cli, :profile_configs, :profiles, :resolved_profile, :user
@@ -33,22 +33,14 @@ module MStrap
 
     def load_profiles!
       profile_configs.each do |profile_config|
-        if profile_config.url
-          ProfileFetcher.new(profile_config).fetch!
-        elsif !profile_config.path
-          raise ConfigurationLoadError.new(
-            "#{profile_config.name}: A url or path must be specified"
-          )
-        end
+        ProfileFetcher.new(profile_config).fetch!
 
-        path = profile_config.path.not_nil!
-
-        if !File.exists?(path)
+        if !File.exists?(profile_config.path)
           next if profile_config == DEFAULT_PROFILE_DEF
-          raise ConfigurationNotFoundError.new(path)
+          raise ConfigurationNotFoundError.new(profile_config.path)
         end
 
-        profile_yaml = File.read(path)
+        profile_yaml = File.read(profile_config.path)
         profiles << Defs::ProfileDef.from_yaml(profile_yaml)
       end
 

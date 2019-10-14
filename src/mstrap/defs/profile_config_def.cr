@@ -1,6 +1,6 @@
 module MStrap
   module Defs
-    class ProfileConfigDef
+    class ProfileConfigDef < Def
       YAML.mapping(
         name: {
           type: String,
@@ -24,6 +24,13 @@ module MStrap
       )
 
       def initialize(@name = nil, @path = nil, @revision = nil, @url = nil)
+      end
+
+      def merge!(other : self)
+        self.name = other.name
+        self.path = other.path if other.path
+        self.revision = other.revision if other.revision
+        self.url = other.url if other.url
       end
     end
   end

@@ -82,32 +82,7 @@ module MStrap
     private getter :github_access_token
 
     private def resolve_profile!
-      # TODO: cleanup this godawful merging code
-      profiles.each do |p|
-        p.projects.each do |proj|
-          unless resolved_profile.projects.any? { |pr| pr.cname == proj.cname }
-            resolved_profile.projects << proj
-          end
-        end
-
-        p.package_globals.gems.each do |gem|
-          unless resolved_profile.package_globals.gems.any? { |g| g.name == gem.name }
-            resolved_profile.package_globals.gems << gem
-          end
-        end
-
-        p.package_globals.npm.each do |pkg|
-          unless resolved_profile.package_globals.npm.any? { |n| n.name == pkg.name }
-            resolved_profile.package_globals.npm << pkg
-          end
-        end
-
-        p.package_globals.pip.each do |pkg|
-          unless resolved_profile.package_globals.pip.any? { |pi| pi.name == pkg.name }
-            resolved_profile.package_globals.pip << pkg
-          end
-        end
-      end
+      resolved_profile.merge!(profiles)
     end
   end
 end

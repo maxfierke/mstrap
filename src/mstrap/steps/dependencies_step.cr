@@ -20,8 +20,8 @@ module MStrap
         set_strap_env!
         setup_hub_config
         strap_sh
-        brew_bundle
         load_profile!
+        brew_bundle
       end
 
       private def set_strap_env!
@@ -51,11 +51,19 @@ module MStrap
       end
 
       private def brew_bundle
-        log "---> Installing dependencies from Brewfile (may take a while): "
-        unless cmd "brew bundle --file=#{MStrap::Paths::BREWFILE} #{debug? ? "--verbose" : ""}"
-          logc "Uhh oh, something went wrong in homebrewland. Check above or in #{MStrap::Paths::LOG_FILE}."
+        logn "==> Installing dependencies from Brewfile (may take a while): "
+
+        config.profile_configs.each do |profile_config|
+          brewfile_path = File.join(profile_config.dir, "Brewfile")
+
+          if File.exists?(brewfile_path)
+            log "---> Installing dependencies from Brewfile from profile '#{profile_config.name})': "
+            unless cmd "brew bundle --file=#{brewfile_path} #{debug? ? "--verbose" : ""}"
+              logc "Uhh oh, something went wrong in homebrewland. Check above or in #{MStrap::Paths::LOG_FILE}."
+            end
+            success "OK"
+          end
         end
-        success "OK"
       end
 
       private def load_profile!

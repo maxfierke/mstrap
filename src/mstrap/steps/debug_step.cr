@@ -24,7 +24,6 @@ module MStrap
         puts "  BREWFILE: #{MStrap::Paths::BREWFILE}"
         puts "  CONFIG_YML: #{MStrap::Paths::CONFIG_YML}"
         puts "  LOG_FILE: #{MStrap::Paths::LOG_FILE}"
-        puts "  PROFILE_YML: #{MStrap::Paths::PROFILE_YML}"
         puts "  PROJECT_SOCKETS: #{MStrap::Paths::PROJECT_SOCKETS}"
         puts "  SERVICES_YML: #{MStrap::Paths::SERVICES_YML}"
         puts "  STRAP_SH_PATH: #{MStrap::Paths::STRAP_SH_PATH}"

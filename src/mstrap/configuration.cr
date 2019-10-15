@@ -7,6 +7,7 @@ module MStrap
       end
     end
 
+
     @cli : CLIOptions
     @config_yaml_def : Defs::ConfigDef
     @profile_configs : Array(Defs::ProfileConfigDef)
@@ -14,10 +15,7 @@ module MStrap
     @resolved_profile : Defs::ProfileDef
     @user : User
 
-    DEFAULT_PROFILE_DEF = Defs::ProfileConfigDef.new(
-      name: "default",
-      url: "file://profile.yml"
-    )
+    DEFAULT_PROFILE_DEF = DefaultProfileDef.new
 
     getter :cli, :profile_configs, :profiles, :resolved_profile, :user
 
@@ -33,10 +31,11 @@ module MStrap
 
     def load_profiles!
       profile_configs.each do |profile_config|
-        ProfileFetcher.new(profile_config).fetch!
+        if profile_config != DEFAULT_PROFILE_DEF
+          ProfileFetcher.new(profile_config).fetch!
+        end
 
         if !File.exists?(profile_config.path)
-          next if profile_config == DEFAULT_PROFILE_DEF
           raise ConfigurationNotFoundError.new(profile_config.path)
         end
 

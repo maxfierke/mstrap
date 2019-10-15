@@ -27,12 +27,7 @@ module MStrap
         end
 
         config.profile_configs.each do |profile_config|
-          if profile_config.name == "default"
-            services_yml_path = Paths::SERVICES_YML
-          else
-            profile_dir = File.join(Paths::PROFILES_DIR, profile_config.name)
-            services_yml_path = File.join(profile_dir, "services.yml")
-          end
+          services_yml_path = File.join(profile_config.dir, "services.yml")
 
           if File.exists?(services_yml_path)
             file_args << "-f"

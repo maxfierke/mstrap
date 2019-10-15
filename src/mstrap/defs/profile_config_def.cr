@@ -35,5 +35,15 @@ module MStrap
         @path ||= File.join(dir, "profile.yml")
       end
     end
+
+    class DefaultProfileDef < ProfileConfigDef
+      def name
+        "default"
+      end
+
+      def dir
+        Paths::RC_DIR
+      end
+    end
   end
 end

@@ -10,6 +10,8 @@ module MStrap
 
     include Utils::System
 
+    @url : URI
+
     getter :config, :url
     getter? :force
 

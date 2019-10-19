@@ -141,7 +141,7 @@ module MStrap
     end
 
     private def git_checkpoint
-      stash_message = "MSTRAP CHECKPOINT #{Time.now.to_unix}"
+      stash_message = "MSTRAP CHECKPOINT #{Time.utc.to_unix}"
 
       begin
         cmd("git", "stash", "push", "-u", "-m", stash_message, quiet: true)

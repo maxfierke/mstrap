@@ -12,7 +12,7 @@ STATIC_LIBS_DIR = $(CURDIR)/vendor
 SOURCES      = src/*.cr src/**/*.cr
 
 override LDFLAGS += -L$(STATIC_LIBS_DIR)
-override CRFLAGS += $(if $(RELEASE),--release ,--debug )$(if $(STATIC),--static )$(if $(LDFLAGS),--link-flags="$(LDFLAGS)" )
+override CRFLAGS += $(if $(RELEASE),--release ,--debug --error-trace )$(if $(STATIC),--static )$(if $(LDFLAGS),--link-flags="$(LDFLAGS)" )
 
 .PHONY: all
 all: build

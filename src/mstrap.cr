@@ -5,20 +5,22 @@ require "file_utils"
 require "http/client"
 require "json"
 require "logger"
+require "openssl"
 require "option_parser"
 require "readline"
 require "uri"
 require "yaml"
 
+require "./mstrap/paths"
+require "./mstrap/utils/**"
+require "./mstrap/version"
 require "./mstrap/cli_options"
 require "./mstrap/def"
 require "./mstrap/defs/**"
+require "./mstrap/profile_fetcher"
 require "./mstrap/user"
 require "./mstrap/configuration"
 require "./mstrap/fs"
-require "./mstrap/paths"
-require "./mstrap/version"
-require "./mstrap/utils/**"
 require "./mstrap/tracker"
 require "./mstrap/web_bootstrapper"
 require "./mstrap/project"
@@ -58,10 +60,12 @@ module MStrap
 
   def self.logger
     @@logger ||= if debug?
+      FileUtils.mkdir_p(Paths::RC_DIR, 0o755)
       log_file = File.new(MStrap::Paths::LOG_FILE, "a+")
       writer = IO::MultiWriter.new(log_file, STDOUT)
       Logger.new(writer, level: Logger::DEBUG, formatter: log_formatter)
     else
+      FileUtils.mkdir_p(Paths::RC_DIR, 0o755)
       file = File.new(MStrap::Paths::LOG_FILE, "a+")
       Logger.new(file, level: Logger::INFO, formatter: log_formatter)
     end.not_nil!

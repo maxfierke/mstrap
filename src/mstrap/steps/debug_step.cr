@@ -12,6 +12,16 @@ module MStrap
 
       def bootstrap
         puts "mstrap v#{MStrap::VERSION}"
+        puts "Loaded Config:"
+        puts "  #{config.cli.config_path}"
+        puts "Known Profiles:"
+        config.known_profile_configs.each do |profile|
+          puts "  #{profile.name}"
+        end
+        puts "Loaded Profiles:"
+        config.profile_configs.each do |profile|
+          puts "* #{profile.name} (#{profile.path})"
+        end
         puts "Paths:"
         puts "  RC_DIR: #{MStrap::Paths::RC_DIR}"
         puts "  SRC_DIR: #{MStrap::Paths::SRC_DIR}"
@@ -22,6 +32,8 @@ module MStrap
         puts "  SERVICES_YML: #{MStrap::Paths::SERVICES_YML}"
         puts "  STRAP_SH_PATH: #{MStrap::Paths::STRAP_SH_PATH}"
         puts "  STRAP_SH_URL: #{MStrap::Paths::STRAP_SH_URL}"
+        puts "Resolved Profile:"
+        puts profile.to_yaml
         puts "Steps:"
         pp! Step.all
       end

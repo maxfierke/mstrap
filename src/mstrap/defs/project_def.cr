@@ -1,6 +1,6 @@
 module MStrap
   module Defs
-    class ProjectDef
+    class ProjectDef < Def
       DEFAULT_RUN_SCRIPTS = true
       DEFAULT_RUNTIME = "unknown"
       DEFAULT_WEB = false
@@ -58,6 +58,20 @@ module MStrap
         @runtime = DEFAULT_RUNTIME
         @websocket = DEFAULT_WEBSOCKET
         @web = DEFAULT_WEB
+      end
+
+      def merge!(other : self)
+        self.name = other.name
+        self.cname = other.cname
+        self.hostname = other.hostname if other.hostname_present?
+        self.path = other.path if other.path_present?
+        self.port = other.port if other.port_present?
+        self.repo = other.repo
+        self.run_scripts = other.run_scripts
+        self.runtime = other.runtime
+        self.upstream = other.upstream if other.upstream_present?
+        self.websocket = other.websocket
+        self.web = other.web if other.web_present?
       end
     end
   end

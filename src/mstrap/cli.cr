@@ -1,5 +1,6 @@
 module MStrap
   class CLI
+    @config_def : Defs::ConfigDef?
     @options : CLIOptions
     @name : String?
     @email : String?
@@ -37,7 +38,7 @@ module MStrap
         opts.on(
           "-n",
           "--name NAME",
-          "Your name (Default: prompt)\n\tCan also be specified by MSTRAP_USER_FULLNAME env var."
+          "Your name (Default: prompt)\n\tCan also be specified by MSTRAP_USER_NAME env var."
         ) do |name|
           @name = name
         end
@@ -108,24 +109,35 @@ module MStrap
     end
 
     def run!
-      user = User.new(
-        name: name.not_nil!,
-        email: email.not_nil!,
-        github: github.not_nil!,
-        github_access_token: @github_access_token
-      )
       configuration = Configuration.new(
         cli: options,
-        user: user,
+        config: config_def,
+        github_access_token: @github_access_token
       )
-
-      configuration.load_profile!
+      configuration.load_profiles!
 
       MStrap::Bootstrapper.new(configuration).bootstrap
     end
 
+    private def config_def
+      @config_def ||= if options.config_path.starts_with?("https://")
+        Defs::ConfigDef.from_url(options.config_path)
+      elsif File.exists?(options.config_path)
+        config_yaml = File.read(options.config_path)
+        Defs::ConfigDef.from_yaml(config_yaml)
+      else
+        Defs::ConfigDef.new(
+          user: Defs::UserDef.new(
+            name: name.not_nil!,
+            email: email.not_nil!,
+            github: github.not_nil!
+          ),
+        )
+      end.not_nil!
+    end
+
     private def name
-      @name ||= ENV["MSTRAP_USER_FULLNAME"]? ||
+      @name ||= ENV["MSTRAP_USER_NAME"]? ||
         ask("What is your name (First and Last)?")
     end
 

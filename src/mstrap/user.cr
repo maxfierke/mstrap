@@ -7,6 +7,13 @@ module MStrap
 
     getter :name, :email, :github
 
+    def initialize(user : Defs::UserDef, github_access_token : String? = nil)
+      @name = user.name.not_nil!
+      @email = user.email.not_nil!
+      @github = user.github.not_nil!
+      @github_access_token = github_access_token
+    end
+
     def initialize(@name, @email, @github, @github_access_token)
     end
 

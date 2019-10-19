@@ -30,13 +30,17 @@ module MStrap
     end
 
     def load_profiles!
-      profile_configs.each do |profile_config|
-        if profile_config != DEFAULT_PROFILE_DEF
-          ProfileFetcher.new(profile_config).fetch!
-        end
+      return self if loaded_profiles?
 
-        if !File.exists?(profile_config.path)
-          raise ConfigurationNotFoundError.new(profile_config.path)
+      profile_configs.each do |profile_config|
+        if profile_config == DEFAULT_PROFILE_DEF
+          next if !File.exists?(profile_config.path)
+        else
+          ProfileFetcher.new(profile_config).fetch!
+
+          if !File.exists?(profile_config.path)
+            raise ConfigurationNotFoundError.new(profile_config.path)
+          end
         end
 
         profile_yaml = File.read(profile_config.path)
@@ -46,6 +50,10 @@ module MStrap
       resolve_profile!
 
       self
+    end
+
+    def loaded_profiles?
+      profiles.any?
     end
 
     def reload!

@@ -15,7 +15,7 @@ module MStrap
     @resolved_profile : Defs::ProfileDef
     @user : User
 
-    DEFAULT_PROFILE_DEF = DefaultProfileDef.new
+    DEFAULT_PROFILE_DEF = Defs::DefaultProfileDef.new
 
     getter :cli, :profile_configs, :profiles, :resolved_profile, :user
 

@@ -37,6 +37,11 @@ module MStrap
     end
 
     class DefaultProfileDef < ProfileConfigDef
+      def initialize
+        @name = "default"
+        @url = ""
+      end
+
       def name
         "default"
       end

@@ -36,7 +36,15 @@ module MStrap
         if profile_config == DEFAULT_PROFILE_DEF
           next if !File.exists?(profile_config.path)
         else
-          ProfileFetcher.new(profile_config).fetch!
+          fetcher = ProfileFetcher.new(profile_config)
+
+          if !mstrapped? && fetcher.git_url? && !has_git?
+            logw "Skipping profile '#{profile_config.name}' fetch, as git has not yet been installed."
+            logw "This should be okay, as it will be fetched & loaded following installation of git via strap.sh"
+            next
+          end
+
+          fetcher.fetch!
 
           if !File.exists?(profile_config.path)
             raise ConfigurationNotFoundError.new(profile_config.path)
@@ -89,6 +97,10 @@ module MStrap
 
     private def resolve_profile!
       resolved_profile.merge!(profiles)
+    end
+
+    private def has_git?
+      cmd("command -v git > /dev/null 2>&1")
     end
   end
 end

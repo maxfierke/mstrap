@@ -34,8 +34,8 @@ module MStrap
       def self.all
         @@step ||= {
           {% for subclass in @type.subclasses %}
-            {% key = subclass.name.stringify.split("::").last.gsub(/Step$/, "").underscore %}
-            {{ key.id }}: {{ subclass.name }},
+            {% key = subclass.name.stringify.split("::").last.gsub(/Step$/, "").underscore.gsub(/_/, "-") %}
+            "{{ key.id }}": {{ subclass.name }},
           {% end %}
         }
       end

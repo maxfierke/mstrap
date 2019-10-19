@@ -106,6 +106,7 @@ module MStrap
         path = cli.config_path
       end
 
+      FileUtils.mkdir_p(Paths::RC_DIR, 0o755)
       File.write(path, config_yaml, perm: 0o600)
     end
 

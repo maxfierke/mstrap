@@ -14,9 +14,13 @@ module MStrap
         puts "mstrap v#{MStrap::VERSION}"
         puts "Loaded Config:"
         puts "  #{config.cli.config_path}"
+        puts "Known Profiles:"
+        config.known_profile_configs.each do |profile|
+          puts "  #{profile.name}"
+        end
         puts "Loaded Profiles:"
         config.profile_configs.each do |profile|
-          puts "  * #{profile.name} (#{profile.path})"
+          puts "* #{profile.name} (#{profile.path})"
         end
         puts "Paths:"
         puts "  RC_DIR: #{MStrap::Paths::RC_DIR}"

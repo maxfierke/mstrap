@@ -28,16 +28,16 @@ module MStrap
       end
 
       if url.scheme == "file"
-        url = url.resolve(Paths::RC_DIR)
+        file_url = url.resolve(Paths::RC_DIR)
 
-        if File.file?(url.path)
+        if File.file?(file_url.path)
           ensure_profile_dir
-          FileUtils.ln_s(url.path, config.path)
-        elsif File.directory?(url.path)
-          FileUtils.ln_s(url.path, config.dir)
+          FileUtils.ln_s(file_url.path, config.path)
+        elsif File.directory?(file_url.path)
+          FileUtils.ln_s(file_url.path, config.dir)
         else
           raise InvalidProfileUrlError.new(
-            "#{config.name}: #{url.path} does not exist or is not accessible."
+            "#{config.name}: #{file_url.path} does not exist or is not accessible."
           )
         end
       elsif git_url?

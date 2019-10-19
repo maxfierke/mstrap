@@ -22,6 +22,7 @@ module MStrap
       def initialize
         @package_globals = GlobalPkgDef.new
         @projects = [] of ProjectDef
+        @version = "1.0"
       end
 
       def merge!(other : self)

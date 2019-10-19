@@ -19,6 +19,8 @@ module MStrap
         }
       )
 
+      @version = "1.0"
+
       def self.from_url(url : String)
         HTTP::Client.get(url) do |response|
           self.from_yaml(response.body_io.gets_to_end)

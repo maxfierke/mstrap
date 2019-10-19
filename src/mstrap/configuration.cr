@@ -7,23 +7,32 @@ module MStrap
       end
     end
 
+    include Utils::Env
+    include Utils::System
 
     @cli : CLIOptions
     @config_yaml_def : Defs::ConfigDef
-    @profile_configs : Array(Defs::ProfileConfigDef)
-    @profiles : Array(Defs::ProfileDef)
+    @loaded_profile_configs : Array(Defs::ProfileConfigDef)
+    @loaded_profiles : Array(Defs::ProfileDef)
+    @known_profile_configs : Array(Defs::ProfileConfigDef)
     @resolved_profile : Defs::ProfileDef
     @user : User
 
     DEFAULT_PROFILE_DEF = Defs::DefaultProfileDef.new
 
-    getter :cli, :profile_configs, :profiles, :resolved_profile, :user
+    getter :cli,
+      :known_profile_configs,
+      :loaded_profile_configs,
+      :loaded_profiles,
+      :resolved_profile,
+      :user
 
     def initialize(cli : CLIOptions, config : Defs::ConfigDef, github_access_token : String? = nil)
       @cli = cli
       @config_yaml_def = config
-      @profile_configs = [DEFAULT_PROFILE_DEF] + config.profiles
-      @profiles = [] of Defs::ProfileDef
+      @loaded_profile_configs = [] of Defs::ProfileConfigDef
+      @loaded_profiles = [] of Defs::ProfileDef
+      @known_profile_configs = config.profiles + [DEFAULT_PROFILE_DEF]
       @resolved_profile = Defs::ProfileDef.new
       @github_access_token = github_access_token
       @user = User.new(user: config.user, github_access_token: github_access_token)
@@ -32,7 +41,7 @@ module MStrap
     def load_profiles!
       return self if loaded_profiles?
 
-      profile_configs.each do |profile_config|
+      known_profile_configs.each do |profile_config|
         if profile_config == DEFAULT_PROFILE_DEF
           next if !File.exists?(profile_config.path)
         else
@@ -52,7 +61,9 @@ module MStrap
         end
 
         profile_yaml = File.read(profile_config.path)
-        profiles << Defs::ProfileDef.from_yaml(profile_yaml)
+
+        loaded_profile_configs << profile_config
+        loaded_profiles << Defs::ProfileDef.from_yaml(profile_yaml)
       end
 
       resolve_profile!
@@ -61,7 +72,15 @@ module MStrap
     end
 
     def loaded_profiles?
-      profiles.any?
+      loaded_profiles.any?
+    end
+
+    def profile_configs
+      loaded_profile_configs
+    end
+
+    def profiles
+      loaded_profiles
     end
 
     def reload!
@@ -69,12 +88,9 @@ module MStrap
         config_yaml = File.read(cli.config_path)
         config = Defs::ConfigDef.from_yaml(config_yaml)
 
-        # TODO: DRY this up?
-        @config_yaml_def = config
-        @profile_configs = [DEFAULT_PROFILE_DEF] + config.profiles
-        @profiles = [] of Defs::ProfileDef
-        @resolved_profile = Defs::ProfileDef.new
-        @user = User.new(user: config.user, github_access_token: github_access_token)
+        # TODO: This is gross, but the initialization logic can't happen inside
+        # another method for types to be correctly inferred (w/o making them nilable)
+        initialize(cli, config, github_access_token)
         load_profiles!
       else
         raise ConfigurationNotFoundError.new(cli.config_path)

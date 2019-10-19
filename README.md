@@ -83,9 +83,7 @@ Usage: mstrap [options] <command> -- [<arguments>]
                                      Can also be specified by MSTRAP_GITHUB_ACCESS_TOKEN env var.
                                      Required for automatic fetching of personal dotfiles and Brewfile
                                      Can be omitted. Will pull from `hub` config, if available.
-    --skip-migrations                Skip migrations
     --skip-project-update            Skip auto-update of projects
-    --skip-update                    Skip auto-update of mstrap
     -v, --version                    Show version
     -h, --help                       Show this message
 
@@ -101,6 +99,7 @@ COMMANDS
     services             (Re)creates mstrap-managed docker-compose services
     shell                Injects mstrap's env.sh into the running shell's config
     steps                Prints available steps
+    update-profiles      Update profiles
 
 Running mstrap without a command will do a full bootstrap.
 ```

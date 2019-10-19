@@ -16,6 +16,8 @@ module MStrap
     def initialize(args)
       @options = CLIOptions.new(argv: args.dup)
 
+      newline_indent = " " * 37
+
       OptionParser.new do |opts|
         opts.banner = "Usage: mstrap [options] <command> -- [<arguments>]"
 
@@ -30,7 +32,7 @@ module MStrap
         opts.on(
           "-c",
           "--config-path [CONFIG_PATH]",
-          "Path to configuration file\n\tDefault: #{MStrap::Paths::CONFIG_YML}. Can also be an HTTPS URL."
+          "Path to configuration file\n#{newline_indent}Default: #{MStrap::Paths::CONFIG_YML}. Can also be an HTTPS URL."
         ) do |config_path|
           options.config_path = config_path
         end
@@ -38,7 +40,7 @@ module MStrap
         opts.on(
           "-n",
           "--name NAME",
-          "Your name (Default: prompt)\n\tCan also be specified by MSTRAP_USER_NAME env var."
+          "Your name (Default: config or prompt)\n#{newline_indent}Can also be specified by MSTRAP_USER_NAME env var."
         ) do |name|
           @name = name
         end
@@ -46,7 +48,7 @@ module MStrap
         opts.on(
           "-e",
           "--email EMAIL ADDRESS",
-          "Email address (Default: prompt)\n\tCan also be specified by MSTRAP_USER_EMAIL env var."
+          "Email address (Default: config or prompt)\n#{newline_indent}Can also be specified by MSTRAP_USER_EMAIL env var."
         ) do |email|
           @email = email
         end
@@ -54,7 +56,7 @@ module MStrap
         opts.on(
           "-g",
           "--github GITHUB",
-          "GitHub username (Default: prompt)\n\tCan also be specified by MSTRAP_USER_GITHUB env var."
+          "GitHub username (Default: config or prompt)\n#{newline_indent}Can also be specified by MSTRAP_USER_GITHUB env var."
         ) do |github|
           @github = github
         end
@@ -62,16 +64,9 @@ module MStrap
         opts.on(
           "-a",
           "--github-access-token [GITHUB_ACCESS_TOKEN]",
-          "GitHub access token\n\tCan also be specified by MSTRAP_GITHUB_ACCESS_TOKEN env var.\n\tRequired for automatic fetching of personal dotfiles and Brewfile\n\tCan be omitted. Will pull from `hub` config, if available."
+          "GitHub access token\n#{newline_indent}Can also be specified by MSTRAP_GITHUB_ACCESS_TOKEN env var.\n#{newline_indent}Required for automatic fetching of personal dotfiles and Brewfile\n#{newline_indent}Can be omitted. Will pull from `hub` config, if available."
         ) do |token|
           @github_access_token = token
-        end
-
-        opts.on(
-          "--skip-migrations",
-          "Skip migrations"
-        ) do |skip_migrations|
-          options.skip_migrations = true
         end
 
         opts.on(
@@ -79,13 +74,6 @@ module MStrap
           "Skip auto-update of projects"
         ) do |skip_project_update|
           options.skip_project_update = true
-        end
-
-        opts.on(
-          "--skip-update",
-          "Skip auto-update of mstrap"
-        ) do |skip_update|
-          options.skip_update = true
         end
 
         opts.on("-v", "--version", "Show version") do

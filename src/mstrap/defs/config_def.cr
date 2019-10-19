@@ -11,6 +11,11 @@ module MStrap
           type: Array(ProfileConfigDef),
           nilable: false,
           default: [] of ProfileConfigDef
+        },
+        version: {
+          type: String,
+          nilable: false,
+          default: "1.0"
         }
       )
 

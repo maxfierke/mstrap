@@ -11,6 +11,11 @@ module MStrap
           type: Array(ProjectDef),
           nilable: false,
           default: [] of ProjectDef
+        },
+        version: {
+          type: String,
+          nilable: false,
+          default: "1.0"
         }
       )
 

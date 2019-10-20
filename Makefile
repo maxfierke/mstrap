@@ -19,7 +19,6 @@ all: build
 
 libs: vendor/libevent.a vendor/libgc.a vendor/libpcre.a vendor/libyaml.a
 
-
 bin/mstrap: deps libs $(SOURCES)
 	mkdir -p bin
 	$(CRYSTAL_BIN) build -o bin/mstrap src/cli.cr $(CRFLAGS)
@@ -41,12 +40,22 @@ clean:
 	rm -rf ./dist
 	rm -rf ./vendor/*.a
 
-.PHONY: test
-test: deps $(SOURCES)
+.PHONY: spec
+spec: deps $(SOURCES)
 	$(CRYSTAL_BIN) spec -Dmt_no_expectations
 
-.PHONY: spec
-spec: test
+.PHONY: check-libraries
+check-libraries: bin/mstrap
+	@if [ "$$(otool -LX bin/mstrap | awk '{print $$1}')" != "$$(cat expected.libs)" ]; then \
+		echo "FAIL: bin/mstrap has non-allowed dynamic libraries"; \
+		exit 1; \
+	else \
+		echo "OK: bin/mstrap has only allowed dynamic libraries"; \
+		exit 0; \
+	fi
+
+.PHONY: test
+test: spec check-libraries
 
 .PHONY: install
 install: bin/mstrap bin/mstrap-project

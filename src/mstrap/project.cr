@@ -1,16 +1,23 @@
 module MStrap
   class Project
     include Utils::Logging
+    include Utils::Env
     include Utils::Node
     include Utils::Php
     include Utils::Python
     include Utils::Ruby
     include Utils::System
 
+    # :nodoc:
     ABSOLUTE_REPO_URL_REGEX = /\A(git|https?|ftps?|ssh|file):\/\//
+
+    # :nodoc:
     SCP_REPO_REGEX = /\A(.+@)?[\w\d\.\-_]+:/
 
+    # :nodoc:
     BOOTSTRAP_SCRIPT = File.join("script", "bootstrap")
+
+    # :nodoc:
     SETUP_SCRIPT = File.join("script", "setup")
 
     @cname : String
@@ -25,9 +32,37 @@ module MStrap
     @websocket : Bool
     @web : Bool
 
-    getter :cname, :hostname, :name, :path, :port, :repo, :runtime
-    getter? :run_scripts, :web, :websocket
+    # Returns canonical name for the project. This must be unique among projects.
+    getter :cname
 
+    # Returns hostname for the project.
+    getter :hostname
+
+    # Returns friendly display name for the project.
+    getter :name
+
+    # Returns path to the project on the filesystem.
+    getter :path
+
+    # Returns the port for the project, if configured.
+    getter :port
+
+    # Returns the configured GitHub path or URI for the project's repo.
+    getter :repo
+
+    # Returns the primary language runtime of the project, if specified.
+    getter :runtime
+
+    # Returns whether to execute and scripts-to-rule-them-all scripts, if they exist.
+    getter? :run_scripts
+
+    # Returns whether the project is a web project.
+    getter? :web
+
+    # Returns whether the project requires a websocket connection
+    getter? :websocket
+
+    # Factory constructor for `Project` from a project definition
     def self.for(project_def : Defs::ProjectDef)
       Project.new(project_def)
     end
@@ -50,6 +85,7 @@ module MStrap
       end
     end
 
+    # Returns a usable Git URI for the project
     def git_uri
       @git_uri ||= if repo =~ ABSOLUTE_REPO_URL_REGEX || repo =~ SCP_REPO_REGEX
         repo
@@ -58,6 +94,7 @@ module MStrap
       end
     end
 
+    # Returns the NGINX upstream for the project. Relevant only to web projects.
     def upstream
       @upstream ||= begin
         if port = @port
@@ -68,16 +105,21 @@ module MStrap
       end
     end
 
+    # Whether project has any bootstrapping/setup scripts a-la
+    # [`scripts-to-rule-them-all`](https://github.com/github/scripts-to-rule-them-all)
     def has_scripts?
       [BOOTSTRAP_SCRIPT, SETUP_SCRIPT].any? do |script_path|
         File.exists?(File.join(path, script_path))
       end
     end
 
+    # Clones the project from Git
     def clone
       cmd("git", "clone", git_uri, path, quiet: true)
     end
 
+    # Updates the project from Git, including auto-stashing any unstaged and
+    # uncommited changes.
     def pull
       Dir.cd(path) do
         git_checkpoint do
@@ -96,6 +138,9 @@ module MStrap
       end
     end
 
+    # Executes `script/bootstrap` and `script/setup` (if either exists and are
+    # configured to run) or executes conventional runtime bootstrapping as
+    # determined by mstrap.
     def bootstrap
       if has_scripts? && run_scripts?
         logd "Found bootstrapping scripts, executing instead of using '#{runtime}' defaults."
@@ -109,6 +154,11 @@ module MStrap
       end
     end
 
+    # Conventional bootstrapping from mstrap. This will auto-detect the runtimes
+    # used by the project and run the standard bootstrapping for each runtime.
+    # This **does not** run any bootstrapping scripts, and is used mainly for
+    # calling into conventional bootstrapping within a project's
+    # `script/bootstrap` or `script/setup` from `mstrap-project`.
     protected def default_bootstrap
       if node?
         logd "Detected Node. Installing Node."

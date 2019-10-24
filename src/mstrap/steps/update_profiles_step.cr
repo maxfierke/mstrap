@@ -1,6 +1,9 @@
 module MStrap
   module Steps
+    # Runnable as `mstrap update-profiles`, the Update Profiles step updates
+    # installed managed profiles.
     class UpdateProfilesStep < Step
+      include Utils::Env
       include Utils::Logging
       include Utils::System
 
@@ -14,7 +17,7 @@ module MStrap
 
       def bootstrap
         log "---> Updating profiles: "
-        config.reload!
+        config.reload!(force: true)
         config.save!
         success "OK"
       end

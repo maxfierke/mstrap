@@ -1,6 +1,9 @@
 module MStrap
   module Steps
+    # Runnable as `mstrap dependencies`, the Dependencies step runs [`strap.sh`](https://github.com/MikeMcQuaid/strap/)
+    # and installs software from any available `Brewfile`s.
     class DependenciesStep < Step
+      include Utils::Env
       include Utils::Logging
       include Utils::System
 

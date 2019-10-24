@@ -1,4 +1,5 @@
 module MStrap
+  # :nodoc:
   module Templates
     class HubYml
       getter :github, :github_access_token

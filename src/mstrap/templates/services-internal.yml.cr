@@ -1,4 +1,5 @@
 module MStrap
+  # :nodoc:
   module Templates
     class ServicesInternalYml
       getter :project_sites_path, :project_sockets_path

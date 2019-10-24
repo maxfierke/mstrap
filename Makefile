@@ -34,10 +34,14 @@ build: bin/mstrap bin/mstrap-project
 deps: shard.yml shard.lock
 	$(SHARDS_BIN) check || $(SHARDS_BIN) install
 
+docs: $(SOURCES)
+	$(CRYSTAL_BIN) docs
+
 .PHONY: clean
 clean:
 	rm -f ./bin/mstrap*
 	rm -rf ./dist
+	rm -rf ./docs
 	rm -rf ./vendor/*.a
 
 .PHONY: spec

@@ -1,6 +1,10 @@
 module MStrap
   module Steps
+    # Runnable as `mstrap python`, the Python step sets the default global Python
+    # version to the latest installed and installs any global pip packages
+    # specified by any loaded profiles.
     class PythonStep < Step
+      include Utils::Env
       include Utils::Logging
       include Utils::System
 

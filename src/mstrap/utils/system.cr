@@ -1,9 +1,21 @@
 module MStrap
   module Utils
     module System
-      include Env
-      include Logging
-
+      # Executes a given command and waits for it to complete, returning whether
+      # the exit status indicated success.
+      #
+      # By default the process is configured with input, output, and error of
+      # the `mstrap` process.
+      #
+      # * _env_: optionally specifies the environment for the command
+      # * _command_: specifies the command to run. Arguments are allowed here, if
+      #   _args_ are omitted and will be evaluated by the system shell.
+      # * _args_: optionally specifies arguments for the command. These will not
+      #   be processed by the shell.
+      # * _shell_: specifies whether to run the command through the system shell
+      # * _input_: specifies
+      # * _quiet_: If passed as `true`, it does no logging. If `mstrap` is
+      #   running in debug mode, process output is always logged.
       def cmd(
         env : Hash?,
         command : String,
@@ -51,6 +63,7 @@ module MStrap
         status.success?
       end
 
+      # :nodoc:
       def cmd(env : Hash?, command, *args, **kwargs)
         # TODO: I hate this
         command_args = if !args.empty?
@@ -73,6 +86,7 @@ module MStrap
         cmd(env, command, command_args, **kwargs)
       end
 
+      # ditto
       def cmd(command, *args, **kwargs)
         cmd(nil, command, *args, **kwargs)
       end

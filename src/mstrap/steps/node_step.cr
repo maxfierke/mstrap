@@ -1,6 +1,10 @@
 module MStrap
   module Steps
+    # Runnable as `mstrap node`, the Node step sets the default global Node.js
+    # version to the latest installed and installs any global NPM packages
+    # specified by any loaded profiles.
     class NodeStep < Step
+      include Utils::Env
       include Utils::Logging
       include Utils::System
 

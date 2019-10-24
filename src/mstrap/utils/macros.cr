@@ -1,7 +1,10 @@
 module MStrap
   module Utils
     macro define_language_env(module_name, language_name, plugin_name)
+      # Utilities for working with {{language_name.id.capitalize}}
       module {{module_name}}
+        # Installs asdf plugin for {{language_name.id.capitalize}} and installs any {{language_name.id.capitalize}}
+        # dependencies for the project.
         def setup_{{language_name.id}}
           cmd "asdf plugin-add {{plugin_name.id}} || echo 'Already added {{language_name.id}}'"
 
@@ -38,6 +41,7 @@ module MStrap
           end
         end
 
+        # Returns whether the project uses {{language_name.id.capitalize}}
         def {{language_name.id}}?
           return true if runtime == "{{language_name.id}}"
 
@@ -88,6 +92,7 @@ module MStrap
           {% end %}
         end
 
+        # Returns the version of {{language_name.id.capitalize}} used by the project
         def {{language_name.id}}_version
           version_path = File.join(path, ".{{language_name.id}}-version")
           version = if File.exists?(version_path)
@@ -97,6 +102,7 @@ module MStrap
           end
         end
 
+        # Executes the block's context using the project's {{language_name.id.capitalize}} version
         def with_project_{{language_name.id}}
           current_version = ENV["ASDF_{{plugin_name.id.upcase}}_VERSION"]?
           begin

@@ -1,13 +1,23 @@
 module MStrap
   module Steps
+    # Runnable as `mstrap services`, the Services step creates or updates any
+    # mstrap-managed Docker services.
     class ServicesStep < Step
       include Utils::Docker
+      include Utils::Env
+      include Utils::Logging
+      include Utils::System
 
       def self.description
         "(Re)creates mstrap-managed docker-compose services"
       end
 
-      def bootstrap(services_yml = nil)
+      def bootstrap
+        bootstrap(nil)
+      end
+
+      # :nodoc:
+      def bootstrap(services_yml)
         ensure_docker_compose!
 
         if services_yml && File.exists?(services_yml)

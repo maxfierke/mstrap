@@ -1,18 +1,32 @@
 module MStrap
   class ProfileFetcher
+
+    # Exception class to indicate some failure fetching a profile
     class ProfileFetchError < Exception; end
+
+    # Exception class to indicate an invalid URL for a profile
     class InvalidProfileUrlError < ProfileFetchError; end
+
+    # Exception class for Git-related profile fetch errors
     class GitProfileFetchError < ProfileFetchError
       def initialize(config)
         super("#{config.name}: Could not clone profile via git. Ensure you have access.")
       end
     end
 
+    include Utils::Env
+    include Utils::Logging
     include Utils::System
 
     @url : URI
 
-    getter :config, :url
+    # Profile configuration definition
+    getter :config
+
+    # Returns normalized URL for profile
+    getter :url
+
+    # Returns whether to force profile update
     getter? :force
 
     def initialize(config : Defs::ProfileConfigDef, force = false)
@@ -24,6 +38,7 @@ module MStrap
       @url = url
     end
 
+    # Fetch or update the profile
     def fetch!
       if File.exists?(config.path) && !should_update?
         return self
@@ -62,16 +77,24 @@ module MStrap
       self
     end
 
+    # Returns whether the profile's URL is a Git URL
     def git_url?
       @_git_url ||= url.scheme == "git" ||
         url.scheme == "ssh" ||
         (!url.scheme || url.scheme == "https") && url.path.ends_with?(".git")
     end
 
+    # Returns whether the profile's URL is an HTTP URL (that is not also a Git URL)
     def https_url?
       @_https_url ||= url.scheme == "https" && !url.path.ends_with?(".git")
     end
 
+    # Returns whether the profile is outdated.
+    #
+    # * For git profiles, this is based on whether the checked out Git ref
+    #   differs from that of the ref recorded for `revision` in the configuration.
+    # * For HTTPS profiles, this is based on the checksum recorded for `revision`
+    #   in the configuration.
     def outdated_revision?
       revision = config.revision
 
@@ -92,6 +115,7 @@ module MStrap
       end
     end
 
+    # Returns whether to update the profile
     def should_update?
       force? || outdated_revision?
     end

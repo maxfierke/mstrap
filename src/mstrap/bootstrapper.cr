@@ -1,9 +1,11 @@
 module MStrap
   class Bootstrapper
+    include Utils::Env
     include Utils::Logging
 
+    # The default step run list. Running `mstrap` with no arguments
+    # will run these steps in order.
     DEFAULT_STEPS = [
-      #:update,
       :init,
       :dependencies,
       :shell,
@@ -12,7 +14,6 @@ module MStrap
       :node,
       :python,
       :ruby,
-      #:migrations
     ]
 
     @options : CLIOptions

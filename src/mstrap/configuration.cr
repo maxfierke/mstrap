@@ -1,6 +1,10 @@
 module MStrap
   class Configuration
+
+    # Exception class for configuration load errors
     class ConfigurationLoadError < Exception; end
+
+    # Exception raised if configuration file is not found or is inaccessible.
     class ConfigurationNotFoundError < ConfigurationLoadError
       def initialize(path : String)
         super("#{path} does not exist or is not accessible.")
@@ -8,6 +12,7 @@ module MStrap
     end
 
     include Utils::Env
+    include Utils::Logging
     include Utils::System
 
     @cli : CLIOptions
@@ -20,12 +25,24 @@ module MStrap
 
     DEFAULT_PROFILE_DEF = Defs::DefaultProfileDef.new
 
-    getter :cli,
-      :known_profile_configs,
-      :loaded_profile_configs,
-      :loaded_profiles,
-      :resolved_profile,
-      :user
+    # Returns CLI options
+    getter :cli
+
+    # Returns known profile configurations
+    getter :known_profile_configs
+
+    # Returns loaded profile configurations
+    getter :loaded_profile_configs
+
+    # Returns loaded profiles
+    getter :loaded_profiles
+
+    # Returns resolved profile. This is the result of merging loaded managed
+    # profiles with the default profiles.
+    getter :resolved_profile
+
+    # Returns the mstrap user
+    getter :user
 
     def initialize(cli : CLIOptions, config : Defs::ConfigDef, github_access_token : String? = nil)
       @cli = cli
@@ -38,14 +55,17 @@ module MStrap
       @user = User.new(user: config.user, github_access_token: github_access_token)
     end
 
-    def load_profiles!
+    # Loads all profiles and resolves them into the resolve_profile
+    #
+    # Raises ConfigurationNotFoundError if a profile cannot be found.
+    def load_profiles!(force = nil)
       return self if loaded_profiles?
 
       known_profile_configs.each do |profile_config|
         if profile_config == DEFAULT_PROFILE_DEF
           next if !File.exists?(profile_config.path)
         else
-          fetcher = ProfileFetcher.new(profile_config)
+          fetcher = ProfileFetcher.new(profile_config, force || cli.force?)
 
           if !mstrapped? && fetcher.git_url? && !has_git?
             logw "Skipping profile '#{profile_config.name}' fetch, as git has not yet been installed."
@@ -71,19 +91,26 @@ module MStrap
       self
     end
 
+    # Returns whether profiles have been loaded
     def loaded_profiles?
       loaded_profiles.any?
     end
 
+    # Returns profile configurations for active profiles
     def profile_configs
       loaded_profile_configs
     end
 
+    # Returns active profiles
     def profiles
       loaded_profiles
     end
 
-    def reload!
+    # Resets and reloads configuration and any managed profiles.
+    #
+    # Raises ConfigurationNotFoundError if the mstrap configuration cannot be
+    # found or accessed, or any managed profiles cannot be found or accessed.
+    def reload!(force = nil)
       if File.exists?(cli.config_path)
         config_yaml = File.read(cli.config_path)
         config = Defs::ConfigDef.from_yaml(config_yaml)
@@ -91,12 +118,13 @@ module MStrap
         # TODO: This is gross, but the initialization logic can't happen inside
         # another method for types to be correctly inferred (w/o making them nilable)
         initialize(cli, config, github_access_token)
-        load_profiles!
+        load_profiles!(force)
       else
         raise ConfigurationNotFoundError.new(cli.config_path)
       end
     end
 
+    # Saves configuration back to disk
     def save!
       config_yaml = @config_yaml_def.to_yaml
 

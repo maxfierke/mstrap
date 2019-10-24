@@ -5,7 +5,14 @@ module MStrap
     @github : String
     @github_access_token : String?
 
-    getter :name, :email, :github
+    # Returns name of user
+    getter :name
+
+    # Returns email address of user
+    getter :email
+
+    # Returns GitHub user account
+    getter :github
 
     def initialize(user : Defs::UserDef, github_access_token : String? = nil)
       @name = user.name.not_nil!
@@ -17,6 +24,8 @@ module MStrap
     def initialize(@name, @email, @github, @github_access_token)
     end
 
+    # Returns GitHub access token. Used by `strap.sh` to clone personal dotfiles
+    # and Brewfile repositories. Loaded from `hub` command's config.
     def github_access_token
       @github_access_token ||= begin
         if File.exists?(Paths::HUB_CONFIG_XML)

@@ -7,8 +7,6 @@ module MStrap
       :ruby,
     ]
 
-    getter :project_def
-
     def self.run!(args)
       new(args).run!
     end
@@ -95,5 +93,7 @@ module MStrap
       project = MStrap::Project.for(project_def)
       project.bootstrap
     end
+
+    private getter :project_def
   end
 end

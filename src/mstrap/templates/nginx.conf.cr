@@ -1,4 +1,5 @@
 module MStrap
+  # :nodoc:
   module Templates
     class NginxConf
       getter :project

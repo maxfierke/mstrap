@@ -1,6 +1,10 @@
 module MStrap
   module Steps
+    # Runnable as `mstrap ruby`, the Ruby step sets the default global Ruby
+    # version to the latest installed and installs any global gems specified by
+    # any loaded profiles.
     class RubyStep < Step
+      include Utils::Env
       include Utils::Logging
       include Utils::System
 

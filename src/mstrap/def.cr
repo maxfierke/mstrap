@@ -1,5 +1,6 @@
 module MStrap
   module Defs
+    # :nodoc:
     abstract class Def
       abstract def merge!(other : self)
 

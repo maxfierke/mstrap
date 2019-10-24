@@ -1,12 +1,20 @@
 module MStrap
   module Steps
+    # Runnable as `mstrap shell`, the Shell step is responsible for creating
+    # the `env.sh` script and injecting it into the current shell's configuration.
+    #
+    # NOTE: Only `bash` and `zsh` are supported for automatic injection. Other
+    # shells, such as `fish` or `tcsh`, will need to be configured manually.
     class ShellStep < Step
       include Utils::Env
       include Utils::Logging
 
+      # :nodoc:
       SHELL_LINE = <<-BASH
       [ -f $HOME/.mstrap/env.sh ] && source $HOME/.mstrap/env.sh
       BASH
+
+      # :nodoc:
       SUPPORTED_SHELL_MSG = <<-MSG
       mstrap installed a shell script that needs to be loaded before you can
       continue bootstrapping.
@@ -14,6 +22,8 @@ module MStrap
       Either restart your current shell or `source ~/.mstrap/env.sh` to load the
       needed environment to continue.
       MSG
+
+      # :nodoc:
       UNSUPPORTED_SHELL_MSG = <<-MSG
       mstrap couldn't detect a supported shell, so you're on your own here.
 
@@ -40,7 +50,7 @@ module MStrap
       def bootstrap
         Dir.mkdir_p(MStrap::Paths::RC_DIR)
 
-        contents = EnvSh.new(user.name, user.email, user.github).to_s
+        contents = Templates::EnvSh.new(user.name, user.email, user.github).to_s
         File.write(env_sh_path, contents, perm: 0o600)
 
         unless mstrapped?

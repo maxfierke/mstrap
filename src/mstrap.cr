@@ -29,23 +29,30 @@ require "./mstrap/step"
 require "./mstrap/steps/**"
 require "./mstrap/bootstrapper"
 
+# Defines top-level constants and shared utilities
 module MStrap
   @@log_formatter : Logger::Formatter? = nil
   @@logger : Logger? = nil
   @@debug = false
 
+  # Set debug mode for `mstrap`
   def self.debug=(value)
     @@debug = value
   end
 
+  # Returns whether or not `mstrap` is in debug mode.
+  #
+  # NOTE: This is not the same as whether it was _compiled_ in debug mode.
   def self.debug?
     @@debug
   end
 
+  # Returns whether or not the feature passed for *name* is active.
   def self.has_feature?(name)
     !!ENV["MSTRAP_FEAT_#{name.upcase}"]?
   end
 
+  # :nodoc:
   def self.log_formatter
     @@log_formatter ||= Logger::Formatter.new do |severity, datetime, progname, message, io|
       if io.tty?
@@ -58,6 +65,8 @@ module MStrap
     end.not_nil!
   end
 
+  # Returns a `Logger` instance that can be used to log to the mstrap log file.
+  # When `MStrap.debug?` is set to `true`, this also logs messages to `STDOUT`.
   def self.logger
     @@logger ||= if debug?
       FileUtils.mkdir_p(Paths::RC_DIR, 0o755)

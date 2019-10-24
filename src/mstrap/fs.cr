@@ -1,4 +1,5 @@
 module MStrap
+  # :nodoc:
   class FS
     extend BakedFileSystem
 

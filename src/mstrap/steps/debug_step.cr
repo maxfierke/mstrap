@@ -1,6 +1,10 @@
 {% skip_file if flag?(:release) %}
 module MStrap
   module Steps
+    # Runnable as `mstrap debug`, the Debug step prints some useful debugging
+    # and configuration information.
+    #
+    # NOTE: It is not included when `mstrap` is compiled in `release` mode.
     class DebugStep < Step
       def self.description
         "Prints debug information"

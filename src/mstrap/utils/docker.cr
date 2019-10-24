@@ -1,13 +1,7 @@
-require "./env"
-require "./logging"
-require "./system"
-
 module MStrap
   module Utils
     module Docker
-      include Logging
-      include System
-
+      # Returns the path to an installed Docker for Mac application
       def docker_app_path
         @docker_app_path ||= if Dir.exists?("/Applications/Docker.app")
           "/Applications/Docker.app"
@@ -18,6 +12,8 @@ module MStrap
         end
       end
 
+      # Returns a collection of flags for `docker-compose` to use `services.yml`
+      # for the loaded profiles.
       def docker_compose_file_args
         file_args = [] of String
 
@@ -41,11 +37,11 @@ module MStrap
       private def ensure_docker_compose!
         found_docker = false
 
-        while !(found_docker = cmd "docker-compose version")
+        while !(found_docker = cmd("docker-compose version", quiet: true))
           logw "Could not find 'docker-compose'."
 
           if docker_app_path && STDIN.tty?
-            cmd "open -a #{docker_app_path}"
+            cmd "open -a #{docker_app_path}", quiet: true
 
             logn "Opening Docker.app. Please follow the installation prompts and return when Docker is running."
             log "Have you completed the Docker installation prompts? [y/n]: "

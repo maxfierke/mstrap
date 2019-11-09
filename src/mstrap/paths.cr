@@ -12,6 +12,9 @@ module MStrap
     # Path to default profile Brewfile
     BREWFILE = File.join(RC_DIR, "Brewfile")
 
+    # Path to curl's CA cert bundle (used for verifying certs)
+    CA_CERT_BUNDLE = File.join(RC_DIR, "cacert.pem")
+
     # Path to mstrap configuration file
     CONFIG_YML = File.join(RC_DIR, "config.yml")
 

@@ -109,6 +109,7 @@ module MStrap
 
     private def config_def
       @config_def ||= if options.config_path.starts_with?("https://")
+        CACertInstaller.install!
         Defs::ConfigDef.from_url(options.config_path)
       elsif File.exists?(options.config_path)
         config_yaml = File.read(options.config_path)

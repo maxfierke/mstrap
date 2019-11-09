@@ -23,6 +23,7 @@ module MStrap
       def bootstrap
         logn "==> Initializing mstrap"
         create_rc_dir
+        CACertInstaller.install!
         fetch_strap_sh
         create_brewfile_unless_exists
         config.save!
@@ -57,7 +58,7 @@ module MStrap
           log "---> Fetching latest strap.sh (older than 30 days or missing): "
           FileUtils.mkdir_p("#{Paths::RC_DIR}/vendor")
 
-          HTTP::Client.get(Paths::STRAP_SH_URL) do |response|
+          HTTP::Client.get(Paths::STRAP_SH_URL, tls: MStrap.tls_client) do |response|
             File.write(Paths::STRAP_SH_PATH, response.body_io.gets_to_end)
           end
 

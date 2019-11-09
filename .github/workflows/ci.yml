@@ -10,8 +10,6 @@ jobs:
     - uses: actions/checkout@v1
     - name: Install crystal
       run: brew install crystal-lang
-    - name: Install macOS Headers for 10.14
-      run: sudo installer -pkg /Library/Developer/CommandLineTools/Packages/macOS_SDK_headers_for_macOS_10.14.pkg -target /
     - name: Install dependencies
       run: shards install
     - name: Run tests

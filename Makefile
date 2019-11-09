@@ -48,7 +48,7 @@ clean:
 .PHONY: spec
 spec: libs deps $(SOURCES)
 	# crystal spec doesn't support link-flags: https://github.com/crystal-lang/crystal/issues/6231
-	PKG_CONFIG_PATH=$(shell brew --prefix openssl)/lib/pkgconfig $(CRYSTAL_BIN) spec -Dmt_no_expectations
+	LIBRARY_PATH=$(STATIC_LIBS_DIR) $(CRYSTAL_BIN) spec -Dmt_no_expectations
 
 .PHONY: check-libraries
 check-libraries: bin/mstrap

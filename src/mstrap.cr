@@ -17,6 +17,7 @@ require "./mstrap/version"
 require "./mstrap/cli_options"
 require "./mstrap/def"
 require "./mstrap/defs/**"
+require "./mstrap/ca_cert_installer"
 require "./mstrap/profile_fetcher"
 require "./mstrap/user"
 require "./mstrap/configuration"
@@ -24,8 +25,8 @@ require "./mstrap/fs"
 require "./mstrap/tracker"
 require "./mstrap/web_bootstrapper"
 require "./mstrap/project"
-require "./mstrap/templates/**"
 require "./mstrap/step"
+require "./mstrap/templates/**"
 require "./mstrap/steps/**"
 require "./mstrap/bootstrapper"
 
@@ -78,5 +79,12 @@ module MStrap
       file = File.new(MStrap::Paths::LOG_FILE, "a+")
       Logger.new(file, level: Logger::INFO, formatter: log_formatter)
     end.not_nil!
+  end
+
+  # Returns a TLS client that uses a local version of the cURL CA bundle.
+  def self.tls_client
+    OpenSSL::SSL::Context::Client.new.tap do |client|
+      client.ca_certificates = Paths::CA_CERT_BUNDLE
+    end
   end
 end

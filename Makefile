@@ -5,6 +5,7 @@ BDWGC_LIB_PATH    ?= $(shell pkg-config --libs-only-L bdw-gc | cut -c 3-)
 LIBEVENT_LIB_PATH ?= $(shell pkg-config --libs-only-L libevent | cut -c 3-)
 LIBPCRE_LIB_PATH  ?= $(shell pkg-config --libs-only-L libpcre | cut -c 3-)
 LIBYAML_LIB_PATH  ?= $(shell pkg-config --libs-only-L yaml-0.1 | cut -c 3-)
+LIBSSL_LIB_PATH   ?= $(shell brew --prefix openssl)/lib
 PREFIX      ?= /usr/local
 RELEASE     ?=
 STATIC      ?=
@@ -17,7 +18,7 @@ override CRFLAGS += $(if $(RELEASE),--release ,--debug --error-trace )$(if $(STA
 .PHONY: all
 all: build
 
-libs: vendor/libevent.a vendor/libgc.a vendor/libpcre.a vendor/libyaml.a
+libs: vendor/libcrypto.a vendor/libssl.a vendor/libevent.a vendor/libgc.a vendor/libpcre.a vendor/libyaml.a
 
 bin/mstrap: deps libs $(SOURCES)
 	mkdir -p bin
@@ -70,6 +71,10 @@ install: bin/mstrap bin/mstrap-project
 reinstall: bin/mstrap bin/mstrap-project
 	cp ./bin/mstrap* $(MSTRAP_BIN) -rf
 
+vendor/libcrypto.a: $(LIBSSL_LIB_PATH)/libcrypto.a
+	mkdir -p $(LIBSSL_LIB_PATH)
+	cp -f $(LIBSSL_LIB_PATH)/libcrypto.a $(STATIC_LIBS_DIR)
+
 vendor/libevent.a: $(LIBEVENT_LIB_PATH)/libevent.a
 	mkdir -p $(STATIC_LIBS_DIR)
 	cp -f $(LIBEVENT_LIB_PATH)/libevent.a $(STATIC_LIBS_DIR)
@@ -81,6 +86,10 @@ vendor/libgc.a: $(BDWGC_LIB_PATH)/libgc.a
 vendor/libpcre.a: $(LIBPCRE_LIB_PATH)/libpcre.a
 	mkdir -p $(STATIC_LIBS_DIR)
 	cp -f $(LIBPCRE_LIB_PATH)/libpcre.a $(STATIC_LIBS_DIR)
+
+vendor/libssl.a: $(LIBSSL_LIB_PATH)/libssl.a
+	mkdir -p $(LIBSSL_LIB_PATH)
+	cp -f $(LIBSSL_LIB_PATH)/libssl.a $(STATIC_LIBS_DIR)
 
 vendor/libyaml.a: $(LIBYAML_LIB_PATH)/libyaml.a
 	mkdir -p $(STATIC_LIBS_DIR)

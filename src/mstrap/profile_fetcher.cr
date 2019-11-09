@@ -65,7 +65,8 @@ module MStrap
         end
       elsif https_url?
         ensure_profile_dir
-        HTTP::Client.get(url) do |response|
+        CACertInstaller.install!
+        HTTP::Client.get(url, tls: MStrap.tls_client) do |response|
           File.write(config.path, response.body_io.gets_to_end, perm: 0o600)
         end
       else

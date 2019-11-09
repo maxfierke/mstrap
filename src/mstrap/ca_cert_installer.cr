@@ -14,6 +14,7 @@ module MStrap
         unless cmd("curl --silent --remote-name --time-cond cacert.pem https://curl.haxx.se/ca/cacert.pem")
           logc "There was an error fetching the cURL CA Cert bundle, which is needed to verify HTTPS certificates. mstrap cannot continue."
         end
+        File.chmod(Paths::CA_CERT_BUNDLE, 0o600)
       end
     end
   end

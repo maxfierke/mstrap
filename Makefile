@@ -17,6 +17,7 @@ override CRFLAGS += $(if $(RELEASE),--release ,--debug --error-trace )$(if $(STA
 .PHONY: all
 all: build
 
+.PHONY: libs
 libs: vendor/libcrypto.a vendor/libssl.a vendor/libevent.a vendor/libpcre.a vendor/libyaml.a
 
 bin/mstrap: deps libs $(SOURCES)
@@ -61,6 +62,10 @@ check-libraries: bin/mstrap
 
 .PHONY: test
 test: spec check-libraries
+
+release: gon.hcl bin/mstrap bin/mstrap-project
+	mkdir -p ./dist
+	gon -log-level=debug ./gon.hcl
 
 .PHONY: install
 install: bin/mstrap bin/mstrap-project

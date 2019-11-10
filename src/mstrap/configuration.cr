@@ -63,7 +63,11 @@ module MStrap
 
       known_profile_configs.each do |profile_config|
         if profile_config == DEFAULT_PROFILE_DEF
-          next if !File.exists?(profile_config.path)
+          # Ignore but treat as loaded
+          if !File.exists?(profile_config.path)
+            loaded_profile_configs << profile_config
+            next
+          end
         else
           fetcher = ProfileFetcher.new(profile_config, force || cli.force?)
 

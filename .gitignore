@@ -1,7 +1,9 @@
 /docs/
 /lib/
 /bin/
+/dist/
 /.crystal/
 /.shards/
 *.dwarf
+.DS_Store
 /vendor/

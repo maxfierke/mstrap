@@ -202,14 +202,14 @@ runtimes:
   ruby:
     default_version: 2.6.3        # If this is omitted, the latest installed will
                                   # be used as the default/global version
-    pkgs:
+    packages:
     - name: bundle-audit
   node:
-    pkgs:
+    packages:
     - name: ember-cli
     - name: release-it
   python:
-    pkgs:
+    packages:
     - name: ansible
       version: 2.8                # Optionally specify a specific version. Uses
                                   # the underlying package manager's semantics

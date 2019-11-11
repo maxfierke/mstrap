@@ -2,10 +2,10 @@ module MStrap
   module Defs
     class ProfileDef < Def
       YAML.mapping(
-        package_globals: {
-          type: GlobalPkgDef,
+        runtimes: {
+          type: Hash(String, RuntimeDef),
           nilable: false,
-          default: GlobalPkgDef.new
+          default: {} of String => RuntimeDef
         },
         projects: {
           type: Array(ProjectDef),
@@ -20,21 +20,27 @@ module MStrap
       )
 
       def initialize
-        @package_globals = GlobalPkgDef.new
+        @runtimes = {} of String => RuntimeDef
         @projects = [] of ProjectDef
         @version = "1.0"
       end
 
       def merge!(other : self)
+        other.runtimes.each do |key, value|
+          if self.runtimes.has_key?(key)
+            self.runtimes[key].merge!(value)
+          else
+            self.runtimes[key] = value
+          end
+        end
+
         other.projects.each do |proj|
           if existing_project = self.projects.find { |pr| pr.cname == proj.cname }
-            # TODO: Do something?
+            existing_project.merge!(proj)
           else
             self.projects << proj
           end
         end
-
-        self.package_globals.merge!(other.package_globals)
       end
     end
   end

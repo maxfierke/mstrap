@@ -11,9 +11,7 @@ module MStrap
       :shell,
       :services,
       :projects,
-      :node,
-      :python,
-      :ruby,
+      :runtimes,
     ]
 
     @options : CLIOptions

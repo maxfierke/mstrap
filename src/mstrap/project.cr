@@ -2,10 +2,6 @@ module MStrap
   class Project
     include Utils::Logging
     include Utils::Env
-    include Utils::Node
-    include Utils::Php
-    include Utils::Python
-    include Utils::Ruby
     include Utils::System
 
     # :nodoc:
@@ -27,7 +23,7 @@ module MStrap
     @port : Int32?
     @repo : String
     @run_scripts : Bool
-    @runtime : String
+    @runtimes : Array(String)
     @upstream : String?
     @websocket : Bool
     @web : Bool
@@ -50,8 +46,8 @@ module MStrap
     # Returns the configured GitHub path or URI for the project's repo.
     getter :repo
 
-    # Returns the primary language runtime of the project, if specified.
-    getter :runtime
+    # Returns the language runtimes of the project, if specified.
+    getter :runtimes
 
     # Returns whether to execute and scripts-to-rule-them-all scripts, if they exist.
     getter? :run_scripts
@@ -75,7 +71,7 @@ module MStrap
       @port = project_def.port
       @repo = project_def.repo
       @run_scripts = project_def.run_scripts
-      @runtime = project_def.runtime
+      @runtimes = project_def.runtimes
       @upstream = project_def.upstream
       @websocket = project_def.websocket
       @web = if project_def.web_present?
@@ -143,13 +139,13 @@ module MStrap
     # determined by mstrap.
     def bootstrap
       if has_scripts? && run_scripts?
-        logd "Found bootstrapping scripts, executing instead of using '#{runtime}' defaults."
+        logd "Found bootstrapping scripts, executing instead of using defaults."
         Dir.cd(path) do
           cmd BOOTSTRAP_SCRIPT if File.exists?(BOOTSTRAP_SCRIPT)
           cmd SETUP_SCRIPT if File.exists?(SETUP_SCRIPT)
         end
       else
-        logd "Bootstrapping '#{name}' with runtime '#{runtime}' defaults."
+        logd "Bootstrapping '#{name}' with runtime defaults."
         default_bootstrap
       end
     end
@@ -160,24 +156,21 @@ module MStrap
     # calling into conventional bootstrapping within a project's
     # `script/bootstrap` or `script/setup` from `mstrap-project`.
     protected def default_bootstrap
-      if node?
-        logd "Detected Node. Installing Node."
-        setup_node
+      runtime_impls = if runtimes.empty?
+        MStrap::Runtime.all
+      else
+        MStrap::Runtime.all.select do |runtime|
+          runtimes.includes?(runtime.language_name)
+        end
       end
 
-      if php?
-        logd "Detected PHP. Installing PHP and any composer dependencies."
-        setup_php
-      end
-
-      if python?
-        logd "Detected Python. Installing Python and any pip dependencies."
-        setup_python
-      end
-
-      if ruby?
-        logd "Detected Ruby. Installing Ruby, bundler, and any Gemfile dependencies."
-        setup_ruby
+      runtime_impls.each do |runtime|
+        Dir.cd(path) do
+          if runtime.matches?
+            logd "Detected #{runtime.language_name}. Installing #{runtime.language_name}, project #{runtime.language_name} packages, and other relevant dependencies"
+            runtime.setup
+          end
+        end
       end
 
       if web?

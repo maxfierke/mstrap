@@ -180,6 +180,7 @@ profiles:
 # Might be managed by my company, and contains all the projects I need for my work
 - name: work
   url: ssh://git@workgit.biz/PlaceOfBizness/mstrap-profile-vry-impt-bizness.git
+  revision: some-commit-sha
 ```
 
 When I run `mstrap`, I'll get the packages, projects, and Docker-manged services
@@ -196,7 +197,7 @@ A managed profile can be one of the following:
 
 * A Git repo or local directory with a `profile.yml` and optionally a
   `Brewfile` and `services.yml`.
-* A link or file path to a `profile.yml`
+* An HTTPS URL or file path to a `profile.yml`
 
 ### `profile.yml`
 

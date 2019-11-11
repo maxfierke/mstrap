@@ -52,8 +52,8 @@ module MStrap
           "-t",
           "--runtime RUNTIME",
           "Project Runtime\n\tOne of #{PROJECT_RUNTIMES.map(&.to_s).join(", ")}"
-        ) do |runtime|
-          project_def.runtime = runtime
+        ) do |runtimes|
+          project_def.runtimes = runtimes.split(',')
         end
 
         opts.on(

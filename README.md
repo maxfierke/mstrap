@@ -99,10 +99,8 @@ COMMANDS
     debug                Prints debug information
     dependencies         Basic machine bootstrapping with strap.sh, hub, and brew bundle.
     init                 Initializes $HOME/.mstrap
-    node                 Set default global Node version and installs global NPM packages
     projects             Bootstraps configured projects
-    python               Set default global Python version and installs global pip packages
-    ruby                 Set default global Ruby version and installs global Ruby gems
+    runtimes             Sets default language runtime versions and installs global runtime packages
     services             (Re)creates mstrap-managed docker-compose services
     shell                Injects mstrap's env.sh into the running shell's config
     steps                Prints available steps
@@ -197,54 +195,60 @@ few things in it.
 
 ```yaml
 ---
-# This section defines packages that will be installed globally for any installed
-# version of the relevant language runtimes.
-package_globals:
-  gems:
+# This section defines global configurations of runtimes, such as packages that
+# will be installed globally for any installed version of the relevant language
+# runtime, or the default runtime version to use if none is specified by a project.
+runtimes:
+  ruby:
+    default_version: 2.6.3        # If this is omitted, the latest installed will
+                                  # be used as the default/global version
+    pkgs:
     - name: bundle-audit
-  npm:
+  node:
+    pkgs:
     - name: ember-cli
     - name: release-it
-  pip:
+  python:
+    pkgs:
     - name: ansible
+      version: 2.8                # Optionally specify a specific version. Uses
+                                  # the underlying package manager's semantics
+                                  # for version constraints.
 # This section defines the projects that will be managed by mstrap
 projects:
-  - name: My Cool Project           # A user-friendly display name for the
-                                    # project. Required.
-    cname: my-cool-project          # A machine-friendly, canonical name for the
-                                    # project. This should be unique. Required.
-    hostname: coolproject.localhost # A hostname for the project. Defaults to
-                                    # CNAME.localhost.
-    path: cool-project              # Path of the project (inside ~/src).
-                                    # Defaults to the cname.
-    port: 5004                      # Port nginx should use to proxy to the
-                                    # project.
-                                    # Optional, if you're using UNIX sockets.
-    repo: git@github.com:maxfierke/my-cool-project.git # Git URI for cloning the project. Required.
-    run_scripts: true               # Whether or not to run scripts-to-rule-them-all
-                                    # like script/bootstrap or script/setup, if
-                                    # they exist. Defaults to true.
-    runtime: ruby                   # Name of the primary runtime. Additional
-                                    # runtimes will be detected automatically.
-                                    # Can be omited to rely wholly on
-                                    # auto-detection. Defaults to "unknown".
-    upstream: ~                     # Specify an absolute NGINX upstream, rather
-                                    # than using something inferred by configuration.
-    websocket: true                 # Whether or not to configure NGINX to handle
-                                    # websockets for this application.
-                                    # Defaults to false.
-    web: true                       # Whether or not this is a web project that
-                                    # will be setup with NGINX. Can be omitted
-                                    # and will be inferred by the presence of
-                                    # other web-related properties.
-  - name: Simple Project
-    cname: simple-project
-    port: 5000
-    repo: git@github.com:maxfierke/simple-project.git
-    runtime: ruby
-
+- name: My Cool Project           # A user-friendly display name for the
+                                  # project. Required.
+  cname: my-cool-project          # A machine-friendly, canonical name for the
+                                  # project. This should be unique. Required.
+  hostname: coolproject.localhost # A hostname for the project. Defaults to
+                                  # CNAME.localhost.
+  path: cool-project              # Path of the project (inside ~/src).
+                                  # Defaults to the cname.
+  port: 5004                      # Port nginx should use to proxy to the
+                                  # project.
+                                  # Optional, if you're using UNIX sockets.
+  repo: git@github.com:maxfierke/my-cool-project.git # Git URI for cloning the project. Required.
+  run_scripts: true               # Whether or not to run scripts-to-rule-them-all
+                                  # like script/bootstrap or script/setup, if
+                                  # they exist. Defaults to true.
+  runtimes: [ruby]                # Name of the runtimes used. Generally to be
+                                  # omitted, as runtimes will be detected
+                                  # automatically.
+  upstream: ~                     # Specify an absolute NGINX upstream, rather
+                                  # than using something inferred by configuration.
+  websocket: true                 # Whether or not to configure NGINX to handle
+                                  # websockets for this application.
+                                  # Defaults to false.
+  web: true                       # Whether or not this is a web project that
+                                  # will be setup with NGINX. Can be omitted
+                                  # and will be inferred by the presence of
+                                  # other web-related properties.
+# An example of a project that will have most of its settings inferred
+- name: Simple Rails Project
+  cname: simple-rails-project
+  port: 5000
+  repo: git@github.com:maxfierke/simple-rails-project.git
 ```
-
 
 ### `services.yml`
 

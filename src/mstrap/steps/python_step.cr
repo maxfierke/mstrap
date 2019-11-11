@@ -16,7 +16,7 @@ module MStrap
       end
 
       def bootstrap
-        return if python_versions.empty?
+        return if !has_python? || python_versions.empty?
         logn "==> Bootstrapping Python"
         set_default_to_latest
         install_pip_globals
@@ -50,6 +50,10 @@ module MStrap
           end
           success "OK"
         end
+      end
+
+      private def has_python?
+        `asdf plugin-list`.chomp.split("\n").includes?("python")
       end
 
       private def python_versions

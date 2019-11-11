@@ -155,8 +155,9 @@ by `~/.mstrap/profile.yml`.
 In addition to this, you can configure `mstrap` to use so-called managed
 profiles, which can be pulled in from local or remote sources.
 
-At runtime, these profiles are merged in with the default profile, with later
-profiles overwriting any conflicts (e.g. projects with the same `cname`).
+At runtime, these profiles are merged together, with later-defined profiles
+overwriting any conflicts (e.g. projects with the same `cname`). The default
+local profile will be merged in last.
 
 e.g.
 
@@ -175,7 +176,7 @@ profiles:
 # Might contain some stuff I'm playing around with for the time being or while
 # developing a new managed profile
 - name: testing
-  url: file://../testing_stuff
+  url: file://../testing_stuff # Resolved relative to ~/.mstrap
 # Might be managed by my company, and contains all the projects I need for my work
 - name: work
   url: ssh://git@workgit.biz/PlaceOfBizness/mstrap-profile-vry-impt-bizness.git
@@ -188,6 +189,14 @@ of all profiles.
 included in the `profiles` configuration. If you use managed profiles heavily,
 you might consider `~/.mstrap/profile.yml` just for local machine use and keep
 few things in it.
+
+##### Defining a managed profile
+
+A managed profile can be one of the following:
+
+* A Git repo or local directory with a `profile.yml` and optionally a
+  `Brewfile` and `services.yml`.
+* A link or file path to a `profile.yml`
 
 ### `profile.yml`
 

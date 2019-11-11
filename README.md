@@ -5,7 +5,9 @@ It is a [convention-over-configuration](https://en.wikipedia.org/wiki/Convention
 tool, which aims to leverage existing ecosystem tools to provide a one-command provisioning
 experience for a new machine.
 
-The approach is inspired by the [`chirpstrap`](https://medium.com/intensive-code-unit/provisioning-engineers-with-chirpstrap-ecae874453d0) tool built at Iora Health, but is built and maintained in my personal capacity and is not associated with Iora Health.
+The approach is inspired by the [`chirpstrap`](https://medium.com/intensive-code-unit/provisioning-engineers-with-chirpstrap-ecae874453d0) tool built at Iora Health,
+but is built and maintained in my personal capacity and is not associated with
+Iora Health.
 
 ## Aims
 
@@ -14,8 +16,13 @@ The approach is inspired by the [`chirpstrap`](https://medium.com/intensive-code
   * Avoid vendoring or overriding tool defaults
 * Hook into standard [scripts-to-rule-them-all](https://github.com/github/scripts-to-rule-them-all)
   * Currently hooks into a project's `script/bootstrap` and `script/setup`
-* Eventually leverage `mruby` for user-defined extensions written in Ruby, such
+* Eventually: leverage `mruby` for user-defined extensions written in Ruby, such
   as environment migrations.
+
+`mstrap` is wholly centered around proving a no-runtime-dependency (other than
+normal system libraries) approach and will always remain a tool designed around
+being possible to run immediately after taking a new machine out of its box, and
+finishing the OS setup.
 
 ### Platform Support
 
@@ -112,7 +119,7 @@ as the configuration.
 
 The config will be written to disk in the default location when the `init` step
 runs, e.g. as part of running `mstrap -c https://url/to/config.yml` with no step
-specified, or `mstrap -c -c https://url/to/config.yml init`.
+specified, or `mstrap -c https://url/to/config.yml init`.
 
 ## Configuration
 
@@ -123,6 +130,8 @@ specified, or `mstrap -c -c https://url/to/config.yml init`.
 * `~/.mstrap/profile.yml` defines what will be setup by `mstrap`. Here you'll
   define projects and packages that will be automatically installed and setup by
   `mstrap`.
+
+In the future, these will become [HCL](https://github.com/hashicorp/hcl) configuration files.
 
 ### `config.yml`
 

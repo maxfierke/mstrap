@@ -60,6 +60,12 @@ check-libraries: bin/mstrap
 		exit 0; \
 	fi
 
+.PHONY: check-provisioning
+check-provisioning:
+	cd $(CURDIR)/spec/provisioning && \
+	(bundle check || bundle install) && \
+	bundle exec rspec
+
 .PHONY: test
 test: spec check-libraries
 

@@ -16,7 +16,7 @@ module MStrap
       end
 
       def bootstrap
-        return if node_versions.empty?
+        return if !has_nodejs? || node_versions.empty?
         logn "==> Bootstrapping Node"
         set_default_to_latest
         install_npm_globals
@@ -50,6 +50,10 @@ module MStrap
           end
           success "OK"
         end
+      end
+
+      private def has_nodejs?
+        `asdf plugin-list`.chomp.split("\n").includes?("nodejs")
       end
 
       private def node_versions

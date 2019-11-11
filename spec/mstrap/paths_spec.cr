@@ -53,7 +53,7 @@ describe MStrap::Paths do
 
   describe "PROJECT_SOCKETS" do
     it "must be relative to the project-sites directory" do
-      expect(MStrap::Paths::PROJECT_SOCKETS).must_equal(File.join(MSTRAP_TEST_RC_DIR, "project-sites", "sockets"))
+      expect(MStrap::Paths::PROJECT_SOCKETS).must_equal(File.join(MStrap::Paths::PROJECT_SITES, "sockets"))
     end
   end
 

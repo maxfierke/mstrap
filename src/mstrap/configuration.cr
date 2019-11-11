@@ -63,7 +63,11 @@ module MStrap
 
       known_profile_configs.each do |profile_config|
         if profile_config == DEFAULT_PROFILE_DEF
-          next if !File.exists?(profile_config.path)
+          # Ignore but treat as loaded
+          if !File.exists?(profile_config.path)
+            loaded_profile_configs << profile_config
+            next
+          end
         else
           fetcher = ProfileFetcher.new(profile_config, force || cli.force?)
 
@@ -111,8 +115,8 @@ module MStrap
     # Raises ConfigurationNotFoundError if the mstrap configuration cannot be
     # found or accessed, or any managed profiles cannot be found or accessed.
     def reload!(force = nil)
-      if File.exists?(cli.config_path)
-        config_yaml = File.read(cli.config_path)
+      if File.exists?(config_path)
+        config_yaml = File.read(config_path)
         config = Defs::ConfigDef.from_yaml(config_yaml)
 
         # TODO: This is gross, but the initialization logic can't happen inside
@@ -120,25 +124,26 @@ module MStrap
         initialize(cli, config, github_access_token)
         load_profiles!(force)
       else
-        raise ConfigurationNotFoundError.new(cli.config_path)
+        raise ConfigurationNotFoundError.new(config_path)
       end
     end
 
     # Saves configuration back to disk
     def save!
       config_yaml = @config_yaml_def.to_yaml
-
-      if cli.config_path.starts_with?("https://")
-        path = Paths::SERVICES_YML
-      else
-        path = cli.config_path
-      end
-
       FileUtils.mkdir_p(Paths::RC_DIR, 0o755)
-      File.write(path, config_yaml, perm: 0o600)
+      File.write(config_path, config_yaml, perm: 0o600)
     end
 
     private getter :github_access_token
+
+    private def config_path
+      if cli.config_path.starts_with?("https://")
+        Paths::CONFIG_YML
+      else
+        cli.config_path
+      end
+    end
 
     private def resolve_profile!
       resolved_profile.merge!(profiles)

@@ -1,0 +1,53 @@
+name: Test Provisioning
+
+# Provisioning tests are expensive, so we should only run them on master merges
+# and version tags (until later determined to be insufficent)
+on:
+  push:
+    branches:
+    - master
+    paths-ignore:
+    - 'docs/**'
+    - '*.md'
+    tags:
+    - 'v*'
+  pull_request: []
+
+jobs:
+  provision:
+    runs-on: macOS-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Install crystal
+      run: brew install crystal-lang
+    - name: Install dependencies
+      run: shards install
+    - name: Build mstrap
+      run: make build
+
+    # Based on https://raw.githubusercontent.com/MikeMcQuaid/strap/master/.github/workflows/tests.yml
+    - name: Make macOS like new
+      run: |
+        sudo rm -rf /usr/local/bin/brew /usr/local/.??* \
+                    /usr/local/Caskroom \
+                    /Library/Developer/CommandLineTools
+        sudo pkgutil --forget com.apple.pkg.CLTools_Executables
+
+    - name: Run initial mstrap process
+      env:
+        STRAP_CI: true
+      run: |
+        bin/mstrap --debug \
+        -c ${{ secrets.TEST_CONFIG_URL }} \
+        -a ${{ secrets.TEST_BOT_ACCESS_TOKEN }}
+
+    - name: Finish mstrap process
+      env:
+        STRAP_CI: true
+      run: |
+        source ~/.mstrap/env.sh && bin/mstrap --debug
+
+    - name: Run serverspecs
+      run: |
+        source ~/.mstrap/env.sh && make check-provisioning

@@ -16,7 +16,7 @@ module MStrap
       end
 
       def bootstrap
-        return if ruby_versions.empty?
+        return if !has_ruby? || ruby_versions.empty?
         logn "==> Bootstrapping Ruby"
         set_default_to_latest
         install_gem_globals
@@ -50,6 +50,10 @@ module MStrap
           end
           success "OK"
         end
+      end
+
+      private def has_ruby?
+        `asdf plugin-list`.chomp.split("\n").includes?("ruby")
       end
 
       private def ruby_versions

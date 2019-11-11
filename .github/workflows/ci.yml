@@ -1,9 +1,13 @@
-name: Crystal CI
+name: Tests
 
-on: [push]
+on:
+  push:
+    paths-ignore:
+    - 'docs/**'
+    - '*.md'
 
 jobs:
-  build:
+  tests:
     runs-on: macOS-latest
 
     steps:
@@ -13,4 +17,4 @@ jobs:
     - name: Install dependencies
       run: shards install
     - name: Run tests
-      run: make spec
+      run: make test

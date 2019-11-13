@@ -16,6 +16,7 @@ module MStrap
       def bootstrap
         MStrap::Runtime.all.each do |runtime|
           if runtime.has_asdf_plugin? && runtime.has_versions?
+            logn "==> Setting global #{runtime.language_name} settings"
             set_default_to_latest(runtime)
             packages = runtime_packages(runtime)
 
@@ -48,7 +49,7 @@ module MStrap
           runtime.installed_versions.last
         end
 
-        logn "---> Setting default #{runtime.language_name} version to #{latest_version}: "
+        logn "--> Setting default #{runtime.language_name} version to #{latest_version}: "
         log "Setting default #{runtime.language_name} version to #{latest_version}: "
         unless cmd "asdf global #{runtime.asdf_plugin_name} #{latest_version}", quiet: true
           logc "Could not set global #{runtime.language_name} version to #{latest_version}"
@@ -57,7 +58,7 @@ module MStrap
       end
 
       private def install_package_globals(runtime, packages)
-        logn "---> Installing global packages for installed #{runtime.language_name} versions: "
+        logn "--> Installing global packages for installed #{runtime.language_name} versions: "
         runtime.installed_versions.each do |version|
           package_names = packages.map(&.name)
           log "Installing #{package_names.join(", ")} for #{runtime.language_name} #{version}: "

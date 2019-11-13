@@ -49,6 +49,10 @@ module MStrap
       `asdf plugin-list`.chomp.split("\n").includes?(asdf_plugin_name)
     end
 
+    def has_version?(version)
+      installed_versions.includes?(version)
+    end
+
     # Returns whether any versions of the language runtime have been
     # installed by ASDF.
     def has_versions?
@@ -86,7 +90,7 @@ module MStrap
       cmd "asdf plugin-add #{asdf_plugin_name}" unless has_asdf_plugin?
 
       with_dir_version(Dir.current) do
-        cmd "asdf install #{asdf_plugin_name} #{current_version}"
+        cmd "asdf install #{asdf_plugin_name} #{current_version}" unless has_version?(current_version)
         bootstrap
       end
     end

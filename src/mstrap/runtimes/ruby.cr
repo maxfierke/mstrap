@@ -10,11 +10,11 @@ module MStrap
       def bootstrap
         if File.exists?("gems.rb")
           cmd "gem install bundler"
-          cmd "bundle install"
+          cmd "bundle check || bundle install"
         elsif File.exists?("Gemfile")
           cmd "gem install bundler"
           cmd "gem install bundler -v '<2'"
-          cmd "bundle install"
+          cmd "bundle check || bundle install"
         end
       end
 

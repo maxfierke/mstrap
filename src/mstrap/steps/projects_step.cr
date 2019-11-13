@@ -19,30 +19,30 @@ module MStrap
         create_services_internal_yml! if has_web_projects?
 
         projects.each do |project|
-          logn "#### #{project.name}"
-          log "---> Fetching: "
+          logn "==> #{project.name}"
+          log "--> Fetching: "
 
           if Dir.exists?(project.path)
             logw "Already fetched"
             unless skip_project_update?
-              log "---> Updating: "
+              log "--> Updating: "
               if project.pull
                 success "OK"
               else
-                logc "Could not update git repo for #{project.cname}"
+                logc "Could not update git repo for #{project.name}"
               end
             end
           else
             if project.clone
               success "OK"
             else
-              logc "Could not clone git repo for #{project.cname}"
+              logc "Could not clone git repo for #{project.name}"
             end
           end
 
-          log "---> Bootstrapping: "
+          logn "--> Bootstrapping: "
           project.bootstrap
-          success "OK"
+          success "Finished bootstrapping #{project.name}"
         end
 
         restart_internal_services! if has_web_projects?
@@ -63,8 +63,9 @@ module MStrap
       end
 
       private def create_services_internal_yml!
-        log "---> Creating/updating default services-internal.yml for web projects: "
+        log "--> Creating/updating default services-internal.yml for web projects: "
         Templates::ServicesInternalYml.new.write_to_config!
+        success "OK"
       end
 
       private def restart_internal_services!

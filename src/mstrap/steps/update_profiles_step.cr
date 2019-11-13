@@ -16,7 +16,7 @@ module MStrap
       end
 
       def bootstrap
-        log "---> Updating profiles: "
+        log "--> Updating profiles: "
         config.reload!(force: true)
         config.save!
         success "OK"

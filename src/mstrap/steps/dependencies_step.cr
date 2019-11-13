@@ -60,7 +60,7 @@ module MStrap
           brewfile_path = File.join(profile_config.dir, "Brewfile")
 
           if File.exists?(brewfile_path)
-            log "---> Installing dependencies from Brewfile from profile '#{profile_config.name})': "
+            log "--> Installing dependencies from Brewfile from profile '#{profile_config.name})': "
             unless cmd "brew bundle --file=#{brewfile_path} #{debug? ? "--verbose" : ""}"
               logc "Uhh oh, something went wrong in homebrewland. Check above or in #{MStrap::Paths::LOG_FILE}."
             end
@@ -70,7 +70,7 @@ module MStrap
       end
 
       private def load_profile!
-        log "---> Reloading profile: "
+        log "--> Reloading profile: "
         config.reload!
         success "OK"
       end

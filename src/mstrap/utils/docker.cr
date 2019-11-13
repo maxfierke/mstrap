@@ -34,7 +34,7 @@ module MStrap
         file_args
       end
 
-      private def ensure_docker_compose!
+      protected def ensure_docker_compose!
         found_docker = false
 
         while !(found_docker = cmd("docker-compose version", quiet: true))
@@ -50,6 +50,12 @@ module MStrap
           else
             logc "Please ensure docker is installed through the Brewfile or some other means."
           end
+        end
+      end
+
+      protected def install_docker!
+        unless docker_app_path || cmd "brew cask install docker"
+          logc "Could not install docker via Homebrew cask"
         end
       end
     end

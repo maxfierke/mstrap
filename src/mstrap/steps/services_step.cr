@@ -17,7 +17,7 @@ module MStrap
       end
 
       # :nodoc:
-      def bootstrap(services_yml)
+      def bootstrap(services_yml : String? = nil)
         if services_yml && File.exists?(services_yml)
           file_args = ["-f", services_yml]
         else
@@ -25,6 +25,7 @@ module MStrap
         end
 
         if file_args.any?
+          install_docker!
           ensure_docker_compose!
           logn "==> Setting up managed services"
           unless start_services(file_args)

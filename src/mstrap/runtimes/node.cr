@@ -3,7 +3,18 @@ module MStrap
     # Node runtime management implmentation. It contains methods for interacting
     # with Node via ASDF and bootstrapping a Node project based on conventions.
     class Node < Runtime
-      MStrap.define_language_runtime :node, :nodejs
+      def asdf_plugin_name
+        "nodejs"
+      end
+
+      def language_name : String
+        "node"
+      end
+
+      def setup
+        super
+        cmd "bash ~/.asdf/plugins/nodejs/bin/import-release-team-keyring"
+      end
 
       def bootstrap
         if File.exists?("yarn.lock")
@@ -15,7 +26,7 @@ module MStrap
       end
 
       def install_packages(packages : Array(Defs::PkgDef), runtime_version : String? = nil) : Bool
-        cmd_args = ["npm", "install", "-g"]
+        cmd_args = ["install", "-g"]
 
         packages.each do |pkg|
           if pkg.version

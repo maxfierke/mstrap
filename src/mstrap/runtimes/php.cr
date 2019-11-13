@@ -3,7 +3,9 @@ module MStrap
     # PHP runtime management implmentation. It contains methods for interacting
     # with PHP via ASDF and bootstrapping a PHP project based on conventions.
     class Php < Runtime
-      MStrap.define_language_runtime :php, :php
+      def language_name : String
+        "php"
+      end
 
       def bootstrap
         if File.exists?("composer.json")

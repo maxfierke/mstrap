@@ -5,7 +5,9 @@ module MStrap
     #
     # TODO: Does not support virtualenv
     class Python < Runtime
-      MStrap.define_language_runtime :python, :python
+      def language_name : String
+        "python"
+      end
 
       def bootstrap
         if File.exists?("requirements.txt")

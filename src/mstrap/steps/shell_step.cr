@@ -50,7 +50,7 @@ module MStrap
       def bootstrap
         Dir.mkdir_p(MStrap::Paths::RC_DIR)
 
-        contents = Templates::EnvSh.new(user.name, user.email, user.github).to_s
+        contents = Templates::EnvSh.new.to_s
         File.write(env_sh_path, contents, perm: 0o600)
 
         unless mstrapped?

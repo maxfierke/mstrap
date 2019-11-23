@@ -50,7 +50,7 @@ module MStrap
         unless cmd "sh #{MStrap::Paths::STRAP_SH_PATH} #{debug? ? "--debug" : ""}"
           logc "Uhh oh, something went wrong in strap.sh-land. Check above or in #{MStrap::Paths::LOG_FILE}."
         end
-        success "Schweet. strap.sh said 'All Good'"
+        success "Finished running strap.sh"
       end
 
       private def brew_bundle

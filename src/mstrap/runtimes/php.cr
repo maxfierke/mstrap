@@ -9,8 +9,8 @@ module MStrap
 
       def bootstrap
         if File.exists?("composer.json")
-          cmd "brew install composer"
-          cmd "composer install"
+          cmd "brew install composer", quiet: true
+          cmd "composer install", quiet: true
         end
       end
 
@@ -25,7 +25,7 @@ module MStrap
           end
         end
 
-        cmd "composer", cmd_args
+        cmd "composer", cmd_args, quiet: true
       end
 
       def matches? : Bool

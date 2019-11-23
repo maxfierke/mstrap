@@ -23,10 +23,10 @@ module MStrap
 
       def bootstrap
         if File.exists?("yarn.lock")
-          cmd "brew install yarn"
-          cmd "yarn install"
+          cmd "brew install yarn", quiet: true
+          cmd "yarn install", quiet: true
         elsif File.exists?("package.json")
-          cmd "npm install"
+          cmd "npm install", quiet: true
         end
       end
 

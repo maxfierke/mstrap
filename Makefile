@@ -11,6 +11,8 @@ STATIC      ?=
 STATIC_LIBS_DIR = $(CURDIR)/vendor
 SOURCES      = src/*.cr src/**/*.cr
 
+export MACOSX_DEPLOYMENT_TARGET=10.12
+
 override LDFLAGS += -L$(STATIC_LIBS_DIR)
 override CRFLAGS += $(if $(RELEASE),--release ,--debug --error-trace )$(if $(STATIC),--static )$(if $(LDFLAGS),--link-flags="$(LDFLAGS)" )
 

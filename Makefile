@@ -1,17 +1,21 @@
-CRYSTAL_BIN ?= $(shell which crystal)
-SHARDS_BIN  ?= $(shell which shards)
-MSTRAP_BIN ?= $(shell which mstrap)
+CRYSTAL_BIN       ?= $(shell which crystal)
+SHARDS_BIN        ?= $(shell which shards)
+MSTRAP_BIN        ?= $(shell which mstrap)
 LIBEVENT_LIB_PATH ?= $(shell pkg-config --libs-only-L libevent | cut -c 3-)
 LIBPCRE_LIB_PATH  ?= $(shell pkg-config --libs-only-L libpcre | cut -c 3-)
 LIBYAML_LIB_PATH  ?= $(shell pkg-config --libs-only-L yaml-0.1 | cut -c 3-)
-LIBSSL_LIB_PATH   ?= $(shell brew --prefix openssl)/lib
-PREFIX      ?= /usr/local
-RELEASE     ?=
-STATIC      ?=
-STATIC_LIBS_DIR = $(CURDIR)/vendor
-SOURCES      = src/*.cr src/**/*.cr
+OPENSSL_LIB_PATH  ?= $(shell brew --prefix openssl@1.1)/lib
+PREFIX            ?= /usr/local
+RELEASE           ?=
+STATIC            ?=
+STATIC_LIBS_DIR   := $(CURDIR)/vendor
+SOURCES           := src/*.cr src/**/*.cr
+UNAME_S           := $(shell uname -s)
 
-export MACOSX_DEPLOYMENT_TARGET=10.12
+ifeq ($(UNAME_S),Darwin)
+  export MACOSX_DEPLOYMENT_TARGET=10.12
+  export PKG_CONFIG_PATH=$(OPENSSL_LIB_PATH)/pkgconfig
+endif
 
 override LDFLAGS += -L$(STATIC_LIBS_DIR)
 override CRFLAGS += $(if $(RELEASE),--release ,--debug --error-trace )$(if $(STATIC),--static )$(if $(LDFLAGS),--link-flags="$(LDFLAGS)" )
@@ -84,9 +88,9 @@ install: bin/mstrap bin/mstrap-project
 reinstall: bin/mstrap bin/mstrap-project
 	cp ./bin/mstrap* $(MSTRAP_BIN) -rf
 
-vendor/libcrypto.a: $(LIBSSL_LIB_PATH)/libcrypto.a
-	mkdir -p $(LIBSSL_LIB_PATH)
-	cp -f $(LIBSSL_LIB_PATH)/libcrypto.a $(STATIC_LIBS_DIR)
+vendor/libcrypto.a: $(OPENSSL_LIB_PATH)/libcrypto.a
+	mkdir -p $(OPENSSL_LIB_PATH)
+	cp -f $(OPENSSL_LIB_PATH)/libcrypto.a $(STATIC_LIBS_DIR)
 
 vendor/libevent.a: $(LIBEVENT_LIB_PATH)/libevent.a
 	mkdir -p $(STATIC_LIBS_DIR)
@@ -96,9 +100,9 @@ vendor/libpcre.a: $(LIBPCRE_LIB_PATH)/libpcre.a
 	mkdir -p $(STATIC_LIBS_DIR)
 	cp -f $(LIBPCRE_LIB_PATH)/libpcre.a $(STATIC_LIBS_DIR)
 
-vendor/libssl.a: $(LIBSSL_LIB_PATH)/libssl.a
-	mkdir -p $(LIBSSL_LIB_PATH)
-	cp -f $(LIBSSL_LIB_PATH)/libssl.a $(STATIC_LIBS_DIR)
+vendor/libssl.a: $(OPENSSL_LIB_PATH)/libssl.a
+	mkdir -p $(OPENSSL_LIB_PATH)
+	cp -f $(OPENSSL_LIB_PATH)/libssl.a $(STATIC_LIBS_DIR)
 
 vendor/libyaml.a: $(LIBYAML_LIB_PATH)/libyaml.a
 	mkdir -p $(STATIC_LIBS_DIR)

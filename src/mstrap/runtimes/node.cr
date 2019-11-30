@@ -46,11 +46,9 @@ module MStrap
 
       def matches? : Bool
         [
-          "Gemfile.lock",
-          "Gemfile",
-          "gems.rb",
-          "gems.locked",
-          ".ruby-version"
+          "yarn.lock",
+          "package.json",
+          ".node-version"
         ].any? do |file|
           File.exists?(file)
         end

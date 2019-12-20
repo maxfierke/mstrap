@@ -8,6 +8,8 @@ dependencies:
   baked_file_system:
     github: schovi/baked_file_system
     version: 0.9.8
+  readline:
+    github: crystal-lang/crystal-readline
 
 development_dependencies:
   minitest:
@@ -19,6 +21,6 @@ targets:
   mstrap-project:
     main: src/project_cli.cr
 
-crystal: 0.31.1
+crystal: 0.32.1
 
 license: MIT

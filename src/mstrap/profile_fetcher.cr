@@ -14,6 +14,12 @@ module MStrap
       end
     end
 
+    class ProfileChecksumMismatchError < ProfileFetchError
+      def initialize(config)
+        super("#{config.name}: Could not fetch profile due to checksum mismatch. The remote contents may have changed. Please verify and update `revision` with latest checksum.")
+      end
+    end
+
     include Utils::Env
     include Utils::Logging
     include Utils::System
@@ -66,8 +72,28 @@ module MStrap
       elsif https_url?
         ensure_profile_dir
         CACertInstaller.install!
-        HTTP::Client.get(url, tls: MStrap.tls_client) do |response|
-          File.write(config.path, response.body_io.gets_to_end, perm: 0o600)
+
+        begin
+          tmp_file = File.tempfile
+
+          HTTP::Client.get(url, tls: MStrap.tls_client) do |response|
+            File.write(tmp_file.path, response.body_io.gets_to_end, perm: 0o600)
+          end
+
+          revision = config.revision
+
+          if !revision || revision_checksum_valid?(tmp_file.path, revision)
+            tmp_file.rewind
+            File.write(config.path, tmp_file.gets_to_end, perm: 0o600)
+
+            if !revision
+              logw "Security warning: You did not specify a `revision` with the checksum for remote profile '#{config.name}'. This can be unsafe if you do not trust the source."
+            end
+          else
+            raise ProfileChecksumMismatchError.new(config)
+          end
+        ensure
+          tmp_file.delete if tmp_file
         end
       else
         raise InvalidProfileUrlError.new(
@@ -108,9 +134,7 @@ module MStrap
           `git rev-parse HEAD`.chomp != `git rev-parse #{revision}`.chomp
         end
       elsif https_url? && File.exists?(config.path)
-        algo, hsh = revision.split(":")
-        digester = OpenSSL::Digest.new(algo.upcase)
-        digester.file(config.path).hexdigest != hsh
+        revision_checksum_valid?(config.path, revision)
       else
         false
       end
@@ -119,6 +143,12 @@ module MStrap
     # Returns whether to update the profile
     def should_update?
       force? || outdated_revision?
+    end
+
+    private def revision_checksum_valid?(file_path, revision)
+      algo, hsh = revision.split(":")
+      digester = OpenSSL::Digest.new(algo.upcase)
+      digester.file(file_path).hexdigest != hsh
     end
 
     private def git_clone_profile!(url)

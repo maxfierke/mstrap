@@ -1,29 +1,20 @@
 module MStrap
   module Defs
     class ConfigDef
-      YAML.mapping(
-        user: {
-          type: UserDef,
-          nilable: false,
-          default: UserDef.new
-        },
-        profiles: {
-          type: Array(ProfileConfigDef),
-          nilable: false,
-          default: [] of ProfileConfigDef
-        },
-        version: {
-          type: String,
-          nilable: false,
-          default: "1.0"
-        }
-      )
+      include HCL::Serializable
 
-      @version = "1.0"
+      @[HCL::Attribute]
+      property version = "1.0"
+
+      @[HCL::Block(key: "profile")]
+      property profiles = [] of ::MStrap::Defs::ProfileConfigDef
+
+      @[HCL::Block]
+      property user = ::MStrap::Defs::UserDef.new
 
       def self.from_url(url : String)
         HTTP::Client.get(url, tls: MStrap.tls_client) do |response|
-          self.from_yaml(response.body_io.gets_to_end)
+          self.from_hcl(response.body_io.gets_to_end)
         end
       end
 

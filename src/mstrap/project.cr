@@ -68,14 +68,14 @@ module MStrap
       @name = project_def.name
       @hostname = project_def.hostname || "#{cname}.localhost"
       @path = File.join(MStrap::Paths::SRC_DIR, project_def.path_present? ? project_def.path.not_nil! : cname)
-      @port = project_def.port
+      @port = (port = project_def.port) ? port.to_i32 : nil
       @repo = project_def.repo
-      @run_scripts = project_def.run_scripts
+      @run_scripts = project_def.run_scripts?
       @runtimes = project_def.runtimes
       @upstream = project_def.upstream
-      @websocket = project_def.websocket
+      @websocket = project_def.websocket?
       @web = if project_def.web_present?
-        project_def.web
+        project_def.web?
       else
         project_def.hostname_present? || project_def.port_present? || project_def.upstream_present?
       end

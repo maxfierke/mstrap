@@ -8,6 +8,8 @@ dependencies:
   baked_file_system:
     github: schovi/baked_file_system
     version: 0.9.8
+  hcl:
+    github: maxfierke/hcl.cr
   readline:
     github: crystal-lang/crystal-readline
 

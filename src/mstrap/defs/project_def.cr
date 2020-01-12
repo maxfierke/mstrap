@@ -1,63 +1,47 @@
 module MStrap
   module Defs
     class ProjectDef < Def
-      DEFAULT_RUN_SCRIPTS = true
-      DEFAULT_WEB = false
-      DEFAULT_WEBSOCKET = false
+      @[HCL::Label]
+      property cname : String = ""
 
-      YAML.mapping(
-        name: String,
-        cname: String,
-        hostname: {
-          type: String?,
-          presence: true
-        },
-        path: {
-          type: String?,
-          presence: true
-        },
-        port: {
-          type: Int32?,
-          presence: true
-        },
-        repo: String,
-        run_scripts: {
-          type: Bool,
-          nilable: false,
-          default: DEFAULT_RUN_SCRIPTS,
-        },
-        runtimes: {
-          type: Array(String),
-          nilable: false,
-          default: [] of String,
-          presence: true
-        },
-        upstream: {
-          type: String?,
-          presence: true
-        },
-        websocket: {
-          type: Bool,
-          nilable: false,
-          default: DEFAULT_WEBSOCKET,
-          presence: true
-        },
-        web: {
-          type: Bool,
-          nilable: false,
-          default: DEFAULT_WEB,
-          presence: true
-        }
-      )
+      @[HCL::Attribute]
+      property name : String = ""
+
+      @[HCL::Attribute(presence: true)]
+      property hostname : String? = nil
+
+      @[HCL::Attribute(presence: true)]
+      property path : String? = nil
+
+      @[HCL::Attribute(presence: true)]
+      property port : Int64? = nil
+
+      @[HCL::Attribute]
+      property repo : String = ""
+
+      @[HCL::Attribute]
+      property? run_scripts = true
+
+      @[HCL::Attribute(presence: true)]
+      property runtimes = [] of String
+
+      @[HCL::Attribute(presence: true)]
+      property upstream : String? = nil
+
+      @[HCL::Attribute]
+      property? websocket = false
+
+      @[HCL::Attribute(presence: true)]
+      property? web = false
+
+      getter? hostname_present = false
+      getter? path_present = false
+      getter? port_present = false
+      getter? runtimes_present = false
+      getter? upstream_present = false
+      getter? web_present = false
 
       def initialize
-        @name = ""
-        @cname = ""
-        @repo = ""
-        @run_scripts = DEFAULT_RUN_SCRIPTS
-        @runtimes = [] of String
-        @websocket = DEFAULT_WEBSOCKET
-        @web = DEFAULT_WEB
       end
 
       def merge!(other : self)
@@ -66,11 +50,11 @@ module MStrap
         self.path = other.path if other.path_present?
         self.port = other.port if other.port_present?
         self.repo = other.repo
-        self.run_scripts = other.run_scripts
+        self.run_scripts = other.run_scripts?
         self.runtimes = other.runtimes if other.runtimes_present?
         self.upstream = other.upstream if other.upstream_present?
-        self.websocket = other.websocket
-        self.web = other.web if other.web_present?
+        self.websocket = other.websocket?
+        self.web = other.web? if other.web_present?
       end
     end
   end

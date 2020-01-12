@@ -27,9 +27,9 @@ describe MStrap::Paths do
     end
   end
 
-  describe "CONFIG_YML" do
+  describe "CONFIG_HCL" do
     it "must be relative to the runtime config directory" do
-      expect(MStrap::Paths::CONFIG_YML).must_equal(File.join(MSTRAP_TEST_RC_DIR, "config.yml"))
+      expect(MStrap::Paths::CONFIG_HCL).must_equal(File.join(MSTRAP_TEST_RC_DIR, "config.hcl"))
     end
   end
 

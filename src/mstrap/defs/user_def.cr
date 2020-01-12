@@ -1,11 +1,16 @@
 module MStrap
   module Defs
     class UserDef
-      YAML.mapping(
-        name: String?,
-        email: String?,
-        github: String?
-      )
+      include HCL::Serializable
+
+      @[HCL::Attribute]
+      property name : String? = nil
+
+      @[HCL::Attribute]
+      property email : String? = nil
+
+      @[HCL::Attribute]
+      property github : String? = nil
 
       def initialize
         @name = nil

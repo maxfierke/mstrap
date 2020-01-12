@@ -16,7 +16,7 @@ module MStrap
     include Utils::System
 
     @cli : CLIOptions
-    @config_yaml_def : Defs::ConfigDef
+    @config_hcl_def : Defs::ConfigDef
     @loaded_profile_configs : Array(Defs::ProfileConfigDef)
     @loaded_profiles : Array(Defs::ProfileDef)
     @known_profile_configs : Array(Defs::ProfileConfigDef)
@@ -46,7 +46,7 @@ module MStrap
 
     def initialize(cli : CLIOptions, config : Defs::ConfigDef, github_access_token : String? = nil)
       @cli = cli
-      @config_yaml_def = config
+      @config_hcl_def = config
       @loaded_profile_configs = [] of Defs::ProfileConfigDef
       @loaded_profiles = [] of Defs::ProfileDef
       @known_profile_configs = config.profiles + [DEFAULT_PROFILE_DEF]
@@ -84,10 +84,10 @@ module MStrap
           end
         end
 
-        profile_yaml = File.read(profile_config.path)
+        profile_hcl = File.read(profile_config.path)
 
         loaded_profile_configs << profile_config
-        loaded_profiles << Defs::ProfileDef.from_yaml(profile_yaml)
+        loaded_profiles << Defs::ProfileDef.from_hcl(profile_hcl)
       end
 
       resolve_profile!
@@ -116,8 +116,8 @@ module MStrap
     # found or accessed, or any managed profiles cannot be found or accessed.
     def reload!(force = nil)
       if File.exists?(config_path)
-        config_yaml = File.read(config_path)
-        config = Defs::ConfigDef.from_yaml(config_yaml)
+        config_hcl = File.read(config_path)
+        config = Defs::ConfigDef.from_hcl(config_hcl)
 
         # TODO: This is gross, but the initialization logic can't happen inside
         # another method for types to be correctly inferred (w/o making them nilable)
@@ -130,16 +130,16 @@ module MStrap
 
     # Saves configuration back to disk
     def save!
-      config_yaml = @config_yaml_def.to_yaml
+      config_hcl = @config_hcl_def.to_hcl
       FileUtils.mkdir_p(Paths::RC_DIR, 0o755)
-      File.write(config_path, config_yaml, perm: 0o600)
+      File.write(config_path, config_hcl, perm: 0o600)
     end
 
     private getter :github_access_token
 
     private def config_path
       if cli.config_path.starts_with?("https://")
-        Paths::CONFIG_YML
+        Paths::CONFIG_HCL
       else
         cli.config_path
       end

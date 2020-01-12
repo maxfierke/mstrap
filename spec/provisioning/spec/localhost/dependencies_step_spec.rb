@@ -7,13 +7,16 @@ describe "dependencies step" do
     end
 
     it "is configued for the mstrap user" do
-      config_path = File.expand_path("~/.mstrap/config.yml")
-      config_yaml = File.read(config_path)
-      config = YAML.load(config_yaml)
+      config_path = File.expand_path("~/.mstrap/config.hcl")
+      config_hcl = File.read(config_path)
 
-      expect(`git config --global user.name`.chomp).to eq(config["user"]["name"])
-      expect(`git config --global user.email`.chomp).to eq(config["user"]["email"])
-      expect(`git config --global github.user`.chomp).to eq(config["user"]["github"])
+      git_name = `git config --global user.name`.chomp
+      git_email = `git config --global user.email`.chomp
+      git_github = `git config --global github.user`.chomp
+
+      expect(config_hcl).to match(/name = "#{git_name}"/)
+      expect(config_hcl).to match(/email = "#{git_email}"/)
+      expect(config_hcl).to match(/github = "#{git_github}"/)
     end
   end
 

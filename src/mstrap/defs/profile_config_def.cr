@@ -1,21 +1,14 @@
 module MStrap
   module Defs
     class ProfileConfigDef < Def
-      YAML.mapping(
-        name: {
-          type: String,
-          nilable: false
-        },
-        revision: {
-          type: String,
-          nilable: true,
-          default: nil
-        },
-        url: {
-          type: String,
-          nilable: false
-        }
-      )
+      @[HCL::Label]
+      property name : String
+
+      @[HCL::Attribute]
+      property revision : String? = nil
+
+      @[HCL::Attribute]
+      property url : String
 
       def initialize(@name, @url, @revision = nil)
       end
@@ -32,7 +25,7 @@ module MStrap
       end
 
       def path
-        @path ||= File.join(dir, "profile.yml")
+        @path ||= File.join(dir, "profile.hcl")
       end
     end
 

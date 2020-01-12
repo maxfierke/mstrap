@@ -2,7 +2,7 @@ module MStrap
   class CLIOptions
     @argv : Array(String)
     @force = false
-    @config_path = MStrap::Paths::CONFIG_YML
+    @config_path = MStrap::Paths::CONFIG_HCL
     @skip_project_update = false
 
     getter :argv

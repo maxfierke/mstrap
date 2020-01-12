@@ -1,22 +1,14 @@
 module MStrap
   module Defs
     class RuntimeDef < Def
-      YAML.mapping(
-        default_version: {
-          type: String,
-          nilable: true,
-          default: nil
-        },
-        packages: {
-          type: Array(PkgDef),
-          nilable: false,
-          default: [] of PkgDef
-        }
-      )
+      @[HCL::Label]
+      property name : String
 
-      def initialize
-        @packages = [] of PkgDef
-      end
+      @[HCL::Attribute]
+      property default_version : String? = nil
+
+      @[HCL::Block(key: "package")]
+      property packages = [] of ::MStrap::Defs::PkgDef
 
       def merge!(other : self)
         if other.default_version

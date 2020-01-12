@@ -1,36 +1,24 @@
 module MStrap
   module Defs
     class ProfileDef < Def
-      YAML.mapping(
-        runtimes: {
-          type: Hash(String, RuntimeDef),
-          nilable: false,
-          default: {} of String => RuntimeDef
-        },
-        projects: {
-          type: Array(ProjectDef),
-          nilable: false,
-          default: [] of ProjectDef
-        },
-        version: {
-          type: String,
-          nilable: false,
-          default: "1.0"
-        }
-      )
+      @[HCL::Attribute]
+      property version = "1.0"
+
+      @[HCL::Block(key: "project")]
+      property projects = [] of ::MStrap::Defs::ProjectDef
+
+      @[HCL::Block(key: "runtime")]
+      property runtimes = [] of ::MStrap::Defs::RuntimeDef
 
       def initialize
-        @runtimes = {} of String => RuntimeDef
-        @projects = [] of ProjectDef
-        @version = "1.0"
       end
 
       def merge!(other : self)
-        other.runtimes.each do |key, value|
-          if self.runtimes.has_key?(key)
-            self.runtimes[key].merge!(value)
+        other.runtimes.each do |runtime|
+          if existing_runtime = self.runtimes.find { |rt| rt.name == runtime.name }
+            existing_runtime.merge!(runtime)
           else
-            self.runtimes[key] = value
+            self.runtimes << runtime
           end
         end
 

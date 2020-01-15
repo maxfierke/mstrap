@@ -29,24 +29,24 @@ module MStrap
         logd "+ #{env ? env : ""} #{command} #{args ? args.join(" ") : ""}"
 
         named = {
-          shell: shell,
-          env: env,
-          input: input,
+          shell:  shell,
+          env:    env,
+          input:  input,
           output: output,
-          error: error
+          error:  error,
         }
 
         if debug?
           named = named.merge({
-            input: Process::Redirect::Inherit,
+            input:  Process::Redirect::Inherit,
             output: Process::Redirect::Inherit,
-            error: Process::Redirect::Inherit
+            error:  Process::Redirect::Inherit,
           })
         elsif quiet
           named = named.merge({
-            input: Process::Redirect::Close,
+            input:  Process::Redirect::Close,
             output: Process::Redirect::Close,
-            error: Process::Redirect::Close
+            error:  Process::Redirect::Close,
           })
         end
 
@@ -67,21 +67,21 @@ module MStrap
       def cmd(env : Hash?, command, *args, **kwargs)
         # TODO: I hate this
         command_args = if !args.empty?
-          first_arg = args.first?
-          if first_arg && first_arg.is_a?(Array(String))
-            first_arg
-          else
-            arr_args = args.to_a
+                         first_arg = args.first?
+                         if first_arg && first_arg.is_a?(Array(String))
+                           first_arg
+                         else
+                           arr_args = args.to_a
 
-            if arr_args.is_a?(Array(NoReturn))
-              nil
-            else
-              arr_args.as(Array(String))
-            end
-          end
-        else
-          nil
-        end
+                           if arr_args.is_a?(Array(NoReturn))
+                             nil
+                           else
+                             arr_args.as(Array(String))
+                           end
+                         end
+                       else
+                         nil
+                       end
 
         cmd(env, command, command_args, **kwargs)
       end

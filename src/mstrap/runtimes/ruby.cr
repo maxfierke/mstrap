@@ -37,7 +37,7 @@ module MStrap
           "Gemfile",
           "gems.rb",
           "gems.locked",
-          ".ruby-version"
+          ".ruby-version",
         ].any? do |file|
           File.exists?(file)
         end

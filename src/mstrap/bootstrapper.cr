@@ -45,10 +45,10 @@ module MStrap
 
     private def step
       @step ||= if step_arg = ARGV.shift?
-        Step.all.keys.find { |step| step.to_s == step_arg }
-      else
-        nil
-      end
+                  Step.all.keys.find { |step| step.to_s == step_arg }
+                else
+                  nil
+                end
     end
 
     private def validate_step!(step)

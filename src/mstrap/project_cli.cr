@@ -67,8 +67,7 @@ module MStrap
         opts.on(
           "-r",
           "--repo [REPO]",
-          "Git Repository Name (Default: GITHUB_USERNAME/CNAME)",
-        ) do |repo|
+          "Git Repository Name (Default: GITHUB_USERNAME/CNAME)") do |repo|
           project_def.repo = repo
         end
 

@@ -75,19 +75,19 @@ module MStrap
       @upstream = project_def.upstream
       @websocket = project_def.websocket?
       @web = if project_def.web_present?
-        project_def.web?
-      else
-        project_def.hostname_present? || project_def.port_present? || project_def.upstream_present?
-      end
+               project_def.web?
+             else
+               project_def.hostname_present? || project_def.port_present? || project_def.upstream_present?
+             end
     end
 
     # Returns a usable Git URI for the project
     def git_uri
       @git_uri ||= if repo =~ ABSOLUTE_REPO_URL_REGEX || repo =~ SCP_REPO_REGEX
-        repo
-      else
-        "git@github.com:#{repo}.git"
-      end
+                     repo
+                   else
+                     "git@github.com:#{repo}.git"
+                   end
     end
 
     # Returns the NGINX upstream for the project. Relevant only to web projects.
@@ -120,10 +120,10 @@ module MStrap
       Dir.cd(path) do
         git_checkpoint do
           success = if current_branch != "master"
-            cmd("git checkout master", quiet: true) && cmd("git pull origin master --rebase", quiet: true) && cmd("git checkout -", quiet: true)
-          else
-            cmd "git pull origin master --rebase", quiet: true
-          end
+                      cmd("git checkout master", quiet: true) && cmd("git pull origin master --rebase", quiet: true) && cmd("git checkout -", quiet: true)
+                    else
+                      cmd "git pull origin master --rebase", quiet: true
+                    end
 
           unless success
             logw "Failed to update 'master' branch from remote. There may be a problem that needs to be resolved manually."
@@ -157,12 +157,12 @@ module MStrap
     # `script/bootstrap` or `script/setup` from `mstrap-project`.
     protected def default_bootstrap
       runtime_impls = if runtimes.empty?
-        MStrap::Runtime.all
-      else
-        MStrap::Runtime.all.select do |runtime|
-          runtimes.includes?(runtime.language_name)
-        end
-      end
+                        MStrap::Runtime.all
+                      else
+                        MStrap::Runtime.all.select do |runtime|
+                          runtimes.includes?(runtime.language_name)
+                        end
+                      end
 
       runtime_impls.each do |runtime|
         Dir.cd(path) do

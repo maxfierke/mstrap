@@ -1,6 +1,5 @@
 module MStrap
   class Configuration
-
     # Exception class for configuration load errors
     class ConfigurationLoadError < Exception; end
 

@@ -109,25 +109,25 @@ module MStrap
 
     private def config_def
       @config_def ||= if options.config_path.starts_with?("https://")
-        CACertInstaller.install!
-        Defs::ConfigDef.from_url(options.config_path)
-      elsif File.exists?(options.config_path)
-        config_hcl = File.read(options.config_path)
-        Defs::ConfigDef.from_hcl(config_hcl)
-      else
-        Defs::ConfigDef.new(
-          user: Defs::UserDef.new(
-            name: name.not_nil!,
-            email: email.not_nil!,
-            github: github.not_nil!
-          ),
-        )
-      end.not_nil!
+                        CACertInstaller.install!
+                        Defs::ConfigDef.from_url(options.config_path)
+                      elsif File.exists?(options.config_path)
+                        config_hcl = File.read(options.config_path)
+                        Defs::ConfigDef.from_hcl(config_hcl)
+                      else
+                        Defs::ConfigDef.new(
+                          user: Defs::UserDef.new(
+                            name: name.not_nil!,
+                            email: email.not_nil!,
+                            github: github.not_nil!
+                          ),
+                        )
+                      end.not_nil!
     end
 
     private def name
       @name ||= ENV["MSTRAP_USER_NAME"]? ||
-        ask("What is your name (First and Last)?")
+                ask("What is your name (First and Last)?")
     end
 
     private def email
@@ -136,7 +136,7 @@ module MStrap
 
     private def github
       @github ||= ENV["MSTRAP_USER_GITHUB"]? ||
-        ask("What is your GitHub username?")
+                  ask("What is your GitHub username?")
     end
 
     private def ask(question = "", default = nil)

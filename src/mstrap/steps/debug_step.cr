@@ -1,4 +1,5 @@
 {% skip_file if flag?(:release) %}
+
 module MStrap
   module Steps
     # Runnable as `mstrap debug`, the Debug step prints some useful debugging

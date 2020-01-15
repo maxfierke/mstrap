@@ -32,7 +32,7 @@ module MStrap
       def matches? : Bool
         [
           "requirements.txt",
-          ".python-version"
+          ".python-version",
         ].any? do |file|
           File.exists?(file)
         end

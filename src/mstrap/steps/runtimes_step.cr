@@ -44,10 +44,10 @@ module MStrap
         cfg = runtime_config(runtime)
 
         latest_version = if cfg && cfg.default_version
-          cfg.default_version
-        else
-          runtime.installed_versions.last
-        end
+                           cfg.default_version
+                         else
+                           runtime.installed_versions.last
+                         end
 
         logn "--> Setting default #{runtime.language_name} version to #{latest_version}: "
         log "Setting default #{runtime.language_name} version to #{latest_version}: "

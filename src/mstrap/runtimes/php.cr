@@ -32,7 +32,7 @@ module MStrap
         [
           "composer.json",
           "composer.lock",
-          ".php-version"
+          ".php-version",
         ].any? do |file|
           File.exists?(file)
         end

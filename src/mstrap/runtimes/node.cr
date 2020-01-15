@@ -48,7 +48,7 @@ module MStrap
         [
           "yarn.lock",
           "package.json",
-          ".node-version"
+          ".node-version",
         ].any? do |file|
           File.exists?(file)
         end

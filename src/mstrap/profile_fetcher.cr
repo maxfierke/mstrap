@@ -1,6 +1,5 @@
 module MStrap
   class ProfileFetcher
-
     # Exception class to indicate some failure fetching a profile
     class ProfileFetchError < Exception; end
 
@@ -107,8 +106,8 @@ module MStrap
     # Returns whether the profile's URL is a Git URL
     def git_url?
       @_git_url ||= url.scheme == "git" ||
-        url.scheme == "ssh" ||
-        (!url.scheme || url.scheme == "https") && url.path.ends_with?(".git")
+                    url.scheme == "ssh" ||
+                    (!url.scheme || url.scheme == "https") && url.path.ends_with?(".git")
     end
 
     # Returns whether the profile's URL is an HTTP URL (that is not also a Git URL)

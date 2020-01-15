@@ -4,12 +4,12 @@ module MStrap
       # Returns the path to an installed Docker for Mac application
       def docker_app_path
         @docker_app_path ||= if Dir.exists?("/Applications/Docker.app")
-          "/Applications/Docker.app"
-        elsif Dir.exists?("#{ENV["HOME"]}/Applications/Docker.app")
-          "#{ENV["HOME"]}/Applications/Docker.app"
-        else
-          nil
-        end
+                               "/Applications/Docker.app"
+                             elsif Dir.exists?("#{ENV["HOME"]}/Applications/Docker.app")
+                               "#{ENV["HOME"]}/Applications/Docker.app"
+                             else
+                               nil
+                             end
       end
 
       # Returns a collection of flags for `docker-compose` to use `services.yml`

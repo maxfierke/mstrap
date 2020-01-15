@@ -74,12 +74,12 @@ module MStrap
 
       private def shell_file
         @shell_file ||= if `#{ENV["SHELL"]} -c 'echo $ZSH_VERSION'`.strip != ""
-          ".zshrc"
-        elsif `#{ENV["SHELL"]} -c 'echo $BASH_VERSION'`.strip != ""
-          ".bash_profile"
-        else
-          "wtf"
-        end
+                          ".zshrc"
+                        elsif `#{ENV["SHELL"]} -c 'echo $BASH_VERSION'`.strip != ""
+                          ".bash_profile"
+                        else
+                          "wtf"
+                        end
       end
 
       private def supported_shell?

@@ -28,9 +28,9 @@ module MStrap
       end
 
       private def set_strap_env!
-        ENV["STRAP_GIT_NAME"]     = user.name
-        ENV["STRAP_GIT_EMAIL"]    = user.email
-        ENV["STRAP_GITHUB_USER"]  = user.github
+        ENV["STRAP_GIT_NAME"] = user.name
+        ENV["STRAP_GIT_EMAIL"] = user.email
+        ENV["STRAP_GITHUB_USER"] = user.github
         ENV["STRAP_GITHUB_TOKEN"] = user.github_access_token
       end
 

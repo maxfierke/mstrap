@@ -10,7 +10,7 @@ module MStrap
     # Execute a command using a specific language runtime version
     def asdf_exec(command : String, args : Array(String), runtime_version : String? = nil)
       if runtime_version
-        env = { asdf_version_env_var => runtime_version }
+        env = {asdf_version_env_var => runtime_version}
         cmd env, command, args, quiet: true
       else
         cmd command, args, quiet: true
@@ -37,10 +37,10 @@ module MStrap
     def current_version
       version_path = File.join(Dir.current, ".#{language_name}-version")
       version = if File.exists?(version_path)
-        File.read(version_path).strip
-      else
-        ENV[asdf_version_env_var]?
-      end
+                  File.read(version_path).strip
+                else
+                  ENV[asdf_version_env_var]?
+                end
     end
 
     # Returns whether the ASDF plugin has been installed for a language runtime
@@ -62,11 +62,11 @@ module MStrap
     # Returns a list of the versions of the language runtime installed
     # by ASDF.
     def installed_versions
-      `asdf list #{asdf_plugin_name} 2>&1`.
-        chomp.
-        split("\n").
-        map(&.strip).
-        reject do |version|
+      `asdf list #{asdf_plugin_name} 2>&1`
+        .chomp
+        .split("\n")
+        .map(&.strip)
+        .reject do |version|
           version.blank? || version == "No versions installed"
         end
     end
@@ -122,7 +122,6 @@ module MStrap
         ENV[asdf_version_env_var] = env_version
       end
     end
-
 
     macro finished
       # :nodoc:

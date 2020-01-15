@@ -72,15 +72,15 @@ module MStrap
   # When `MStrap.debug?` is set to `true`, this also logs messages to `STDOUT`.
   def self.logger
     @@logger ||= if debug?
-      FileUtils.mkdir_p(Paths::RC_DIR, 0o755)
-      log_file = File.new(MStrap::Paths::LOG_FILE, "a+")
-      writer = IO::MultiWriter.new(log_file, STDOUT)
-      Logger.new(writer, level: Logger::DEBUG, formatter: log_formatter)
-    else
-      FileUtils.mkdir_p(Paths::RC_DIR, 0o755)
-      file = File.new(MStrap::Paths::LOG_FILE, "a+")
-      Logger.new(file, level: Logger::INFO, formatter: log_formatter)
-    end.not_nil!
+                   FileUtils.mkdir_p(Paths::RC_DIR, 0o755)
+                   log_file = File.new(MStrap::Paths::LOG_FILE, "a+")
+                   writer = IO::MultiWriter.new(log_file, STDOUT)
+                   Logger.new(writer, level: Logger::DEBUG, formatter: log_formatter)
+                 else
+                   FileUtils.mkdir_p(Paths::RC_DIR, 0o755)
+                   file = File.new(MStrap::Paths::LOG_FILE, "a+")
+                   Logger.new(file, level: Logger::INFO, formatter: log_formatter)
+                 end.not_nil!
   end
 
   # Returns a TLS client that uses a local version of the cURL CA bundle.

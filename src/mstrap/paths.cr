@@ -16,7 +16,7 @@ module MStrap
     CA_CERT_BUNDLE = File.join(RC_DIR, "cacert.pem")
 
     # Path to mstrap configuration file
-    CONFIG_YML = File.join(RC_DIR, "config.yml")
+    CONFIG_HCL = File.join(RC_DIR, "config.hcl")
 
     # :nodoc:
     HUB_CONFIG_XML = File.join(XDG_CONFIG_DIR, "hub")

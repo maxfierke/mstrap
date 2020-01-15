@@ -28,7 +28,7 @@ module MStrap
       end
 
       private def runtime_config(runtime)
-        profile.runtimes[runtime.language_name]?
+        profile.runtimes.find { |r| r.name == runtime.language_name }
       end
 
       private def runtime_packages(runtime)

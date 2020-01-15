@@ -29,7 +29,7 @@ module MStrap
           "--port PORT",
           "Port Number\n\te.g. 3000"
         ) do |port|
-          project_def.port = port.to_i
+          project_def.port = port.to_i64
         end
 
         opts.on(

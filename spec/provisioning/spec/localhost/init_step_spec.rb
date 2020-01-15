@@ -10,7 +10,7 @@ describe "init step" do
   end
 
   it "ensures a config file exists w/ expected perms" do
-    config_path = File.join(rc_dir, "config.yml")
+    config_path = File.join(rc_dir, "config.hcl")
     expect(File.exist?(config_path)).to eq(true)
     config_stat = File.stat(config_path)
     expect(config_stat.mode & 07777).to eq(0600)

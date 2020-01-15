@@ -3,7 +3,7 @@ module MStrap
     # Runnable as `mstrap init`, the Init step is responsible for creating
     # the runtime configuration directory (`~/.mstrap`) if it does not exist,
     # fetching or updating `strap.sh`, creating a Brewfile, and saving an initial
-    # configuration file, `config.yml`, that can be modified and extended.
+    # configuration file, `config.hcl`, that can be modified and extended.
     #
     # It can also be run with `--force` to update `strap.sh`, replace the
     # `Brewfile`, or upgrade the mstrap configuration file version.

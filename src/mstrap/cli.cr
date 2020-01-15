@@ -32,7 +32,7 @@ module MStrap
         opts.on(
           "-c",
           "--config-path [CONFIG_PATH]",
-          "Path to configuration file\n#{newline_indent}Default: #{MStrap::Paths::CONFIG_YML}. Can also be an HTTPS URL."
+          "Path to configuration file\n#{newline_indent}Default: #{MStrap::Paths::CONFIG_HCL}. Can also be an HTTPS URL."
         ) do |config_path|
           options.config_path = config_path
         end
@@ -112,8 +112,8 @@ module MStrap
         CACertInstaller.install!
         Defs::ConfigDef.from_url(options.config_path)
       elsif File.exists?(options.config_path)
-        config_yaml = File.read(options.config_path)
-        Defs::ConfigDef.from_yaml(config_yaml)
+        config_hcl = File.read(options.config_path)
+        Defs::ConfigDef.from_hcl(config_hcl)
       else
         Defs::ConfigDef.new(
           user: Defs::UserDef.new(

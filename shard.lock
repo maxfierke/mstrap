@@ -4,9 +4,17 @@ shards:
     github: schovi/baked_file_system
     version: 0.9.8
 
+  hcl:
+    github: maxfierke/hcl.cr
+    commit: d41f355fc6209971f2b642126655a2a0bd1b8348
+
   minitest:
     github: ysbaddaden/minitest.cr
     version: 0.5.0
+
+  pegmatite:
+    github: jemc/crystal-pegmatite
+    commit: c3a6ae2eebce9ba7c08d08eb9cfedeb13f8a3646
 
   readline:
     github: crystal-lang/crystal-readline

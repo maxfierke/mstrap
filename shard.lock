@@ -4,6 +4,10 @@ shards:
     github: schovi/baked_file_system
     version: 0.9.8
 
+  commander:
+    github: mrrooijen/commander
+    version: 0.3.4
+
   hcl:
     github: maxfierke/hcl.cr
     commit: d41f355fc6209971f2b642126655a2a0bd1b8348

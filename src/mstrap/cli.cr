@@ -1,13 +1,13 @@
 module MStrap
   class CLI
     @config_def : Defs::ConfigDef?
+    @cli : Commander::Command
     @options : CLIOptions
     @name : String?
     @email : String?
     @github : String?
-    @github_access_token : String?
 
-    getter :options
+    getter :cli, :options
 
     def self.run!(args)
       new(args).run!
@@ -15,96 +15,113 @@ module MStrap
 
     def initialize(args)
       @options = CLIOptions.new(argv: args.dup)
+      @cli = Commander::Command.new do |cmd|
+        cmd.use = "mstrap"
+        cmd.long = "mstrap is a tool for bootstrapping development machines"
 
-      newline_indent = " " * 37
-
-      OptionParser.new do |opts|
-        opts.banner = "Usage: mstrap [options] <command> -- [<arguments>]"
-
-        opts.on("-d", "--debug", "Run with debug messaging") do |debug|
-          MStrap.debug = true
+        cmd.flags.add do |flag|
+          flag.name = "config_path"
+          flag.short = "-c"
+          flag.long = "--config"
+          flag.default = MStrap::Paths::CONFIG_HCL
+          flag.description = "Path to configuration file. Can also be an HTTPS URL."
+          flag.persistent = true
         end
 
-        opts.on("-f", "--force", "Force overwrite of existing config with reckless abandon") do |force|
-          options.force = true
+        cmd.flags.add do |flag|
+          flag.name = "debug"
+          flag.short = "-d"
+          flag.long = "--debug"
+          flag.default = false
+          flag.description = "Run with debug messaging."
+          flag.persistent = true
         end
 
-        opts.on(
-          "-c",
-          "--config-path [CONFIG_PATH]",
-          "Path to configuration file\n#{newline_indent}Default: #{MStrap::Paths::CONFIG_HCL}. Can also be an HTTPS URL."
-        ) do |config_path|
-          options.config_path = config_path
+        cmd.flags.add do |flag|
+          flag.name = "email"
+          flag.long = "--email"
+          flag.default = ""
+          flag.description = "Email address (Default: config or prompt). Can also be specified by MSTRAP_USER_EMAIL."
         end
 
-        opts.on(
-          "-n",
-          "--name NAME",
-          "Your name (Default: config or prompt)\n#{newline_indent}Can also be specified by MSTRAP_USER_NAME env var."
-        ) do |name|
-          @name = name
+        cmd.flags.add do |flag|
+          flag.name = "force"
+          flag.short = "-f"
+          flag.long = "--force"
+          flag.default = false
+          flag.description = "Force overwrite of existing config with reckless abandon."
+          flag.persistent = true
         end
 
-        opts.on(
-          "-e",
-          "--email EMAIL ADDRESS",
-          "Email address (Default: config or prompt)\n#{newline_indent}Can also be specified by MSTRAP_USER_EMAIL env var."
-        ) do |email|
-          @email = email
+        cmd.flags.add do |flag|
+          flag.name = "github"
+          flag.long = "--github"
+          flag.default = ""
+          flag.description = "GitHub username. (Default: config or prompt). Can also be specified by MSTRAP_USER_GITHUB."
         end
 
-        opts.on(
-          "-g",
-          "--github GITHUB",
-          "GitHub username (Default: config or prompt)\n#{newline_indent}Can also be specified by MSTRAP_USER_GITHUB env var."
-        ) do |github|
-          @github = github
+        cmd.flags.add do |flag|
+          flag.name = "github_access_token"
+          flag.long = "--github-access-token"
+          flag.default = ""
+          flag.description = "GitHub access token. Can also be specified by MSTRAP_GITHUB_ACCESS_TOKEN. Required for automatic fetching of personal dotfiles and Brewfile. Can be omitted. Will pull from `hub` config, if available."
         end
 
-        opts.on(
-          "-a",
-          "--github-access-token [GITHUB_ACCESS_TOKEN]",
-          "GitHub access token\n#{newline_indent}Can also be specified by MSTRAP_GITHUB_ACCESS_TOKEN env var.\n#{newline_indent}Required for automatic fetching of personal dotfiles and Brewfile\n#{newline_indent}Can be omitted. Will pull from `hub` config, if available."
-        ) do |token|
-          @github_access_token = token
+        cmd.flags.add do |flag|
+          flag.name = "name"
+          flag.long = "--name"
+          flag.default = ""
+          flag.description = "Your name. (Default: config or prompt). Can also be specified by MSTRAP_USER_NAME."
         end
 
-        opts.on(
-          "--skip-project-update",
-          "Skip auto-update of projects"
-        ) do |skip_project_update|
-          options.skip_project_update = true
+        cmd.flags.add do |flag|
+          flag.name = "skip_project_update"
+          flag.long = "--skip-project-update"
+          flag.default = false
+          flag.description = "Skip auto-update of projects."
+          flag.persistent = true
         end
 
-        opts.on("-v", "--version", "Show version") do
-          puts "mstrap v#{MStrap::VERSION}"
-          exit
-        end
-
-        opts.on("-h", "--help", "Show this message") do
-          puts "mstrap is a tool for bootstrapping development machines\n\n"
-          puts opts
-          puts "\nCOMMANDS"
-          Step.all.each do |key, value|
-            puts "    #{key}#{" " * (21 - key.to_s.size)}#{value.description}"
+        cmd.commands.add do |version_cmd|
+          version_cmd.use = "version"
+          version_cmd.short = "Prints version number."
+          version_cmd.long = version_cmd.short
+          version_cmd.run do |options, arguments|
+            puts "mstrap v#{MStrap::VERSION}"
+            exit
           end
-
-          puts "\nRunning mstrap without a command will do a full bootstrap."
-
-          exit
         end
-      end.parse(args)
+
+        Step.all.each do |key, step|
+          cmd.commands.add do |cmd|
+            cmd.use = key.to_s
+            cmd.short = step.description
+            cmd.long = step.long_description
+            step.setup_cmd!(cmd)
+
+            cmd.run do |options, arguments|
+              load_cli_options!(options)
+              github_access_token = options.string["github_access_token"]?
+              config = load_configuration!(github_access_token: github_access_token)
+              step.new(
+                config,
+                args: arguments
+              ).bootstrap
+            end
+          end
+        end
+
+        cmd.run do |options, arguments|
+          load_cli_options!(options)
+          github_access_token = options.string["github_access_token"]?
+          config = load_configuration!(github_access_token: github_access_token)
+          MStrap::Bootstrapper.new(config).bootstrap
+        end
+      end
     end
 
     def run!
-      configuration = Configuration.new(
-        cli: options,
-        config: config_def,
-        github_access_token: @github_access_token
-      )
-      configuration.load_profiles!
-
-      MStrap::Bootstrapper.new(configuration).bootstrap
+      Commander.run(cli, options.argv)
     end
 
     private def config_def
@@ -123,6 +140,36 @@ module MStrap
                           ),
                         )
                       end.not_nil!
+    end
+
+    private def load_cli_options!(options)
+      MStrap.debug = options.bool["debug"]
+      self.options.config_path = options.string["config_path"]
+      self.options.force = options.bool["force"]
+      self.options.skip_project_update = options.bool["skip_project_update"]
+
+      if options.string.has_key?("email") && !options.string["email"].empty?
+        @email = options.string["email"]
+      end
+
+      if options.string.has_key?("github") && !options.string["github"].empty?
+        @github = options.string["github"]
+      end
+
+      if options.string.has_key?("name") && !options.string["name"].empty?
+        @name = options.string["name"]
+      end
+    end
+
+    private def load_configuration!(github_access_token : String? = nil)
+      configuration = Configuration.new(
+        cli: options,
+        config: config_def,
+        github_access_token: github_access_token
+      )
+      configuration.load_profiles!
+
+      configuration
     end
 
     private def name

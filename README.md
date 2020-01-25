@@ -33,7 +33,7 @@ Please refer to the [documentation site](https://mstrap.dev) for documentation
 1. `git clone git@github.com:maxfierke/mstrap.git`
 2. `brew install crystal-lang`
 3. `make`
-4. `bin/mstrap` and `bin/mstrap-project` will be created
+4. `bin/mstrap` will be created
 
 ## Contributing
 

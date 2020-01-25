@@ -30,12 +30,8 @@ bin/mstrap: deps libs $(SOURCES)
 	mkdir -p bin
 	$(CRYSTAL_BIN) build -o bin/mstrap src/cli.cr $(CRFLAGS)
 
-bin/mstrap-project: deps libs $(SOURCES)
-	mkdir -p bin
-	$(CRYSTAL_BIN) build -o bin/mstrap-project src/project_cli.cr $(CRFLAGS)
-
 .PHONY: build
-build: bin/mstrap bin/mstrap-project
+build: bin/mstrap
 
 .PHONY: deps
 deps: shard.yml shard.lock
@@ -76,17 +72,17 @@ check-provisioning:
 .PHONY: test
 test: spec check-libraries
 
-release: gon.hcl bin/mstrap bin/mstrap-project
+release: gon.hcl bin/mstrap
 	mkdir -p ./dist
 	gon -log-level=debug ./gon.hcl
 
 .PHONY: install
-install: bin/mstrap bin/mstrap-project
+install: bin/mstrap
 	mkdir -p $(PREFIX)/bin
 	cp ./bin/mstrap* $(PREFIX)/bin
 
 .PHONY: reinstall
-reinstall: bin/mstrap bin/mstrap-project
+reinstall: bin/mstrap
 	cp ./bin/mstrap* $(MSTRAP_BIN) -rf
 
 vendor/libcrypto.a: $(OPENSSL_LIB_PATH)/libcrypto.a

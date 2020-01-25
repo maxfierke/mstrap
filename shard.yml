@@ -23,8 +23,6 @@ development_dependencies:
 targets:
   mstrap:
     main: src/cli.cr
-  mstrap-project:
-    main: src/project_cli.cr
 
 crystal: 0.32.1
 

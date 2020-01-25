@@ -1,13 +1,35 @@
 module MStrap
   class CLI
+    include Utils::Env
+    include Utils::Logging
+
+    # The default step run list. Running `mstrap` with no arguments
+    # will run these steps in order.
+    DEFAULT_STEPS = [
+      :init,
+      :dependencies,
+      :shell,
+      :services,
+      :projects,
+      :runtimes,
+    ]
+
+    PROJECT_RUNTIMES = [
+      :unknown,
+      :javascript,
+      :python,
+      :ruby,
+    ]
+
     @config_def : Defs::ConfigDef?
     @cli : Commander::Command
     @options : CLIOptions
     @name : String?
     @email : String?
     @github : String?
+    @github_access_token : String?
 
-    getter :cli, :options
+    getter :cli, :github_access_token, :options
 
     def self.run!(args)
       new(args).run!
@@ -82,6 +104,62 @@ module MStrap
           flag.persistent = true
         end
 
+        Step.all.each do |key, step|
+          cmd.commands.add do |cmd|
+            cmd.use = key.to_s
+            cmd.short = step.description
+            cmd.long = step.long_description
+            step.setup_cmd!(cmd)
+
+            cmd.run do |options, arguments|
+              validate_step!(key)
+
+              load_cli_options!(options)
+              config = load_configuration!
+
+              run_step!(key, config, args: arguments)
+              success "`mstrap #{key}` has completed successfully!"
+              print_shell_reload_warning if step.requires_shell_restart?
+            end
+          end
+        end
+
+        cmd.commands.add do |project_cmd|
+          project_cmd.use = "project"
+          project_cmd.short = "Provisions a single mstrap project"
+          project_cmd.long = <<-HELP
+          #{project_cmd.short}. When run from within a project's script/bootstrap
+            or script/setup it will run the standard mstrap project bootstrapping
+            conventions.
+          HELP
+
+          project_cmd.run do |options, arguments|
+            load_cli_options!(options)
+            config = load_configuration!
+
+            unless arguments.empty?
+              project_cname = arguments[0]
+              project_def = config
+                .resolved_profile
+                .projects
+                .find { |proj| proj.cname == project_cname }
+            end
+
+            project_def ||= Defs::ProjectDef.new
+            project_def.run_scripts = !ENV["__MSTRAP_EXEC_SCRIPTS"]
+            project_def.cname = options.string["cname"] if options.string.has_key?("cname")
+            project_def.name = options.string["name"] if options.string.has_key?("name")
+            project_def.hostname = options.string["hostname"] if options.string.has_key?("hostname")
+            project_def.path = options.string["path"] if options.string.has_key?("path")
+            project_def.port = options.int["port"].to_i64 if options.string.has_key?("port")
+            project_def.repo = options.string["repo"] if options.string.has_key?("repo")
+            project_def.runtimes = options.string["runtimes"].split(',') if options.string.has_key?("runtimes")
+
+            project = MStrap::Project.for(project_def)
+            project.bootstrap
+          end
+        end
+
         cmd.commands.add do |version_cmd|
           version_cmd.use = "version"
           version_cmd.short = "Prints version number."
@@ -92,30 +170,14 @@ module MStrap
           end
         end
 
-        Step.all.each do |key, step|
-          cmd.commands.add do |cmd|
-            cmd.use = key.to_s
-            cmd.short = step.description
-            cmd.long = step.long_description
-            step.setup_cmd!(cmd)
-
-            cmd.run do |options, arguments|
-              load_cli_options!(options)
-              github_access_token = options.string["github_access_token"]?
-              config = load_configuration!(github_access_token: github_access_token)
-              step.new(
-                config,
-                args: arguments
-              ).bootstrap
-            end
-          end
-        end
-
         cmd.run do |options, arguments|
           load_cli_options!(options)
-          github_access_token = options.string["github_access_token"]?
-          config = load_configuration!(github_access_token: github_access_token)
-          MStrap::Bootstrapper.new(config).bootstrap
+          config = load_configuration!
+
+          logw "Strap in!"
+          DEFAULT_STEPS.each { |s| run_step!(s, config) }
+          success "mstrap has completed successfully!"
+          print_shell_reload_warning
         end
       end
     end
@@ -159,9 +221,11 @@ module MStrap
       if options.string.has_key?("name") && !options.string["name"].empty?
         @name = options.string["name"]
       end
+
+      @github_access_token = options.string["github_access_token"]?
     end
 
-    private def load_configuration!(github_access_token : String? = nil)
+    private def load_configuration!
       configuration = Configuration.new(
         cli: options,
         config: config_def,
@@ -194,6 +258,23 @@ module MStrap
         response
       else
         default
+      end
+    end
+
+    private def print_shell_reload_warning
+      logw "Remember to restart your terminal, as the contents of your environment may have shifted."
+    end
+
+    private def run_step!(step, config, args = [] of String)
+      Step.all[step].new(
+        config,
+        args: args
+      ).bootstrap
+    end
+
+    private def validate_step!(step)
+      if Step.all[step].requires_mstrap? && !mstrapped?
+        logc "You must do a full mstrap run before you can run `mstrap #{step}`"
       end
     end
   end

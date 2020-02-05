@@ -5,12 +5,12 @@ shards:
     version: 0.9.8
 
   commander:
-    github: mrrooijen/commander
-    version: 0.3.4
+    github: maxfierke/commander
+    commit: 40b333ff5bfad70770cc375ee6688d4d3e23ffd0
 
   hcl:
     github: maxfierke/hcl.cr
-    commit: d41f355fc6209971f2b642126655a2a0bd1b8348
+    commit: d49271880c802adaf9e0a3153f24d2578562ec4d
 
   minitest:
     github: ysbaddaden/minitest.cr

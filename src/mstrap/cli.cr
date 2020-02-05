@@ -172,6 +172,7 @@ module MStrap
 
         cmd.run do |options, arguments|
           load_cli_options!(options)
+          load_bootstrap_options!(options)
           config = load_configuration!
 
           logw "Strap in!"
@@ -205,11 +206,13 @@ module MStrap
     end
 
     private def load_cli_options!(options)
-      MStrap.debug = options.bool["debug"]
-      self.options.config_path = options.string["config_path"]
-      self.options.force = options.bool["force"]
-      self.options.skip_project_update = options.bool["skip_project_update"]
+      MStrap.debug = options.bool["debug"] if options.bool.has_key?("debug")
+      self.options.config_path = options.string["config_path"]  if options.bool.has_key?("config_path")
+      self.options.force = options.bool["force"] if options.bool.has_key?("force")
+      self.options.skip_project_update = options.bool["skip_project_update"] if options.bool.has_key?("skip_project_update")
+    end
 
+    private def load_bootstrap_options!(options)
       if options.string.has_key?("email") && !options.string["email"].empty?
         @email = options.string["email"]
       end

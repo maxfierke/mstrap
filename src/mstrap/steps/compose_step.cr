@@ -14,8 +14,24 @@ module MStrap
       include Utils::Logging
       include Utils::System
 
+      REMOVED_FLAGS = [
+        "-c",
+        "-d",
+        "-f",
+        "-h",
+        "--skip-project-update"
+      ]
+
       def self.description
         "Wrapper around `docker-compose` and all loaded profile's services.yml"
+      end
+
+      def self.setup_cmd!(cmd)
+        # HACK: Remove persistent flags that overlap with docker-compose
+        cmd.flags.flags.reject! do |flag|
+          REMOVED_FLAGS.includes?(flag.short) || REMOVED_FLAGS.includes?(flag.long)
+        end
+        cmd.ignore_unmapped_flags = true
       end
 
       def bootstrap
@@ -27,7 +43,10 @@ module MStrap
           logc "No services.yml found. Please create one at #{Paths::SERVICES_YML}, or within a profile."
         end
 
-        Process.exec("docker-compose", file_args + args)
+        compose_args = file_args + args
+
+        logn "# mstrap: executing docker-compose #{compose_args.join(' ')}"
+        Process.exec("docker-compose", compose_args)
       end
     end
   end

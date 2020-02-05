@@ -19,7 +19,7 @@ module MStrap
         "-d",
         "-f",
         "-h",
-        "--skip-project-update"
+        "--skip-project-update",
       ]
 
       def self.description

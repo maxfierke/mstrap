@@ -207,7 +207,7 @@ module MStrap
 
     private def load_cli_options!(options)
       MStrap.debug = options.bool["debug"] if options.bool.has_key?("debug")
-      self.options.config_path = options.string["config_path"]  if options.bool.has_key?("config_path")
+      self.options.config_path = options.string["config_path"] if options.bool.has_key?("config_path")
       self.options.force = options.bool["force"] if options.bool.has_key?("force")
       self.options.skip_project_update = options.bool["skip_project_update"] if options.bool.has_key?("skip_project_update")
     end

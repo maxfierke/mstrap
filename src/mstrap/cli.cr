@@ -125,13 +125,62 @@ module MStrap
         end
 
         cmd.commands.add do |project_cmd|
-          project_cmd.use = "project"
+          project_cmd.use = "project CNAME"
           project_cmd.short = "Provisions a single mstrap project"
           project_cmd.long = <<-HELP
           #{project_cmd.short}. When run from within a project's script/bootstrap
-            or script/setup it will run the standard mstrap project bootstrapping
+            or script/setup, it will run the standard mstrap project bootstrapping
             conventions.
           HELP
+
+          project_cmd.flags.add do |flag|
+            flag.name = "cname"
+            flag.long = "--cname"
+            flag.default = ""
+            flag.description = "Project canonical name, e.g. my_cool_app"
+          end
+
+          project_cmd.flags.add do |flag|
+            flag.name = "hostname"
+            flag.long = "--hostname"
+            flag.default = ""
+            flag.description = "Project hostname. Defaults to CNAME.localhost. e.g. my_cool_app.localhost"
+          end
+
+          project_cmd.flags.add do |flag|
+            flag.name = "name"
+            flag.long = "--name"
+            flag.default = ""
+            flag.description = "Friendly project name, e.g. My Cool App"
+          end
+
+          project_cmd.flags.add do |flag|
+            flag.name = "port"
+            flag.long = "--port"
+            flag.default = 0
+            flag.description = "Port number"
+          end
+
+          project_cmd.flags.add do |flag|
+            flag.name = "path"
+            flag.long = "--path"
+            flag.default = ""
+            flag.description = "Project path, e.g. my-app-repo/backend"
+          end
+
+          project_cmd.flags.add do |flag|
+            flag.name = "repo"
+            flag.long = "--repo"
+            flag.default = ""
+            flag.description = "Git repository URL or GitHub path. Defaults to GITHUB_USERNAME/CNAME"
+          end
+
+          project_cmd.flags.add do |flag|
+            flag.name = "runtimes"
+            flag.long = "--runtimes"
+            flag.default = ""
+            flag.description = "Comma-seperated list of project runtimes. Will be detected if omitted."
+          end
 
           project_cmd.run do |options, arguments|
             load_cli_options!(options)
@@ -151,7 +200,7 @@ module MStrap
             project_def.name = options.string["name"] if options.string.has_key?("name")
             project_def.hostname = options.string["hostname"] if options.string.has_key?("hostname")
             project_def.path = options.string["path"] if options.string.has_key?("path")
-            project_def.port = options.int["port"].to_i64 if options.string.has_key?("port")
+            project_def.port = options.int["port"].to_i64 if options.int.has_key?("port")
             project_def.repo = options.string["repo"] if options.string.has_key?("repo")
             project_def.runtimes = options.string["runtimes"].split(',') if options.string.has_key?("runtimes")
 

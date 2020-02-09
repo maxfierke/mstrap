@@ -5,8 +5,8 @@ shards:
     version: 0.9.8
 
   commander:
-    github: maxfierke/commander
-    commit: 40b333ff5bfad70770cc375ee6688d4d3e23ffd0
+    github: mrrooijen/commander
+    version: 0.3.5
 
   hcl:
     github: maxfierke/hcl.cr

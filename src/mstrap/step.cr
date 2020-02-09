@@ -39,6 +39,10 @@ module MStrap
       raise "Must specify in sub-class"
     end
 
+    def self.long_description
+      description
+    end
+
     # Whether the step requires the mstrap environment to be loaded (`env.sh`)
     def self.requires_mstrap?
       true
@@ -47,6 +51,10 @@ module MStrap
     # Whether the step requires the shell to be restarted after being run
     def self.requires_shell_restart?
       false
+    end
+
+    # Hook that can be implemented to modify CLI command flags or subcommands.
+    def self.setup_cmd!(cmd : Commander::Command)
     end
 
     macro finished

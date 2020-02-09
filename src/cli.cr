@@ -1,3 +1,4 @@
+require "commander"
 require "./mstrap"
 require "./mstrap/cli"
 

@@ -8,6 +8,9 @@ dependencies:
   baked_file_system:
     github: schovi/baked_file_system
     version: 0.9.8
+  commander:
+    github: mrrooijen/commander
+    version: ~> 0.3.5
   hcl:
     github: maxfierke/hcl.cr
   readline:
@@ -20,8 +23,6 @@ development_dependencies:
 targets:
   mstrap:
     main: src/cli.cr
-  mstrap-project:
-    main: src/project_cli.cr
 
 crystal: 0.32.1
 

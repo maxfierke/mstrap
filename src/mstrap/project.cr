@@ -140,9 +140,15 @@ module MStrap
     def bootstrap
       if has_scripts? && run_scripts?
         logd "Found bootstrapping scripts, executing instead of using defaults."
-        Dir.cd(path) do
-          cmd BOOTSTRAP_SCRIPT if File.exists?(BOOTSTRAP_SCRIPT)
-          cmd SETUP_SCRIPT if File.exists?(SETUP_SCRIPT)
+        begin
+          ENV["__MSTRAP_EXEC_SCRIPTS"] = "true"
+
+          Dir.cd(path) do
+            cmd BOOTSTRAP_SCRIPT if File.exists?(BOOTSTRAP_SCRIPT)
+            cmd SETUP_SCRIPT if File.exists?(SETUP_SCRIPT)
+          end
+        ensure
+          ENV.delete("__MSTRAP_EXEC_SCRIPTS")
         end
       else
         logd "Bootstrapping '#{name}' with runtime defaults."
@@ -154,7 +160,7 @@ module MStrap
     # used by the project and run the standard bootstrapping for each runtime.
     # This **does not** run any bootstrapping scripts, and is used mainly for
     # calling into conventional bootstrapping within a project's
-    # `script/bootstrap` or `script/setup` from `mstrap-project`.
+    # `script/bootstrap` or `script/setup` from `mstrap project`.
     protected def default_bootstrap
       runtime_impls = if runtimes.empty?
                         MStrap::Runtime.all

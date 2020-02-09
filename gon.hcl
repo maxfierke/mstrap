@@ -1,4 +1,4 @@
-source = ["./bin/mstrap", "./bin/mstrap-project"]
+source = ["./bin/mstrap"]
 bundle_id = "com.maxfierke.mstrap"
 
 apple_id {

@@ -30,7 +30,6 @@ require "./mstrap/project"
 require "./mstrap/step"
 require "./mstrap/templates/**"
 require "./mstrap/steps/**"
-require "./mstrap/bootstrapper"
 
 # Defines top-level constants and shared utilities
 module MStrap

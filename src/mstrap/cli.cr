@@ -1,13 +1,35 @@
 module MStrap
   class CLI
+    include Utils::Env
+    include Utils::Logging
+
+    # The default step run list. Running `mstrap` with no arguments
+    # will run these steps in order.
+    DEFAULT_STEPS = [
+      :init,
+      :dependencies,
+      :shell,
+      :services,
+      :projects,
+      :runtimes,
+    ]
+
+    PROJECT_RUNTIMES = [
+      :unknown,
+      :javascript,
+      :python,
+      :ruby,
+    ]
+
     @config_def : Defs::ConfigDef?
+    @cli : Commander::Command
     @options : CLIOptions
     @name : String?
     @email : String?
     @github : String?
     @github_access_token : String?
 
-    getter :options
+    getter :cli, :github_access_token, :options
 
     def self.run!(args)
       new(args).run!
@@ -15,96 +37,203 @@ module MStrap
 
     def initialize(args)
       @options = CLIOptions.new(argv: args.dup)
+      @cli = Commander::Command.new do |cmd|
+        cmd.use = "mstrap"
+        cmd.long = "mstrap is a tool for bootstrapping development machines"
 
-      newline_indent = " " * 37
-
-      OptionParser.new do |opts|
-        opts.banner = "Usage: mstrap [options] <command> -- [<arguments>]"
-
-        opts.on("-d", "--debug", "Run with debug messaging") do |debug|
-          MStrap.debug = true
+        cmd.flags.add do |flag|
+          flag.name = "config_path"
+          flag.short = "-c"
+          flag.long = "--config"
+          flag.default = MStrap::Paths::CONFIG_HCL
+          flag.description = "Path to configuration file. Can also be an HTTPS URL."
+          flag.persistent = true
         end
 
-        opts.on("-f", "--force", "Force overwrite of existing config with reckless abandon") do |force|
-          options.force = true
+        cmd.flags.add do |flag|
+          flag.name = "debug"
+          flag.short = "-d"
+          flag.long = "--debug"
+          flag.default = false
+          flag.description = "Run with debug messaging."
+          flag.persistent = true
         end
 
-        opts.on(
-          "-c",
-          "--config-path [CONFIG_PATH]",
-          "Path to configuration file\n#{newline_indent}Default: #{MStrap::Paths::CONFIG_HCL}. Can also be an HTTPS URL."
-        ) do |config_path|
-          options.config_path = config_path
+        cmd.flags.add do |flag|
+          flag.name = "email"
+          flag.long = "--email"
+          flag.default = ""
+          flag.description = "Email address (Default: config or prompt). Can also be specified by MSTRAP_USER_EMAIL."
         end
 
-        opts.on(
-          "-n",
-          "--name NAME",
-          "Your name (Default: config or prompt)\n#{newline_indent}Can also be specified by MSTRAP_USER_NAME env var."
-        ) do |name|
-          @name = name
+        cmd.flags.add do |flag|
+          flag.name = "force"
+          flag.short = "-f"
+          flag.long = "--force"
+          flag.default = false
+          flag.description = "Force overwrite of existing config with reckless abandon."
+          flag.persistent = true
         end
 
-        opts.on(
-          "-e",
-          "--email EMAIL ADDRESS",
-          "Email address (Default: config or prompt)\n#{newline_indent}Can also be specified by MSTRAP_USER_EMAIL env var."
-        ) do |email|
-          @email = email
+        cmd.flags.add do |flag|
+          flag.name = "github"
+          flag.long = "--github"
+          flag.default = ""
+          flag.description = "GitHub username. (Default: config or prompt). Can also be specified by MSTRAP_USER_GITHUB."
         end
 
-        opts.on(
-          "-g",
-          "--github GITHUB",
-          "GitHub username (Default: config or prompt)\n#{newline_indent}Can also be specified by MSTRAP_USER_GITHUB env var."
-        ) do |github|
-          @github = github
+        cmd.flags.add do |flag|
+          flag.name = "github_access_token"
+          flag.long = "--github-access-token"
+          flag.default = ""
+          flag.description = "GitHub access token. Can also be specified by MSTRAP_GITHUB_ACCESS_TOKEN. Required for automatic fetching of personal dotfiles and Brewfile. Can be omitted. Will pull from `hub` config, if available."
         end
 
-        opts.on(
-          "-a",
-          "--github-access-token [GITHUB_ACCESS_TOKEN]",
-          "GitHub access token\n#{newline_indent}Can also be specified by MSTRAP_GITHUB_ACCESS_TOKEN env var.\n#{newline_indent}Required for automatic fetching of personal dotfiles and Brewfile\n#{newline_indent}Can be omitted. Will pull from `hub` config, if available."
-        ) do |token|
-          @github_access_token = token
+        cmd.flags.add do |flag|
+          flag.name = "name"
+          flag.long = "--name"
+          flag.default = ""
+          flag.description = "Your name. (Default: config or prompt). Can also be specified by MSTRAP_USER_NAME."
         end
 
-        opts.on(
-          "--skip-project-update",
-          "Skip auto-update of projects"
-        ) do |skip_project_update|
-          options.skip_project_update = true
+        cmd.flags.add do |flag|
+          flag.name = "skip_project_update"
+          flag.long = "--skip-project-update"
+          flag.default = false
+          flag.description = "Skip auto-update of projects."
+          flag.persistent = true
         end
 
-        opts.on("-v", "--version", "Show version") do
-          puts "mstrap v#{MStrap::VERSION}"
-          exit
+        Step.all.each do |key, step|
+          cmd.commands.add do |cmd|
+            cmd.use = key.to_s
+            cmd.short = step.description
+            cmd.long = step.long_description
+            step.setup_cmd!(cmd)
+
+            cmd.run do |options, arguments|
+              validate_step!(key)
+
+              load_cli_options!(options)
+              config = load_configuration!
+
+              run_step!(key, config, args: arguments)
+              success "`mstrap #{key}` has completed successfully!"
+              print_shell_reload_warning if step.requires_shell_restart?
+            end
+          end
         end
 
-        opts.on("-h", "--help", "Show this message") do
-          puts "mstrap is a tool for bootstrapping development machines\n\n"
-          puts opts
-          puts "\nCOMMANDS"
-          Step.all.each do |key, value|
-            puts "    #{key}#{" " * (21 - key.to_s.size)}#{value.description}"
+        cmd.commands.add do |project_cmd|
+          project_cmd.use = "project CNAME"
+          project_cmd.short = "Provisions a single mstrap project"
+          project_cmd.long = <<-HELP
+          #{project_cmd.short}. When run from within a project's script/bootstrap
+            or script/setup, it will run the standard mstrap project bootstrapping
+            conventions.
+          HELP
+
+          project_cmd.flags.add do |flag|
+            flag.name = "cname"
+            flag.long = "--cname"
+            flag.default = ""
+            flag.description = "Project canonical name, e.g. my_cool_app"
           end
 
-          puts "\nRunning mstrap without a command will do a full bootstrap."
+          project_cmd.flags.add do |flag|
+            flag.name = "hostname"
+            flag.long = "--hostname"
+            flag.default = ""
+            flag.description = "Project hostname. Defaults to CNAME.localhost. e.g. my_cool_app.localhost"
+          end
 
-          exit
+          project_cmd.flags.add do |flag|
+            flag.name = "name"
+            flag.long = "--name"
+            flag.default = ""
+            flag.description = "Friendly project name, e.g. My Cool App"
+          end
+
+          project_cmd.flags.add do |flag|
+            flag.name = "port"
+            flag.long = "--port"
+            flag.default = 0
+            flag.description = "Port number"
+          end
+
+          project_cmd.flags.add do |flag|
+            flag.name = "path"
+            flag.long = "--path"
+            flag.default = ""
+            flag.description = "Project path, e.g. my-app-repo/backend"
+          end
+
+          project_cmd.flags.add do |flag|
+            flag.name = "repo"
+            flag.long = "--repo"
+            flag.default = ""
+            flag.description = "Git repository URL or GitHub path. Defaults to GITHUB_USERNAME/CNAME"
+          end
+
+          project_cmd.flags.add do |flag|
+            flag.name = "runtimes"
+            flag.long = "--runtimes"
+            flag.default = ""
+            flag.description = "Comma-seperated list of project runtimes. Will be detected if omitted."
+          end
+
+          project_cmd.run do |options, arguments|
+            load_cli_options!(options)
+            config = load_configuration!
+
+            unless arguments.empty?
+              project_cname = arguments[0]
+              project_def = config
+                .resolved_profile
+                .projects
+                .find { |proj| proj.cname == project_cname }
+            end
+
+            project_def ||= Defs::ProjectDef.new
+            project_def.run_scripts = !ENV["__MSTRAP_EXEC_SCRIPTS"]
+            project_def.cname = options.string["cname"] if options.string.has_key?("cname")
+            project_def.name = options.string["name"] if options.string.has_key?("name")
+            project_def.hostname = options.string["hostname"] if options.string.has_key?("hostname")
+            project_def.path = options.string["path"] if options.string.has_key?("path")
+            project_def.port = options.int["port"].to_i64 if options.int.has_key?("port")
+            project_def.repo = options.string["repo"] if options.string.has_key?("repo")
+            project_def.runtimes = options.string["runtimes"].split(',') if options.string.has_key?("runtimes")
+
+            project = MStrap::Project.for(project_def)
+            project.bootstrap
+          end
         end
-      end.parse(args)
+
+        cmd.commands.add do |version_cmd|
+          version_cmd.use = "version"
+          version_cmd.short = "Prints version number."
+          version_cmd.long = version_cmd.short
+          version_cmd.run do |options, arguments|
+            puts "mstrap v#{MStrap::VERSION}"
+            exit
+          end
+        end
+
+        cmd.run do |options, arguments|
+          load_cli_options!(options)
+          load_bootstrap_options!(options)
+          config = load_configuration!
+
+          logw "Strap in!"
+          DEFAULT_STEPS.each { |s| run_step!(s, config) }
+          success "mstrap has completed successfully!"
+          print_shell_reload_warning
+        end
+      end
     end
 
     def run!
-      configuration = Configuration.new(
-        cli: options,
-        config: config_def,
-        github_access_token: @github_access_token
-      )
-      configuration.load_profiles!
-
-      MStrap::Bootstrapper.new(configuration).bootstrap
+      Commander.run(cli, options.argv)
     end
 
     private def config_def
@@ -123,6 +252,40 @@ module MStrap
                           ),
                         )
                       end.not_nil!
+    end
+
+    private def load_cli_options!(options)
+      MStrap.debug = options.bool["debug"] if options.bool.has_key?("debug")
+      self.options.config_path = options.string["config_path"] if options.string.has_key?("config_path")
+      self.options.force = options.bool["force"] if options.bool.has_key?("force")
+      self.options.skip_project_update = options.bool["skip_project_update"] if options.bool.has_key?("skip_project_update")
+    end
+
+    private def load_bootstrap_options!(options)
+      if options.string.has_key?("email") && !options.string["email"].empty?
+        @email = options.string["email"]
+      end
+
+      if options.string.has_key?("github") && !options.string["github"].empty?
+        @github = options.string["github"]
+      end
+
+      if options.string.has_key?("name") && !options.string["name"].empty?
+        @name = options.string["name"]
+      end
+
+      @github_access_token = options.string["github_access_token"]?
+    end
+
+    private def load_configuration!
+      configuration = Configuration.new(
+        cli: options,
+        config: config_def,
+        github_access_token: github_access_token
+      )
+      configuration.load_profiles!
+
+      configuration
     end
 
     private def name
@@ -147,6 +310,23 @@ module MStrap
         response
       else
         default
+      end
+    end
+
+    private def print_shell_reload_warning
+      logw "Remember to restart your terminal, as the contents of your environment may have shifted."
+    end
+
+    private def run_step!(step, config, args = [] of String)
+      Step.all[step].new(
+        config,
+        args: args
+      ).bootstrap
+    end
+
+    private def validate_step!(step)
+      if Step.all[step].requires_mstrap? && !mstrapped?
+        logc "You must do a full mstrap run before you can run `mstrap #{step}`"
       end
     end
   end

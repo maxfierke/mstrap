@@ -19,11 +19,12 @@ dependencies:
 development_dependencies:
   minitest:
     github: ysbaddaden/minitest.cr
+    version: ~> 0.5.1
 
 targets:
   mstrap:
     main: src/cli.cr
 
-crystal: 0.32.1
+crystal: 0.34.0
 
 license: MIT

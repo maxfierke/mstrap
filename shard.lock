@@ -10,11 +10,11 @@ shards:
 
   hcl:
     github: maxfierke/hcl.cr
-    commit: d49271880c802adaf9e0a3153f24d2578562ec4d
+    commit: 7b3378dcb89ea41c0149cd2e3fcbddc983bc7c30
 
   minitest:
     github: ysbaddaden/minitest.cr
-    version: 0.5.0
+    version: 0.5.1
 
   pegmatite:
     github: jemc/crystal-pegmatite

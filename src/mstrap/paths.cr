@@ -43,6 +43,10 @@ module MStrap
     STRAP_SH_PATH = File.join(MStrap::Paths::RC_DIR, "vendor", "strap.sh")
 
     # :nodoc:
-    STRAP_SH_URL = "https://raw.githubusercontent.com/MikeMcQuaid/strap/master/bin/strap.sh"
+    {% if flag?(:macos) %}
+      STRAP_SH_URL = "https://raw.githubusercontent.com/MikeMcQuaid/strap/master/bin/strap.sh"
+    {% elsif flag?(:linux) %}
+      STRAP_SH_URL = "https://raw.githubusercontent.com/maxfierke/strap-linux/master/bin/strap.sh"
+    {% end %}
   end
 end

@@ -13,6 +13,7 @@ require "uri"
 require "yaml"
 
 require "./mstrap/paths"
+require "./mstrap/platform/**"
 require "./mstrap/utils/**"
 require "./mstrap/version"
 require "./mstrap/cli_options"

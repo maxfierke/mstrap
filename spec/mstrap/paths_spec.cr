@@ -71,7 +71,17 @@ describe MStrap::Paths do
 
   describe "STRAP_SH_URL" do
     it "must be the raw URL to fetch strap.sh" do
-      expect(MStrap::Paths::STRAP_SH_URL).must_equal("https://raw.githubusercontent.com/MikeMcQuaid/strap/master/bin/strap.sh")
+      {% if flag?(:darwin) %}
+        expect(
+          MStrap::Paths::STRAP_SH_URL
+        ).must_equal("https://raw.githubusercontent.com/MikeMcQuaid/strap/master/bin/strap.sh")
+      {% elsif flag?(:linux) %}
+        expect(
+          MStrap::Paths::STRAP_SH_URL
+        ).must_equal("https://raw.githubusercontent.com/maxfierke/strap-linux/master/bin/strap.sh")
+      {% else %}
+        {{ raise "Unsupported platform" }}
+      {% end %}
     end
   end
 end

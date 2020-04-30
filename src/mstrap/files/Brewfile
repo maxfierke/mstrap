@@ -4,7 +4,6 @@ brew 'autoconf'
 brew 'automake'
 brew 'bash-completion'
 brew 'bison'
-brew 'bison@2.7'
 brew 'coreutils'
 brew 'curl'
 brew 'findutils'
@@ -16,18 +15,20 @@ brew 'gnu-tar'
 brew 'hub'
 brew 'jpeg'
 brew 'jq'
-brew 'libiconv'
+brew 'libiconv' if /darwin/ =~ RUBY_PLATFORM
 brew 'libpng'
-brew 'libxslt'
 brew 'libyaml'
 brew 'openssl'
 brew 'pkg-config'
 brew 'readline'
-brew 'unixodbc'
 brew 'zlib'
 
 # Language runtime managers
 brew 'asdf'
 
 # Resolve *.localhost
-brew "launchdns", restart_service: true
+if /darwin/ =~ RUBY_PLATFORM
+  brew "launchdns", restart_service: true
+else
+  # TODO: dnsmasq or something
+end

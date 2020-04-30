@@ -1,11 +1,13 @@
 module MStrap
   module Utils
     module Docker
+      @docker_app_path : String? = nil
+
       DOCKER_APT_KEY_FINGERPRINT = "9DC8 5822 9FC7 DD38 854A  E2D8 8D81 803C 0EBF CD88"
 
       # Returns the path to an installed Docker for Mac application
       def docker_app_path
-        {% if flag?(:macos) %}
+        {% if flag?(:darwin) %}
           @docker_app_path ||= if Dir.exists?("/Applications/Docker.app")
                                  "/Applications/Docker.app"
                                elsif Dir.exists?("#{ENV["HOME"]}/Applications/Docker.app")
@@ -54,7 +56,7 @@ module MStrap
 
             STDIN.gets
           else
-            {% if flag?(:macos) %}
+            {% if flag?(:darwin) %}
               logc "Please ensure docker is installed through the Brewfile or some other means."
             {% else %}
               logc "Please ensure docker is installed via your package manager or some other means."
@@ -64,7 +66,7 @@ module MStrap
       end
 
       protected def install_docker!
-        {% if flag?(:macos) %}
+        {% if flag?(:darwin) %}
           unless docker_app_path || cmd "brew cask install docker"
             logc "Could not install docker via Homebrew cask"
           end

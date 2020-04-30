@@ -47,10 +47,11 @@ module MStrap
 
       private def strap_sh
         logn "==> Running strap.sh"
-        unless cmd "sh #{MStrap::Paths::STRAP_SH_PATH} #{debug? ? "--debug" : ""}"
+        unless cmd "bash #{MStrap::Paths::STRAP_SH_PATH} #{debug? ? "--debug" : ""}"
           logc "Uhh oh, something went wrong in strap.sh-land. Check above or in #{MStrap::Paths::LOG_FILE}."
         end
         success "Finished running strap.sh"
+        set_brew_env_if_not_set
       end
 
       private def brew_bundle
@@ -73,6 +74,19 @@ module MStrap
         log "--> Reloading profile: "
         config.reload!
         success "OK"
+      end
+
+      private def set_brew_env_if_not_set
+        {% if flag?(:linux) %}
+          # Needed on initial run to continue
+          unless cmd("brew --version", quiet: true)
+            ENV["HOMEBREW_PREFIX"] = MStrap::Paths::HOMEBREW_PREFIX
+            ENV["HOMEBREW_CELLAR"] = "#{MStrap::Paths::HOMEBREW_PREFIX}/Cellar"
+            ENV["HOMEBREW_REPOSITORY"] = "#{MStrap::Paths::HOMEBREW_PREFIX}/Homebrew"
+            path = ENV["PATH"]
+            ENV["PATH"] = "#{MStrap::Paths::HOMEBREW_PREFIX}/bin:#{MStrap::Paths::HOMEBREW_PREFIX}/sbin:#{path}"
+          end
+        {% end %}
       end
     end
   end

@@ -7,13 +7,27 @@ on:
     - '*.md'
 
 jobs:
-  tests:
+  macos-tests:
     runs-on: macOS-latest
 
     steps:
     - uses: actions/checkout@v1
     - name: Install crystal
       run: brew install crystal-lang
+    - name: Install dependencies
+      run: shards install
+    - name: Run tests
+      run: make test
+
+  ubuntu-tests:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Add Crystal repos
+      run: curl -sSL https://dist.crystal-lang.org/apt/setup.sh | sudo bash
+    - name: Install crystal
+      run: sudo apt install -y crystal libyaml-dev libreadline-dev libssl-dev
     - name: Install dependencies
       run: shards install
     - name: Run tests

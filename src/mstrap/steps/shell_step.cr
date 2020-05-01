@@ -73,9 +73,9 @@ module MStrap
       end
 
       private def shell_file
-        @shell_file ||= if `#{ENV["SHELL"]} -c 'echo $ZSH_VERSION'`.strip != ""
+        @shell_file ||= if ENV["SHELL"]? && `#{ENV["SHELL"]} -c 'echo $ZSH_VERSION'`.strip != ""
                           ".zshrc"
-                        elsif `#{ENV["SHELL"]} -c 'echo $BASH_VERSION'`.strip != ""
+                        elsif ENV["SHELL"]? && `#{ENV["SHELL"]} -c 'echo $BASH_VERSION'`.strip != ""
                           ".bash_profile"
                         else
                           "wtf"

@@ -1,10 +1,17 @@
+MAKEFLAGS += --warn-undefined-variables
+SHELL := bash
+.SHELLFLAGS := -eu -o pipefail -c
+.DEFAULT_GOAL := all
+.DELETE_ON_ERROR:
+.SUFFIXES:
+
 CRYSTAL_BIN       ?= $(shell which crystal)
 SHARDS_BIN        ?= $(shell which shards)
 MSTRAP_BIN        ?= $(shell which mstrap)
 LIBEVENT_LIB_PATH ?= $(shell pkg-config --libs-only-L libevent | cut -c 3-)
 LIBPCRE_LIB_PATH  ?= $(shell pkg-config --libs-only-L libpcre | cut -c 3-)
 LIBYAML_LIB_PATH  ?= $(shell pkg-config --libs-only-L yaml-0.1 | cut -c 3-)
-OPENSSL_LIB_PATH  ?= $(shell brew --prefix openssl@1.1)/lib
+
 PREFIX            ?= /usr/local
 RELEASE           ?=
 STATIC            ?=
@@ -14,7 +21,14 @@ UNAME_S           := $(shell uname -s)
 
 ifeq ($(UNAME_S),Darwin)
   export MACOSX_DEPLOYMENT_TARGET=10.12
+  OPENSSL_LIB_PATH ?= $(shell brew --prefix openssl@1.1)/lib
   export PKG_CONFIG_PATH=$(OPENSSL_LIB_PATH)/pkgconfig
+
+  .PHONY: libs
+  libs: vendor/libcrypto.a vendor/libssl.a vendor/libevent.a vendor/libpcre.a vendor/libyaml.a
+else
+  .PHONY: libs
+  libs:
 endif
 
 override LDFLAGS += -L$(STATIC_LIBS_DIR)
@@ -22,9 +36,6 @@ override CRFLAGS += $(if $(RELEASE),--release ,--debug --error-trace )$(if $(STA
 
 .PHONY: all
 all: build
-
-.PHONY: libs
-libs: vendor/libcrypto.a vendor/libssl.a vendor/libevent.a vendor/libpcre.a vendor/libyaml.a
 
 bin/mstrap: deps libs $(SOURCES)
 	mkdir -p bin
@@ -39,6 +50,9 @@ deps: shard.yml shard.lock
 
 docs: $(SOURCES)
 	$(CRYSTAL_BIN) docs
+
+format:
+	$(CRYSTAL_BIN) tool format
 
 .PHONY: clean
 clean:
@@ -55,7 +69,7 @@ spec: libs deps $(SOURCES)
 
 .PHONY: check-libraries
 check-libraries: bin/mstrap
-	@if [ "$$(otool -LX bin/mstrap | awk '{print $$1}')" != "$$(cat expected.libs)" ]; then \
+	@if [ "$$(uname -s)" == "Darwin" ] && [ "$$(otool -LX bin/mstrap | awk '{print $$1}')" != "$$(cat expected.libs.darwin)" ]; then \
 		echo "FAIL: bin/mstrap has non-allowed dynamic libraries"; \
 		exit 1; \
 	else \

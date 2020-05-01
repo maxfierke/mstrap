@@ -14,7 +14,7 @@ on:
   pull_request: []
 
 jobs:
-  provision:
+  macos-provision:
     runs-on: macOS-latest
 
     steps:
@@ -49,5 +49,52 @@ jobs:
         source ~/.mstrap/env.sh && bin/mstrap --debug
 
     - name: Run serverspecs
+      env:
+        BUNDLE_DEPLOYMENT: true
+      run: |
+        source ~/.mstrap/env.sh && make check-provisioning
+
+  ubuntu-provision:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Add Crystal repos
+      run: curl -sSL https://dist.crystal-lang.org/apt/setup.sh | sudo bash
+    - name: Install crystal
+      run: |
+        sudo apt install -y crystal libyaml-dev libreadline-dev libssl-dev \
+          curl \
+          ruby ruby-bundler
+    - name: Install dependencies
+      run: shards install
+    - name: Build mstrap
+      run: make build
+
+    - name: Make Ubuntu like new
+      run: |
+        sudo apt remove --purge build-essential git file
+        sudo apt install curl
+
+    - name: Run initial mstrap process
+      env:
+        SHELL: /bin/bash
+        STRAP_CI: true
+      run: |
+        bin/mstrap --debug \
+        --config ${{ secrets.TEST_CONFIG_URL }} \
+        --github-access-token ${{ secrets.TEST_BOT_ACCESS_TOKEN }}
+
+    - name: Finish mstrap process
+      env:
+        SHELL: /bin/bash
+        STRAP_CI: true
+      run: |
+        source ~/.mstrap/env.sh && bin/mstrap --debug
+
+    - name: Run serverspecs
+      env:
+        SHELL: /bin/bash
+        BUNDLE_DEPLOYMENT: true
       run: |
         source ~/.mstrap/env.sh && make check-provisioning

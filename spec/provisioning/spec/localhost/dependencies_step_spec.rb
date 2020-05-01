@@ -52,7 +52,6 @@ describe "dependencies step" do
       'automake',
       'bash-completion',
       'bison',
-      'bison@2.7',
       'coreutils',
       'curl',
       'findutils',
@@ -64,11 +63,9 @@ describe "dependencies step" do
       'hub',
       'jpeg',
       'jq',
-      'libiconv',
       'libpng',
-      'libxslt',
       'libyaml',
-      'openssl',
+      'openssl@1.1',
       'pkg-config',
       'readline',
       'unixodbc',
@@ -79,6 +76,10 @@ describe "dependencies step" do
       describe package(pkg) do
         it { is_expected.to be_installed.by('homebrew') }
       end
+    end
+
+    describe package('libiconv'), :if => os[:family] == 'darwin' do
+      it { is_expected.to be_installed.by('homebrew') }
     end
   end
 

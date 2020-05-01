@@ -42,7 +42,18 @@ module MStrap
     # :nodoc:
     STRAP_SH_PATH = File.join(MStrap::Paths::RC_DIR, "vendor", "strap.sh")
 
-    # :nodoc:
-    STRAP_SH_URL = "https://raw.githubusercontent.com/MikeMcQuaid/strap/master/bin/strap.sh"
+    {% if flag?(:darwin) %}
+      # :nodoc:
+      STRAP_SH_URL = "https://raw.githubusercontent.com/MikeMcQuaid/strap/master/bin/strap.sh"
+
+      # :nodoc:
+      HOMEBREW_PREFIX = ENV["HOMEBREW_PREFIX"]? || "/usr/local"
+    {% elsif flag?(:linux) %}
+      # :nodoc:
+      STRAP_SH_URL = "https://raw.githubusercontent.com/maxfierke/strap-linux/master/bin/strap.sh"
+
+      # :nodoc:
+      HOMEBREW_PREFIX = ENV["HOMEBREW_PREFIX"]? || "/home/linuxbrew/.linuxbrew"
+    {% end %}
   end
 end

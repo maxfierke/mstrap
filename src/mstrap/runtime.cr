@@ -17,9 +17,21 @@ module MStrap
       end
     end
 
+    def asdf_install_plugin
+      log "--> Adding #{asdf_plugin_name} to asdf for #{language_name} support: "
+      unless cmd("asdf plugin-add #{asdf_plugin_name}", quiet: true)
+        logc "There was an error adding the #{asdf_plugin_name} to asdf. Check #{MStrap::Paths::LOG_FILE} or run again with --debug"
+      end
+      success "OK"
+    end
+
     # Name of the ASDF plugin. Defaults to language_name
     def asdf_plugin_name : String
       language_name
+    end
+
+    # :nodoc:
+    def asdf_pre_version_install
     end
 
     # :nodoc:
@@ -87,16 +99,12 @@ module MStrap
     # Installs asdf plugin for the language runtime and installs any of the
     # language runtime dependencies for the project.
     def setup
-      unless has_asdf_plugin?
-        log "--> Adding #{asdf_plugin_name} to asdf for #{language_name} support: "
-        unless cmd("asdf plugin-add #{asdf_plugin_name}", quiet: true)
-          logc "There was an error adding the #{asdf_plugin_name} to asdf. Check #{MStrap::Paths::LOG_FILE} or run again with --debug"
-        end
-        success "OK"
-      end
+      asdf_install_plugin unless has_asdf_plugin?
 
       with_dir_version(Dir.current) do
         if current_version && current_version != "" && !has_version?(current_version)
+          asdf_pre_version_install
+
           log "--> Installing #{language_name} #{current_version} via asdf-#{asdf_plugin_name}: "
           unless cmd("asdf install #{asdf_plugin_name} #{current_version}", quiet: true)
             logc "There was an error installing the #{language_name} via asdf. Check #{MStrap::Paths::LOG_FILE} or run again with --debug"

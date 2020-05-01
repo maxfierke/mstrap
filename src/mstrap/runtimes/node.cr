@@ -11,9 +11,7 @@ module MStrap
         "node"
       end
 
-      def setup
-        super
-
+      def asdf_pre_version_install
         log "--> Ensure node.js release team keyring is up-to-date: "
         unless cmd "bash ~/.asdf/plugins/nodejs/bin/import-release-team-keyring", quiet: true
           logc "There was an error updating the node.js release team keyring. Check #{MStrap::Paths::LOG_FILE} or run again with --debug"

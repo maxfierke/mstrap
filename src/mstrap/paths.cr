@@ -18,9 +18,6 @@ module MStrap
     # Path to mstrap configuration file
     CONFIG_HCL = File.join(RC_DIR, "config.hcl")
 
-    # :nodoc:
-    HUB_CONFIG_XML = File.join(XDG_CONFIG_DIR, "hub")
-
     # Path to mstrap log file
     LOG_FILE = File.join(RC_DIR, "mstrap.log")
 

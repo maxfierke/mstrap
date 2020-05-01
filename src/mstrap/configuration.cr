@@ -43,15 +43,14 @@ module MStrap
     # Returns the mstrap user
     getter :user
 
-    def initialize(cli : CLIOptions, config : Defs::ConfigDef, github_access_token : String? = nil)
+    def initialize(cli : CLIOptions, config : Defs::ConfigDef)
       @cli = cli
       @config_hcl_def = config
       @loaded_profile_configs = [] of Defs::ProfileConfigDef
       @loaded_profiles = [] of Defs::ProfileDef
       @known_profile_configs = config.profiles + [DEFAULT_PROFILE_DEF]
       @resolved_profile = Defs::ProfileDef.new
-      @github_access_token = github_access_token
-      @user = User.new(user: config.user, github_access_token: github_access_token)
+      @user = User.new(user: config.user)
     end
 
     # Loads all profiles and resolves them into the resolve_profile
@@ -120,7 +119,7 @@ module MStrap
 
         # TODO: This is gross, but the initialization logic can't happen inside
         # another method for types to be correctly inferred (w/o making them nilable)
-        initialize(cli, config, github_access_token)
+        initialize(cli, config)
         load_profiles!(force)
       else
         raise ConfigurationNotFoundError.new(config_path)
@@ -133,8 +132,6 @@ module MStrap
       FileUtils.mkdir_p(Paths::RC_DIR, 0o755)
       File.write(config_path, config_hcl, perm: 0o600)
     end
-
-    private getter :github_access_token
 
     private def config_path
       if cli.config_path.starts_with?("https://")

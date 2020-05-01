@@ -39,8 +39,7 @@ jobs:
         STRAP_CI: true
       run: |
         bin/mstrap --debug \
-        --config ${{ secrets.TEST_CONFIG_URL }} \
-        --github-access-token ${{ secrets.TEST_BOT_ACCESS_TOKEN }}
+        --config ${{ secrets.TEST_CONFIG_URL }}
 
     - name: Finish mstrap process
       env:
@@ -63,7 +62,7 @@ jobs:
       run: curl -sSL https://dist.crystal-lang.org/apt/setup.sh | sudo bash
     - name: Install crystal
       run: |
-        sudo apt install -y crystal libyaml-dev libreadline-dev libssl-dev \
+        sudo apt install -y crystal libreadline-dev libssl-dev \
           curl \
           ruby ruby-bundler
     - name: Install dependencies
@@ -82,8 +81,7 @@ jobs:
         STRAP_CI: true
       run: |
         bin/mstrap --debug \
-        --config ${{ secrets.TEST_CONFIG_URL }} \
-        --github-access-token ${{ secrets.TEST_BOT_ACCESS_TOKEN }}
+        --config ${{ secrets.TEST_CONFIG_URL }}
 
     - name: Finish mstrap process
       env:

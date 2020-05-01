@@ -21,7 +21,6 @@ module MStrap
 
       def bootstrap
         set_strap_env!
-        setup_hub_config
         strap_sh
         load_profile!
         brew_bundle
@@ -31,18 +30,6 @@ module MStrap
         ENV["STRAP_GIT_NAME"] = user.name
         ENV["STRAP_GIT_EMAIL"] = user.email
         ENV["STRAP_GITHUB_USER"] = user.github
-        ENV["STRAP_GITHUB_TOKEN"] = user.github_access_token
-      end
-
-      private def setup_hub_config
-        github_access_token = user.github_access_token
-
-        if github_access_token && !File.exists?(Paths::HUB_CONFIG_XML)
-          Templates::HubYml.new(
-            github: user.github,
-            github_access_token: github_access_token
-          ).write_to_config!
-        end
       end
 
       private def strap_sh

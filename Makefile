@@ -10,7 +10,6 @@ SHARDS_BIN        ?= $(shell which shards)
 MSTRAP_BIN        ?= $(shell which mstrap)
 LIBEVENT_LIB_PATH ?= $(shell pkg-config --libs-only-L libevent | cut -c 3-)
 LIBPCRE_LIB_PATH  ?= $(shell pkg-config --libs-only-L libpcre | cut -c 3-)
-LIBYAML_LIB_PATH  ?= $(shell pkg-config --libs-only-L yaml-0.1 | cut -c 3-)
 
 PREFIX            ?= /usr/local
 RELEASE           ?=
@@ -25,7 +24,7 @@ ifeq ($(UNAME_S),Darwin)
   export PKG_CONFIG_PATH=$(OPENSSL_LIB_PATH)/pkgconfig
 
   .PHONY: libs
-  libs: vendor/libcrypto.a vendor/libssl.a vendor/libevent.a vendor/libpcre.a vendor/libyaml.a
+  libs: vendor/libcrypto.a vendor/libssl.a vendor/libevent.a vendor/libpcre.a
 else
   .PHONY: libs
   libs:
@@ -114,7 +113,3 @@ vendor/libpcre.a: $(LIBPCRE_LIB_PATH)/libpcre.a
 vendor/libssl.a: $(OPENSSL_LIB_PATH)/libssl.a
 	mkdir -p $(OPENSSL_LIB_PATH)
 	cp -f $(OPENSSL_LIB_PATH)/libssl.a $(STATIC_LIBS_DIR)
-
-vendor/libyaml.a: $(LIBYAML_LIB_PATH)/libyaml.a
-	mkdir -p $(STATIC_LIBS_DIR)
-	cp -f $(LIBYAML_LIB_PATH)/libyaml.a $(STATIC_LIBS_DIR)

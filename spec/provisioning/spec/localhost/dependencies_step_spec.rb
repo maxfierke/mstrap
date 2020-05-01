@@ -65,7 +65,7 @@ describe "dependencies step" do
       'jq',
       'libpng',
       'libyaml',
-      'openssl',
+      'openssl@1.1',
       'pkg-config',
       'readline',
       'unixodbc',

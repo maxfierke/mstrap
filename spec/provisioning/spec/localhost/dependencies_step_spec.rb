@@ -20,30 +20,6 @@ describe "dependencies step" do
     end
   end
 
-  describe "hub" do
-    it "is installed" do
-      expect(`hub --version`.chomp).to match(/hub version/)
-    end
-
-    it "is configured for the mstrap user" do
-      config_path = File.expand_path("~/.mstrap/config.hcl")
-      config_hcl = File.read(config_path)
-      config_user_github = config_hcl.match(/github = "(.*)"/)[1]
-
-      hub_path = File.expand_path("~/.config/hub")
-      hub_yaml = File.read(hub_path)
-      hub = YAML.load(hub_yaml)
-
-      user_config = hub["github.com"].detect do |user|
-        user["user"] == config_user_github
-      end
-
-      expect(user_config).not_to be_nil
-      expect(user_config["oauth_token"]).not_to be_nil
-      expect(user_config["protocol"]).to eq("https")
-    end
-  end
-
   describe "default Brewfile packages" do
     PACKAGES = [
       'ack',
@@ -60,11 +36,9 @@ describe "dependencies step" do
       'git',
       'gnu-sed',
       'gnu-tar',
-      'hub',
       'jpeg',
       'jq',
       'libpng',
-      'libyaml',
       'openssl@1.1',
       'pkg-config',
       'readline',

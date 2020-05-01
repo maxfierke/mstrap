@@ -27,9 +27,8 @@ module MStrap
     @name : String?
     @email : String?
     @github : String?
-    @github_access_token : String?
 
-    getter :cli, :github_access_token, :options
+    getter :cli, :options
 
     def self.run!(args)
       new(args).run!
@@ -80,13 +79,6 @@ module MStrap
           flag.long = "--github"
           flag.default = ""
           flag.description = "GitHub username. (Default: config or prompt). Can also be specified by MSTRAP_USER_GITHUB."
-        end
-
-        cmd.flags.add do |flag|
-          flag.name = "github_access_token"
-          flag.long = "--github-access-token"
-          flag.default = ""
-          flag.description = "GitHub access token. Can also be specified by MSTRAP_GITHUB_ACCESS_TOKEN. Required for automatic fetching of personal dotfiles and Brewfile. Can be omitted. Will pull from `hub` config, if available."
         end
 
         cmd.flags.add do |flag|
@@ -273,15 +265,12 @@ module MStrap
       if options.string.has_key?("name") && !options.string["name"].empty?
         @name = options.string["name"]
       end
-
-      @github_access_token = options.string["github_access_token"]?
     end
 
     private def load_configuration!
       configuration = Configuration.new(
         cli: options,
-        config: config_def,
-        github_access_token: github_access_token
+        config: config_def
       )
       configuration.load_profiles!
 

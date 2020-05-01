@@ -33,12 +33,6 @@ describe MStrap::Paths do
     end
   end
 
-  describe "HUB_CONFIG_XML" do
-    it "must be relative to the XDG config directory" do
-      expect(MStrap::Paths::HUB_CONFIG_XML).must_equal(File.join(MSTRAP_TEST_HOME, ".config", "hub"))
-    end
-  end
-
   describe "LOG_FILE" do
     it "must be relative to the runtime config directory" do
       expect(MStrap::Paths::LOG_FILE).must_equal(File.join(MSTRAP_TEST_RC_DIR, "mstrap.log"))

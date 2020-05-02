@@ -34,7 +34,7 @@ require "./mstrap/steps/**"
 
 # Defines top-level constants and shared utilities
 module MStrap
-  Log = ::Log.for(self)
+  Log          = ::Log.for(self)
   LogFormatter = ::Log::Formatter.new do |entry, io|
     if io.tty?
       io << entry.message

@@ -79,31 +79,38 @@ module MStrap
           distro_name = MStrap.linux_distro
           distro_codename = MStrap.linux_distro_codename
 
-          if MStrap.debian_distro?
-            # https://docs.docker.com/engine/install/ubuntu/#installation-methods
-            cmd "sudo apt-get update"
-            cmd "sudo apt-get -y install apt-transport-https ca-certificates curl gnupg-agent software-properties-common"
-            cmd "curl -fsSL https://download.docker.com/linux/#{distro_name}/gpg | sudo apt-key add -"
-            cmd "sudo add-apt-repository \"deb [arch=#{arch}] https://download.docker.com/linux/#{distro_name} #{distro_codename} stable\""
-            cmd "sudo apt-get update"
-            cmd "sudo apt-get -y install docker-ce docker-ce-cli containerd.io"
-          elsif MStrap.fedora?
-            cmd "sudo dnf -y install dnf-plugins-core"
-            cmd "sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo"
-            cmd "sudo dnf install docker-ce docker-ce-cli containerd.io"
-          elsif MStrap.centos?
-            cmd "sudo yum install -y yum-utils"
-            cmd "sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo"
-            cmd "sudo yum install -y docker-ce docker-ce-cli containerd.io"
-          elsif MStrap.rhel?
-            logc <<-REDHAT
-            docker-ce (community edition) is not officially supported on RHEL.
-            You'll need to install it manually via supported channels or use
-            docker-ee (enterprise edition) instead.
-            REDHAT
-          else
-            logw "Cannot determine your distribution, so skipping Docker installation."
-            logw "This will error if Docker is not installed."
+          success = if MStrap.debian_distro?
+                      # https://docs.docker.com/engine/install/ubuntu/#installation-methods
+                      cmd("sudo apt-get update") &&
+                        cmd("sudo apt-get -y install apt-transport-https ca-certificates curl gnupg-agent software-properties-common") &&
+                        cmd("curl -fsSL https://download.docker.com/linux/#{distro_name}/gpg | sudo apt-key add -") &&
+                        cmd("sudo add-apt-repository \"deb [arch=#{arch}] https://download.docker.com/linux/#{distro_name} #{distro_codename} stable\"") &&
+                        cmd("sudo apt-get update") &&
+                        cmd("sudo apt-get -y install docker-ce docker-ce-cli containerd.io")
+                    elsif MStrap.fedora?
+                      # https://docs.docker.com/engine/install/fedora/#installation-methods
+                      cmd("sudo dnf -y install dnf-plugins-core") &&
+                        cmd("sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo") &&
+                        cmd("sudo dnf install docker-ce docker-ce-cli containerd.io")
+                    elsif MStrap.centos?
+                      # https://docs.docker.com/engine/install/centos/#installation-methods
+                      cmd("sudo yum install -y yum-utils") &&
+                        cmd("sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo") &&
+                        cmd("sudo yum install -y docker-ce docker-ce-cli containerd.io")
+                    elsif MStrap.rhel?
+                      logc <<-REDHAT
+                      docker-ce (community edition) is not officially supported on RHEL.
+                      You'll need to install it manually via supported channels or use
+                      docker-ee (enterprise edition) instead.
+                      REDHAT
+                      false
+                    else
+                      logw "Cannot determine your distribution, so skipping Docker installation."
+                      logw "This will error if Docker is not installed."
+                      true
+                    end
+          unless success
+            logc "Could not install Docker successfully."
           end
         {% end %}
       end

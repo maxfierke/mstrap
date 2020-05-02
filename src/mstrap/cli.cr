@@ -214,6 +214,9 @@ module MStrap
         cmd.run do |options, arguments|
           load_cli_options!(options)
           load_bootstrap_options!(options)
+
+          MStrap.initialize_logger!
+
           config = load_configuration!
 
           logw "Strap in!"

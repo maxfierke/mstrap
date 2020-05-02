@@ -5,7 +5,7 @@ require "file_utils"
 require "hcl"
 require "http/client"
 require "json"
-require "logger"
+require "log"
 require "openssl"
 require "option_parser"
 require "readline"
@@ -34,8 +34,17 @@ require "./mstrap/steps/**"
 
 # Defines top-level constants and shared utilities
 module MStrap
-  @@log_formatter : Logger::Formatter? = nil
-  @@logger : Logger? = nil
+  Log = ::Log.for(self)
+  LogFormatter = ::Log::Formatter.new do |entry, io|
+    if io.tty?
+      io << entry.message
+    else
+      label = entry.severity.none? ? "ANY" : entry.severity.to_s
+      io << "[" << entry.timestamp << " PID#" << Process.pid << "] "
+      io << label.rjust(5) << " -- : " << entry.message
+    end
+  end
+
   @@debug = false
 
   # Set debug mode for `mstrap`
@@ -55,32 +64,30 @@ module MStrap
     !!ENV["MSTRAP_FEAT_#{name.upcase}"]?
   end
 
-  # :nodoc:
-  def self.log_formatter
-    @@log_formatter ||= Logger::Formatter.new do |severity, datetime, progname, message, io|
-      if io.tty?
-        io << message
-      else
-        label = severity.unknown? ? "ANY" : severity.to_s
-        io << "[" << datetime << " PID#" << Process.pid << "] "
-        io << label.rjust(5) << " -- : " << message
-      end
-    end.not_nil!
-  end
-
-  # Returns a `Logger` instance that can be used to log to the mstrap log file.
+  # Sets up Log instance that can be used to log to the mstrap log file.
   # When `MStrap.debug?` is set to `true`, this also logs messages to `STDOUT`.
-  def self.logger
-    @@logger ||= if debug?
-                   FileUtils.mkdir_p(Paths::RC_DIR, 0o755)
-                   log_file = File.new(MStrap::Paths::LOG_FILE, "a+")
-                   writer = IO::MultiWriter.new(log_file, STDOUT)
-                   Logger.new(writer, level: Logger::DEBUG, formatter: log_formatter)
-                 else
-                   FileUtils.mkdir_p(Paths::RC_DIR, 0o755)
-                   file = File.new(MStrap::Paths::LOG_FILE, "a+")
-                   Logger.new(file, level: Logger::INFO, formatter: log_formatter)
-                 end.not_nil!
+  def self.initialize_logger! : Nil
+    if debug?
+      FileUtils.mkdir_p(Paths::RC_DIR, 0o755)
+      log_file = File.new(MStrap::Paths::LOG_FILE, "a+")
+      writer = IO::MultiWriter.new(log_file, STDOUT)
+      backend = ::Log::IOBackend.new(writer)
+      backend.formatter = LogFormatter
+
+      ::Log.builder.clear
+      ::Log.builder.bind "*", :debug, backend
+    else
+      FileUtils.mkdir_p(Paths::RC_DIR, 0o755)
+      file = File.new(MStrap::Paths::LOG_FILE, "a+")
+
+      backend = ::Log::IOBackend.new(file)
+      backend.formatter = LogFormatter
+
+      ::Log.builder.clear
+      ::Log.builder.bind "*", :info, backend
+    end
+
+    nil
   end
 
   # Returns a TLS client that uses a local version of the cURL CA bundle.

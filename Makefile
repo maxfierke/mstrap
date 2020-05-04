@@ -23,20 +23,20 @@ ifeq ($(UNAME_S),Darwin)
   export PKG_CONFIG_PATH=$(OPENSSL_LIB_PATH)/pkgconfig
 
   vendor/libcrypto.a: $(OPENSSL_LIB_PATH)/libcrypto.a
-    mkdir -p $(OPENSSL_LIB_PATH)
-    cp -f $(OPENSSL_LIB_PATH)/libcrypto.a $(STATIC_LIBS_DIR)
+		mkdir -p $(OPENSSL_LIB_PATH)
+		cp -f $(OPENSSL_LIB_PATH)/libcrypto.a $(STATIC_LIBS_DIR)
 
   vendor/libevent.a: $(LIBEVENT_LIB_PATH)/libevent.a
-    mkdir -p $(STATIC_LIBS_DIR)
-    cp -f $(LIBEVENT_LIB_PATH)/libevent.a $(STATIC_LIBS_DIR)
+		mkdir -p $(STATIC_LIBS_DIR)
+		cp -f $(LIBEVENT_LIB_PATH)/libevent.a $(STATIC_LIBS_DIR)
 
   vendor/libpcre.a: $(LIBPCRE_LIB_PATH)/libpcre.a
-    mkdir -p $(STATIC_LIBS_DIR)
-    cp -f $(LIBPCRE_LIB_PATH)/libpcre.a $(STATIC_LIBS_DIR)
+		mkdir -p $(STATIC_LIBS_DIR)
+		cp -f $(LIBPCRE_LIB_PATH)/libpcre.a $(STATIC_LIBS_DIR)
 
   vendor/libssl.a: $(OPENSSL_LIB_PATH)/libssl.a
-    mkdir -p $(OPENSSL_LIB_PATH)
-    cp -f $(OPENSSL_LIB_PATH)/libssl.a $(STATIC_LIBS_DIR)
+		mkdir -p $(OPENSSL_LIB_PATH)
+		cp -f $(OPENSSL_LIB_PATH)/libssl.a $(STATIC_LIBS_DIR)
 
   .PHONY: libs
   libs: vendor/libcrypto.a vendor/libssl.a vendor/libevent.a vendor/libpcre.a

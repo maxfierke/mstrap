@@ -30,10 +30,12 @@ Please refer to the [documentation site](https://mstrap.dev) for documentation
 
 ## Development
 
-1. `git clone git@github.com:maxfierke/mstrap.git`
-2  Install dependencies
+1. Install dependencies
   * macOS: `brew install crystal-lang libevent pcre openssl@1.1`
-  * Debian/Ubuntu: `sudo apt install libevent-2.1.7 libevent-dev libpcre3 libpcre3-dev libssl1.1 libssl-dev patchelf`
+  * Debian/Ubuntu:
+    1. [Install Crystal](https://crystal-lang.org/install/)
+    2. `sudo apt install libevent-dev libpcre3-dev libssl-dev patchelf`
+2. `git clone git@github.com:maxfierke/mstrap.git`
 3. `make`
 4. `bin/mstrap` will be created
 

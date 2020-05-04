@@ -8,9 +8,6 @@ SHELL := bash
 CRYSTAL_BIN       ?= $(shell which crystal)
 SHARDS_BIN        ?= $(shell which shards)
 MSTRAP_BIN        ?= $(shell which mstrap)
-LIBEVENT_LIB_PATH ?= $(shell pkg-config --libs-only-L libevent | cut -c 3-)
-LIBPCRE_LIB_PATH  ?= $(shell pkg-config --libs-only-L libpcre | cut -c 3-)
-
 PREFIX            ?= /usr/local
 RELEASE           ?=
 STATIC            ?=
@@ -20,8 +17,26 @@ UNAME_S           := $(shell uname -s)
 
 ifeq ($(UNAME_S),Darwin)
   export MACOSX_DEPLOYMENT_TARGET=10.12
+  LIBEVENT_LIB_PATH ?= $(shell pkg-config --libs-only-L libevent | cut -c 3-)
+  LIBPCRE_LIB_PATH  ?= $(shell pkg-config --libs-only-L libpcre | cut -c 3-)
   OPENSSL_LIB_PATH ?= $(shell brew --prefix openssl@1.1)/lib
   export PKG_CONFIG_PATH=$(OPENSSL_LIB_PATH)/pkgconfig
+
+  vendor/libcrypto.a: $(OPENSSL_LIB_PATH)/libcrypto.a
+    mkdir -p $(OPENSSL_LIB_PATH)
+    cp -f $(OPENSSL_LIB_PATH)/libcrypto.a $(STATIC_LIBS_DIR)
+
+  vendor/libevent.a: $(LIBEVENT_LIB_PATH)/libevent.a
+    mkdir -p $(STATIC_LIBS_DIR)
+    cp -f $(LIBEVENT_LIB_PATH)/libevent.a $(STATIC_LIBS_DIR)
+
+  vendor/libpcre.a: $(LIBPCRE_LIB_PATH)/libpcre.a
+    mkdir -p $(STATIC_LIBS_DIR)
+    cp -f $(LIBPCRE_LIB_PATH)/libpcre.a $(STATIC_LIBS_DIR)
+
+  vendor/libssl.a: $(OPENSSL_LIB_PATH)/libssl.a
+    mkdir -p $(OPENSSL_LIB_PATH)
+    cp -f $(OPENSSL_LIB_PATH)/libssl.a $(STATIC_LIBS_DIR)
 
   .PHONY: libs
   libs: vendor/libcrypto.a vendor/libssl.a vendor/libevent.a vendor/libpcre.a
@@ -39,6 +54,10 @@ all: build
 bin/mstrap: deps libs $(SOURCES)
 	mkdir -p bin
 	$(CRYSTAL_BIN) build -o bin/mstrap src/cli.cr $(CRFLAGS)
+	@if readelf -p1 bin/mstrap | grep -q 'linuxbrew'; then \
+		patchelf --remove-rpath bin/mstrap; \
+		patchelf --set-interpreter /lib64/ld-linux-x86-64.so.2 bin/mstrap; \
+	fi
 
 .PHONY: build
 build: bin/mstrap
@@ -97,19 +116,3 @@ install: bin/mstrap
 .PHONY: reinstall
 reinstall: bin/mstrap
 	cp ./bin/mstrap* $(MSTRAP_BIN) -rf
-
-vendor/libcrypto.a: $(OPENSSL_LIB_PATH)/libcrypto.a
-	mkdir -p $(OPENSSL_LIB_PATH)
-	cp -f $(OPENSSL_LIB_PATH)/libcrypto.a $(STATIC_LIBS_DIR)
-
-vendor/libevent.a: $(LIBEVENT_LIB_PATH)/libevent.a
-	mkdir -p $(STATIC_LIBS_DIR)
-	cp -f $(LIBEVENT_LIB_PATH)/libevent.a $(STATIC_LIBS_DIR)
-
-vendor/libpcre.a: $(LIBPCRE_LIB_PATH)/libpcre.a
-	mkdir -p $(STATIC_LIBS_DIR)
-	cp -f $(LIBPCRE_LIB_PATH)/libpcre.a $(STATIC_LIBS_DIR)
-
-vendor/libssl.a: $(OPENSSL_LIB_PATH)/libssl.a
-	mkdir -p $(OPENSSL_LIB_PATH)
-	cp -f $(OPENSSL_LIB_PATH)/libssl.a $(STATIC_LIBS_DIR)

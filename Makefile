@@ -9,6 +9,7 @@ CRYSTAL_BIN       ?= $(shell which crystal)
 SHARDS_BIN        ?= $(shell which shards)
 MSTRAP_BIN        ?= $(shell which mstrap)
 PREFIX            ?= /usr/local
+LDFLAGS           ?=
 RELEASE           ?=
 STATIC            ?=
 STATIC_LIBS_DIR   := $(CURDIR)/vendor

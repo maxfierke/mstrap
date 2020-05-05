@@ -46,7 +46,7 @@ else
 endif
 
 override LDFLAGS += -L$(STATIC_LIBS_DIR)
-override CRFLAGS += $(if $(RELEASE),--release ,--debug --error-trace )$(if $(STATIC),--static )$(if $(LDFLAGS),--link-flags="$(LDFLAGS)" )
+override CRFLAGS += --progress $(if $(RELEASE),--release ,--debug --error-trace )$(if $(STATIC),--static )$(if $(LDFLAGS),--link-flags="$(LDFLAGS)" )
 
 .PHONY: all
 all: build

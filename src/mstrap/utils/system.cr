@@ -24,8 +24,18 @@ module MStrap
         input = Process::Redirect::Inherit,
         output = Process::Redirect::Inherit,
         error = Process::Redirect::Inherit,
-        quiet = false
+        quiet = false,
+        sudo = false
       )
+        if sudo
+          if args
+            args.unshift(command)
+            command = "sudo"
+          else
+            command = "sudo #{command}"
+          end
+        end
+
         logd "+ #{env ? env : ""} #{command} #{args ? args.join(" ") : ""}"
 
         named = {

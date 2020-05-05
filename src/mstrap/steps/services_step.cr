@@ -38,7 +38,8 @@ module MStrap
       end
 
       private def start_services(file_args)
-        cmd("docker-compose", file_args + ["up", "-d"])
+        logw "#{ENV["USER"]} is not in 'docker' group (or change hasn't taken affect), so invoking docker-compose with sudo" if docker_requires_sudo?
+        cmd("docker-compose", file_args + ["up", "-d"], sudo: docker_requires_sudo?)
       end
     end
   end

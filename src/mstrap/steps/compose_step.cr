@@ -46,7 +46,13 @@ module MStrap
         compose_args = file_args + args
 
         logn "# mstrap: executing docker-compose #{compose_args.join(' ')}"
-        Process.exec("docker-compose", compose_args)
+
+        if docker_requires_sudo?
+          logw "mstrap: #{ENV["USER"]} is not in 'docker' group, so invoking docker-compose with sudo"
+          Process.exec("sudo", ["docker-compose"] + compose_args)
+        else
+          Process.exec("docker-compose", compose_args)
+        end
       end
     end
   end

@@ -2,6 +2,7 @@ module MStrap
   module Utils
     module Docker
       @docker_app_path : String? = nil
+      @docker_requires_sudo : Bool? = nil
 
       # :nodoc:
       DOCKER_APT_KEY_FINGERPRINT = "9DC8 5822 9FC7 DD38 854A  E2D8 8D81 803C 0EBF CD88"
@@ -49,10 +50,20 @@ module MStrap
         file_args
       end
 
+      def docker_requires_sudo?
+        requires_sudo = @docker_requires_sudo
+        return requires_sudo unless requires_sudo.nil?
+        @docker_requires_sudo = {% if flag?(:darwin) %}
+                                  false
+                                {% else %}
+                                  !`groups`.chomp.split(" ").includes?("docker")
+                                {% end %}
+      end
+
       protected def ensure_docker_compose!
         found_docker = false
 
-        while !(found_docker = cmd("docker-compose version", quiet: true))
+        while !(found_docker = cmd("docker-compose version", quiet: true, sudo: docker_requires_sudo?))
           logw "Could not find 'docker-compose'."
 
           if docker_app_path && STDIN.tty?
@@ -78,7 +89,7 @@ module MStrap
             logc "Could not install docker via Homebrew cask"
           end
         {% elsif flag?(:linux) %}
-          if !cmd("docker version", quiet: true)
+          if !cmd("docker version", quiet: true, sudo: docker_requires_sudo?)
             logn "Docker has not been installed. Attempting to install Docker now."
             logn "You may be prompted by sudo"
             arch = `uname -m`.chomp
@@ -87,6 +98,7 @@ module MStrap
 
             success = if MStrap.debian_distro?
                         # https://docs.docker.com/engine/install/ubuntu/#installation-methods
+                        logn "Installing Docker from Official Docker Repos"
                         cmd("sudo apt-get update") &&
                           cmd("sudo apt-get -y install apt-transport-https ca-certificates curl gnupg-agent software-properties-common") &&
                           cmd("curl -fsSL https://download.docker.com/linux/#{distro_name}/gpg | sudo apt-key add -") &&
@@ -95,11 +107,13 @@ module MStrap
                           cmd("sudo apt-get -y install docker-ce docker-ce-cli containerd.io")
                       elsif MStrap.fedora?
                         # https://docs.docker.com/engine/install/fedora/#installation-methods
+                        logn "Installing Docker from Official Docker Repos"
                         cmd("sudo dnf -y install dnf-plugins-core") &&
                           cmd("sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo") &&
                           cmd("sudo dnf install docker-ce docker-ce-cli containerd.io")
                       elsif MStrap.centos?
                         # https://docs.docker.com/engine/install/centos/#installation-methods
+                        logn "Installing Docker from Official Docker Repos"
                         cmd("sudo yum install -y yum-utils") &&
                           cmd("sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo") &&
                           cmd("sudo yum install -y docker-ce docker-ce-cli containerd.io")
@@ -119,13 +133,15 @@ module MStrap
               logc "Could not install Docker successfully."
             end
 
-            # Add user to 'docker' group so we can run without sudo
-            unless cmd("sudo usermod -aG docker #{ENV["USER"]}") && cmd("newgrp docker")
-              logw "Could not add current user to 'docker' group. Continuing, but calls to Docker may fail."
+            logn "Adding user to 'docker' group for sudoless docker: "
+            if cmd("sudo usermod -aG docker #{ENV["USER"]}") && cmd("newgrp docker")
+              logw "Could not add current user to 'docker' group. You will have to do this manually to run docker without sudo."
+            else
+              success "OK. You may need to log-out and back in, or restart for it to take effect."
             end
           end
 
-          if !cmd("docker-compose version", quiet: true)
+          if !cmd("docker-compose version", quiet: true, sudo: docker_requires_sudo?)
             logn "docker-compose has not been installed. Attempting to install docker-compose now."
             logn "You may be prompted by sudo"
             arch = `uname -m`.chomp

@@ -16,6 +16,7 @@ SOURCES           := src/*.cr src/**/*.cr
 UNAME_S           := $(shell uname -s)
 
 ifeq ($(UNAME_S),Darwin)
+  override LDFLAGS += -L$(STATIC_LIBS_DIR)
   export MACOSX_DEPLOYMENT_TARGET=10.12
   LIBEVENT_LIB_PATH ?= $(shell pkg-config --libs-only-L libevent | cut -c 3-)
   LIBPCRE_LIB_PATH  ?= $(shell pkg-config --libs-only-L libpcre | cut -c 3-)
@@ -45,7 +46,6 @@ else
   libs:
 endif
 
-override LDFLAGS += -L$(STATIC_LIBS_DIR)
 override CRFLAGS += --progress $(if $(RELEASE),--release ,--debug --error-trace )$(if $(STATIC),--static )$(if $(LDFLAGS),--link-flags="$(LDFLAGS)" )
 
 .PHONY: all
@@ -83,13 +83,17 @@ clean:
 	rm -f ./bin/mstrap*
 	rm -rf ./dist
 	rm -rf ./docs
-	rm -rf ./vendor/*.a
+	@[ "$$(uname -s)" == "Darwin" ] && rm -rf ./vendor/*.a || true
 
 .PHONY: spec
 spec: libs deps $(SOURCES)
 	$(CRYSTAL_BIN) tool format --check
-	# crystal spec doesn't support link-flags: https://github.com/crystal-lang/crystal/issues/6231
-	LIBRARY_PATH=$(STATIC_LIBS_DIR) $(CRYSTAL_BIN) spec -Dmt_no_expectations
+	@if [ "$$(uname -s)" == "Darwin" ]; then \
+		# crystal spec doesn't support link-flags: https://github.com/crystal-lang/crystal/issues/6231 \
+		LIBRARY_PATH=$(STATIC_LIBS_DIR) $(CRYSTAL_BIN) spec -Dmt_no_expectations; \
+	else \
+		$(CRYSTAL_BIN) spec -Dmt_no_expectations; \
+	fi
 
 .PHONY: check-libraries
 check-libraries: bin/mstrap

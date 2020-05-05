@@ -90,7 +90,6 @@ clean:
 spec: libs deps $(SOURCES)
 	$(CRYSTAL_BIN) tool format --check
 	@if [ "$$(uname -s)" == "Darwin" ]; then \
-		# crystal spec doesn't support link-flags: https://github.com/crystal-lang/crystal/issues/6231 \
 		LIBRARY_PATH=$(STATIC_LIBS_DIR) $(CRYSTAL_BIN) spec -Dmt_no_expectations; \
 	else \
 		$(CRYSTAL_BIN) spec -Dmt_no_expectations; \

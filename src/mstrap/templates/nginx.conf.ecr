@@ -5,8 +5,8 @@ upstream <%= project.cname %> {
 server {
   access_log /dev/stdout;
   error_log /dev/stderr;
-  listen 8080;
-  listen [::]:8080;
+  listen <%= nginx_port %>;
+  listen [::]:<%= nginx_port %>;
   root <%= project.path %>/public;
   server_name <%= project.hostname %> *.<%= project.hostname %>;
 

@@ -11,6 +11,10 @@ module MStrap
 
       ECR.def_to_s "#{__DIR__}/services-internal.yml.ecr"
 
+      def use_host_network?
+        {{ flag?(:linux) }}
+      end
+
       def write_to_config!
         File.write(Paths::SERVICES_INTERNAL_YML, to_s, perm: 0o644)
       end

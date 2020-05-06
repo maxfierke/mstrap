@@ -10,6 +10,14 @@ module MStrap
 
       ECR.def_to_s "#{__DIR__}/nginx.conf.ecr"
 
+      def nginx_port
+        {% if flag?(:linux) %}
+          80
+        {% else %}
+          8080
+        {% end %}
+      end
+
       def write_to_config!
         config_path = File.join(Paths::PROJECT_SITES, "#{project.cname}.conf")
         Dir.mkdir_p(Paths::PROJECT_SITES)

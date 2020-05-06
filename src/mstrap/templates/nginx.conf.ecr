@@ -1,4 +1,4 @@
-upstream <%= project.cname %> {
+upstream <%= upstream_name %> {
   server <%= project.upstream %>;
 }
 
@@ -18,8 +18,8 @@ server {
     internal;
   }
 
-  try_files $uri/index.html $uri @<%= project.cname %>;
-  location @<%= project.cname %> {
+  try_files $uri/index.html $uri @<%= upstream_name %>;
+  location @<%= upstream_name %> {
     <%- if project.websocket? -%>
     proxy_http_version 1.1;
     proxy_set_header Upgrade $http_upgrade;
@@ -30,6 +30,6 @@ server {
     proxy_set_header Host $http_host;
     proxy_read_timeout 300s;
     proxy_redirect off;
-    proxy_pass http://<%= project.cname %>;
+    proxy_pass http://<%= upstream_name %>;
   }
 }

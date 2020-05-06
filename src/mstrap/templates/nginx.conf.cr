@@ -2,6 +2,8 @@ module MStrap
   # :nodoc:
   module Templates
     class NginxConf
+      @upstream_name : String? = nil
+
       getter :project
 
       def initialize(project : Project)
@@ -16,6 +18,10 @@ module MStrap
         {% else %}
           8080
         {% end %}
+      end
+
+      def upstream_name
+        @upstream_name ||= project.cname.gsub(/[^A-Za-z0-9_]/, "_")
       end
 
       def write_to_config!

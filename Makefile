@@ -54,14 +54,14 @@ all: build
 
 bin/mstrap: deps libs $(SOURCES)
 	mkdir -p bin
-	@if [ "$(STATIC)" -eq 1 ] && [ "$(UNAME_S)" == "Linux" ]; then \
+	@if [ ! -z "$(STATIC)" ] && [ $(STATIC) -eq 1 ] && [ "$(UNAME_S)" == "Linux" ]; then \
 		DOCKER_BUILDKIT=1 docker build -t mstrap-static-builder .; \
 		docker run --rm -it -v $(CURDIR):/workspace -w /workspace mstrap-static-builder:latest \
 			crystal build -o bin/mstrap src/cli.cr $(CRFLAGS); \
 	else \
 		$(CRYSTAL_BIN) build -o bin/mstrap src/cli.cr $(CRFLAGS); \
 	fi
-	@if readelf -p1 bin/mstrap | grep -q 'linuxbrew'; then \
+	@if [ "$(UNAME_S)" == "Linux" ] && readelf -p1 bin/mstrap | grep -q 'linuxbrew'; then \
 		patchelf --remove-rpath bin/mstrap; \
 		patchelf --set-interpreter /lib64/ld-linux-x86-64.so.2 bin/mstrap; \
 	fi
@@ -84,12 +84,12 @@ clean:
 	rm -f ./bin/mstrap*
 	rm -rf ./dist
 	rm -rf ./docs
-	@[ "$$(uname -s)" == "Darwin" ] && rm -rf ./vendor/*.a || true
+	@[ "$(UNAME_S)" == "Darwin" ] && rm -rf ./vendor/*.a || true
 
 .PHONY: spec
 spec: libs deps $(SOURCES)
 	$(CRYSTAL_BIN) tool format --check
-	@if [ "$$(uname -s)" == "Darwin" ]; then \
+	@if [ "$(UNAME_S)" == "Darwin" ]; then \
 		LIBRARY_PATH=$(STATIC_LIBS_DIR) $(CRYSTAL_BIN) spec -Dmt_no_expectations; \
 	else \
 		$(CRYSTAL_BIN) spec -Dmt_no_expectations; \
@@ -97,7 +97,7 @@ spec: libs deps $(SOURCES)
 
 .PHONY: check-libraries
 check-libraries: bin/mstrap
-	@if [ "$$(uname -s)" == "Darwin" ] && [ "$$(otool -LX bin/mstrap | awk '{print $$1}')" != "$$(cat expected.libs.darwin)" ]; then \
+	@if [ "$(UNAME_S)" == "Darwin" ] && [ "$$(otool -LX bin/mstrap | awk '{print $$1}')" != "$$(cat expected.libs.darwin)" ]; then \
 		echo "FAIL: bin/mstrap has non-allowed dynamic libraries"; \
 		exit 1; \
 	else \

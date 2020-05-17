@@ -95,6 +95,7 @@ module MStrap
             arch = `uname -m`.chomp
             distro_name = MStrap.linux_distro
             distro_codename = MStrap.linux_distro_codename
+            require_reboot = false
 
             success = if MStrap.debian_distro?
                         # https://docs.docker.com/engine/install/ubuntu/#installation-methods
@@ -108,14 +109,19 @@ module MStrap
                       elsif MStrap.fedora?
                         # https://docs.docker.com/engine/install/fedora/#installation-methods
                         logn "Installing Docker from Official Docker Repos"
-                        cmd("sudo dnf -y install dnf-plugins-core") &&
-                          cmd("sudo dnf config-manager --add-repo https://download.docker.com/linux/fedora/docker-ce.repo") &&
-                          cmd("sudo dnf install docker-ce docker-ce-cli containerd.io")
+                        install_success =
+                          cmd("sudo dnf -y install dnf-plugins-core grubby") &&
+                          cmd("sudo dnf config-manager -y --add-repo https://download.docker.com/linux/fedora/docker-ce.repo") &&
+                          cmd("sudo dnf install -y docker-ce docker-ce-cli containerd.io")
+
+                        logn "Enabling cgroup backwards compatiblity (requires reboot)"
+                        require_reboot = true
+                        install_success && cmd("sudo grubby --update-kernel=ALL --args=\"systemd.unified_cgroup_hierarchy=0\"")
                       elsif MStrap.centos?
                         # https://docs.docker.com/engine/install/centos/#installation-methods
                         logn "Installing Docker from Official Docker Repos"
                         cmd("sudo yum install -y yum-utils") &&
-                          cmd("sudo yum-config-manager --add-repo https://download.docker.com/linux/centos/docker-ce.repo") &&
+                          cmd("sudo yum-config-manager -y --add-repo https://download.docker.com/linux/centos/docker-ce.repo") &&
                           cmd("sudo yum install -y docker-ce docker-ce-cli containerd.io")
                       elsif MStrap.rhel?
                         logc <<-REDHAT
@@ -133,11 +139,20 @@ module MStrap
               logc "Could not install Docker successfully."
             end
 
+            logn "Starting docker and setting docker to start on boot"
+            cmd "sudo systemctl enable docker" && "sudo systemctl start docker"
+
             logn "Adding user to 'docker' group for sudoless docker: "
-            if cmd("sudo usermod -aG docker #{ENV["USER"]}") && cmd("newgrp docker")
+            if !`groups`.includes?("docker") && cmd("sudo usermod -aG docker #{ENV["USER"]}")
               logw "Could not add current user to 'docker' group. You will have to do this manually to run docker without sudo."
             else
               success "OK. You may need to log-out and back in, or restart for it to take effect."
+            end
+
+            if require_reboot
+              logw "Docker install successfully, but unfortunately a reboot is required for Docker to work correctly."
+              logw "You may run this again to continue anyway, but Docker may fail to launch containers."
+              exit
             end
           end
 

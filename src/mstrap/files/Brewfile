@@ -7,7 +7,7 @@ brew 'bison'
 brew 'coreutils'
 brew 'curl'
 brew 'findutils'
-brew 'gcc'
+brew 'gcc' if /darwin/ =~ RUBY_PLATFORM # gcc is really old in linuxbrew
 brew 'gettext'
 brew 'git'
 brew 'gnu-sed'

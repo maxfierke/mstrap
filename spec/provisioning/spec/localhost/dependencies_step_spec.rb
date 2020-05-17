@@ -31,7 +31,6 @@ describe "dependencies step" do
       'coreutils',
       'curl',
       'findutils',
-      'gcc',
       'gettext',
       'git',
       'gnu-sed',

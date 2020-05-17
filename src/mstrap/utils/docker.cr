@@ -111,8 +111,8 @@ module MStrap
                         logn "Installing Docker from Official Docker Repos"
                         install_success =
                           cmd("sudo dnf -y install dnf-plugins-core grubby") &&
-                          cmd("sudo dnf config-manager -y --add-repo https://download.docker.com/linux/fedora/docker-ce.repo") &&
-                          cmd("sudo dnf install -y docker-ce docker-ce-cli containerd.io")
+                            cmd("sudo dnf config-manager -y --add-repo https://download.docker.com/linux/fedora/docker-ce.repo") &&
+                            cmd("sudo dnf install -y docker-ce docker-ce-cli containerd.io")
 
                         logn "Enabling cgroup backwards compatiblity (requires reboot)"
                         require_reboot = true

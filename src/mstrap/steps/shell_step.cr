@@ -31,6 +31,8 @@ module MStrap
       is doing the equivalent of `source ~/.mstrap/env.sh` when the shell is initialized.
       MSG
 
+      @login_shell : String? = nil
+
       def self.bootstrap(options)
         new(options).bootstrap
       end
@@ -53,6 +55,8 @@ module MStrap
         contents = Templates::EnvSh.new.to_s
         File.write(env_sh_path, contents, perm: 0o600)
 
+        exit_if_shell_changed!
+
         unless mstrapped?
           if supported_shell?
             logn "==> Injecting magic shell scripts into your #{shell_file}: "
@@ -73,13 +77,14 @@ module MStrap
       end
 
       private def shell_file
-        @shell_file ||= if ENV["SHELL"]? && `#{ENV["SHELL"]} -c 'echo $ZSH_VERSION'`.strip != ""
-                          ".zshrc"
-                        elsif ENV["SHELL"]? && `#{ENV["SHELL"]} -c 'echo $BASH_VERSION'`.strip != ""
-                          ".bash_profile"
-                        else
-                          "wtf"
-                        end
+        @shell_file ||=
+          if ENV["SHELL"]? && `#{ENV["SHELL"]} -c 'echo $ZSH_VERSION'`.strip != ""
+            ".zshrc"
+          elsif ENV["SHELL"]? && `#{ENV["SHELL"]} -c 'echo $BASH_VERSION'`.strip != ""
+            ".bash_profile"
+          else
+            "wtf"
+          end
       end
 
       private def supported_shell?
@@ -88,6 +93,29 @@ module MStrap
 
       private def env_sh_path
         @env_sh_path ||= File.join(MStrap::Paths::RC_DIR, "env.sh")
+      end
+
+      private def exit_if_shell_changed!
+        if ENV["SHELL"] != login_shell
+          logw "Your currently active shell is not the same as your login shell."
+          logw "You may have changed your default login shell recently and should"
+          logw "restart before continuing with mstrap."
+          exit 1
+        end
+      end
+
+      private def login_shell
+        @login_shell ||= begin
+          {% if flag?(:linux) %}
+            `getent passwd #{ENV["USER"]} | cut -d: -f7`.chomp
+          {% elsif flag?(:darwin) %}
+            user_def = `dscl . -read /Users/#{ENV["USER"]} UserShell`
+            user_def.gsub(/^UserShell: /, "").strip
+          {% else %}
+            # This is wrong, but ensures a no-op on unsupported platforms
+            ENV["SHELL"]
+          {% end %}
+        end
       end
     end
   end

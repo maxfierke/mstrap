@@ -1,7 +1,7 @@
 name: Test Provisioning
 
 # Provisioning tests are expensive, so we should only run them on master merges
-# and version tags (until later determined to be insufficent)
+# (until later determined to be insufficent)
 on:
   push:
     branches:
@@ -9,9 +9,6 @@ on:
     paths-ignore:
     - 'docs/**'
     - '*.md'
-    tags:
-    - 'v*'
-  pull_request: []
 
 jobs:
   macos-provision:

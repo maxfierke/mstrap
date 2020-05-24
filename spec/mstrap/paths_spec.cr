@@ -39,6 +39,12 @@ describe MStrap::Paths do
     end
   end
 
+  describe "PROJECT_CERTS" do
+    it "must be relative to the runtime config directory" do
+      expect(MStrap::Paths::PROJECT_CERTS).must_equal(File.join(MSTRAP_TEST_RC_DIR, "project-certs"))
+    end
+  end
+
   describe "PROJECT_SITES" do
     it "must be relative to the runtime config directory" do
       expect(MStrap::Paths::PROJECT_SITES).must_equal(File.join(MSTRAP_TEST_RC_DIR, "project-sites"))

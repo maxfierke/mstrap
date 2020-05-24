@@ -7,6 +7,7 @@ services:
     image: nginx:stable-alpine
     restart: unless-stopped
     volumes:
+      - <%= project_certs_path %>:/etc/nginx/ssl:ro
       - <%= project_sites_path %>:/etc/nginx/conf.d:ro
       - <%= project_sockets_path %>:<%= project_sockets_path %>
     <% if use_host_network? %>
@@ -17,4 +18,5 @@ services:
     <% else %>
     ports:
       - "80:8080"
+      - "443:8443"
     <% end %>

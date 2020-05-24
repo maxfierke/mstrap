@@ -15,6 +15,7 @@ brew 'jpeg'
 brew 'jq'
 brew 'libiconv' if /darwin/ =~ RUBY_PLATFORM
 brew 'libpng'
+brew 'mkcert'
 brew 'openssl'
 brew 'pkg-config'
 brew 'readline'

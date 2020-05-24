@@ -29,11 +29,14 @@ module MStrap
     # Returns a collection of flags for `docker-compose` to use `services.yml`
     # for the loaded profiles.
     def compose_file_args(config)
-      file_args = ["-p", "mstrap"]
+      file_args = [] of String
+
+      has_files = false
 
       if File.exists?(Paths::SERVICES_INTERNAL_YML)
         file_args << "-f"
         file_args << Paths::SERVICES_INTERNAL_YML
+        has_files = true
       end
 
       config.profile_configs.each do |profile_config|
@@ -42,7 +45,13 @@ module MStrap
         if File.exists?(services_yml_path)
           file_args << "-f"
           file_args << services_yml_path
+          has_files = true
         end
+      end
+
+      if has_files
+        file_args << "-p"
+        file_args << "mstrap"
       end
 
       file_args

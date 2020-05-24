@@ -9,10 +9,6 @@ module MStrap
     # interpretted by the `mstrap` CLI options parser. For example, using
     # `mstrap compose -- --version` to print the docker-compose version.
     class ComposeStep < Step
-      include Utils::Env
-      include Utils::Logging
-      include Utils::System
-
       REMOVED_FLAGS = [
         "-c",
         "-d",

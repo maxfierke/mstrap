@@ -3,9 +3,6 @@ module MStrap
     # Runnable as `mstrap steps`, the Steps step simply prints a list of steps
     # supported by `mstrap`.
     class StepsStep < Step
-      include Utils::Env
-      include Utils::Logging
-
       def self.description
         "Prints available steps"
       end

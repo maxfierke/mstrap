@@ -3,9 +3,6 @@ module MStrap
     # Runnable as `mstrap projects`, the Project step does the work of fetching,
     # updating, and bootstrapping all configured projects.
     class ProjectsStep < Step
-      include Utils::Env
-      include Utils::Logging
-
       @has_web_projects = false
       @projects : Array(Project) | Nil
 

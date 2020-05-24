@@ -8,10 +8,6 @@ module MStrap
     # It can also be run with `--force` to update `strap.sh`, replace the
     # `Brewfile`, or upgrade the mstrap configuration file version.
     class InitStep < Step
-      include Utils::Env
-      include Utils::Logging
-      include Utils::System
-
       def self.description
         "Initializes #{Paths::RC_DIR}"
       end

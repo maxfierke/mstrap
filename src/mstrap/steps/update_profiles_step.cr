@@ -3,10 +3,6 @@ module MStrap
     # Runnable as `mstrap update-profiles`, the Update Profiles step updates
     # installed managed profiles.
     class UpdateProfilesStep < Step
-      include Utils::Env
-      include Utils::Logging
-      include Utils::System
-
       def self.description
         "Update profiles"
       end

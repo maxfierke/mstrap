@@ -3,10 +3,6 @@ module MStrap
     # Runnable as `mstrap dependencies`, the Dependencies step runs [`strap.sh`](https://github.com/MikeMcQuaid/strap/)
     # and installs software from any available `Brewfile`s.
     class DependenciesStep < Step
-      include Utils::Env
-      include Utils::Logging
-      include Utils::System
-
       def self.description
         "Basic machine bootstrapping with strap.sh, hub, and brew bundle."
       end

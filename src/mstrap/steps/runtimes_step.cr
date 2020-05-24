@@ -5,10 +5,6 @@ module MStrap
     # packages specified by any loaded profiles specified for the language
     # runtime.
     class RuntimesStep < Step
-      include Utils::Env
-      include Utils::Logging
-      include Utils::System
-
       def self.description
         "Sets default language runtime versions and installs global runtime packages"
       end

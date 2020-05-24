@@ -6,9 +6,6 @@ module MStrap
     # NOTE: Only `bash` and `zsh` are supported for automatic injection. Other
     # shells, such as `fish` or `tcsh`, will need to be configured manually.
     class ShellStep < Step
-      include Utils::Env
-      include Utils::Logging
-
       # :nodoc:
       SHELL_LINE = <<-BASH
       [ -f $HOME/.mstrap/env.sh ] && source $HOME/.mstrap/env.sh

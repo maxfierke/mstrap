@@ -92,7 +92,6 @@ module MStrap
           if !cmd("docker version", quiet: true, sudo: docker_requires_sudo?)
             logn "Docker has not been installed. Attempting to install Docker now."
             logn "You may be prompted by sudo"
-            arch = `uname -m`.chomp
             distro_name = MStrap.linux_distro
             distro_codename = MStrap.linux_distro_codename
             require_reboot = false
@@ -103,7 +102,7 @@ module MStrap
                         cmd("sudo apt-get update") &&
                           cmd("sudo apt-get -y install apt-transport-https ca-certificates curl gnupg-agent software-properties-common") &&
                           cmd("curl -fsSL https://download.docker.com/linux/#{distro_name}/gpg | sudo apt-key add -") &&
-                          cmd("sudo add-apt-repository \"deb [arch=#{arch}] https://download.docker.com/linux/#{distro_name} #{distro_codename} stable\"") &&
+                          cmd("sudo add-apt-repository \"deb [arch=amd64] https://download.docker.com/linux/#{distro_name} #{distro_codename} stable\"") &&
                           cmd("sudo apt-get update") &&
                           cmd("sudo apt-get -y install docker-ce docker-ce-cli containerd.io")
                       elsif MStrap.fedora?

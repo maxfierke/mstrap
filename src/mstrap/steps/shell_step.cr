@@ -57,7 +57,7 @@ module MStrap
 
         exit_if_shell_changed!
 
-        unless mstrapped?
+        unless mstrapped? || shell_instrumented?
           if supported_shell?
             logn "==> Injecting magic shell scripts into your #{shell_file}: "
             `touch #{shell_file_path} && echo '#{SHELL_LINE}' >> #{shell_file_path}`
@@ -85,6 +85,12 @@ module MStrap
           else
             "wtf"
           end
+      end
+
+      private def shell_instrumented?
+        if File.exists?(shell_file_path)
+          File.read(shell_file_path).includes?(SHELL_LINE)
+        end
       end
 
       private def supported_shell?

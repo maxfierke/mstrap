@@ -1,6 +1,7 @@
 module MStrap
   abstract class Step
     @args : Array(String)
+    @docker : Docker? = nil
     # BUG?: Why aren't these inferred correctly?
     @options : CLIOptions
     @profile : Defs::ProfileDef
@@ -55,6 +56,12 @@ module MStrap
 
     # Hook that can be implemented to modify CLI command flags or subcommands.
     def self.setup_cmd!(cmd : Commander::Command)
+    end
+
+    # Returns a `Docker` object that can be used to interact with and query
+    # Docker.
+    protected def docker
+      @docker ||= Docker.new
     end
 
     macro finished

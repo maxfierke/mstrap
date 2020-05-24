@@ -9,7 +9,6 @@ module MStrap
     # interpretted by the `mstrap` CLI options parser. For example, using
     # `mstrap compose -- --version` to print the docker-compose version.
     class ComposeStep < Step
-      include Utils::Docker
       include Utils::Env
       include Utils::Logging
       include Utils::System
@@ -35,9 +34,9 @@ module MStrap
       end
 
       def bootstrap
-        ensure_docker_compose!
+        docker.ensure_compose!
 
-        file_args = docker_compose_file_args
+        file_args = docker.compose_file_args(config)
 
         if file_args.empty?
           logc "No services.yml found. Please create one at #{Paths::SERVICES_YML}, or within a profile."
@@ -47,7 +46,7 @@ module MStrap
 
         logn "# mstrap: executing docker-compose #{compose_args.join(' ')}"
 
-        if docker_requires_sudo?
+        if docker.requires_sudo?
           logw "mstrap: #{ENV["USER"]} is not in 'docker' group, so invoking docker-compose with sudo"
           Process.exec("sudo", ["docker-compose"] + compose_args)
         else

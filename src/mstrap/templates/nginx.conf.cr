@@ -12,12 +12,25 @@ module MStrap
 
       ECR.def_to_s "#{__DIR__}/nginx.conf.ecr"
 
-      def nginx_port
-        {% if flag?(:linux) %}
-          80
-        {% else %}
-          8080
-        {% end %}
+      def cert_name
+        "#{project.hostname}.pem"
+      end
+
+      def cert_key_name
+        "#{project.hostname}-key.pem"
+      end
+
+      def has_cert?
+        cert_path = File.join(Paths::PROJECT_CERTS, cert_name)
+        File.exists?(cert_path)
+      end
+
+      def nginx_http_port
+        80
+      end
+
+      def nginx_https_port
+        443
       end
 
       def upstream_name
@@ -26,8 +39,6 @@ module MStrap
 
       def write_to_config!
         config_path = File.join(Paths::PROJECT_SITES, "#{project.cname}.conf")
-        Dir.mkdir_p(Paths::PROJECT_SITES)
-        Dir.mkdir_p(Paths::PROJECT_SOCKETS)
         File.write(config_path, to_s, perm: 0o644)
       end
     end

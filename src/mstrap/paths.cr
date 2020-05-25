@@ -24,6 +24,9 @@ module MStrap
     # Path to mstrap profiles directory, where managed profiles are stored.
     PROFILES_DIR = File.join(RC_DIR, "profiles")
 
+    # Path to project certs directory, where NGINX TLS certs are stored.
+    PROJECT_CERTS = File.join(RC_DIR, "project-certs")
+
     # Path to project sites directory, where NGINX configurations are stored.
     PROJECT_SITES = File.join(RC_DIR, "project-sites")
 

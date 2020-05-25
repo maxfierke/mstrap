@@ -2,9 +2,10 @@ module MStrap
   # :nodoc:
   module Templates
     class ServicesInternalYml
-      getter :project_sites_path, :project_sockets_path
+      getter :project_certs_path, :project_sites_path, :project_sockets_path
 
       def initialize
+        @project_certs_path = Paths::PROJECT_CERTS
         @project_sites_path = Paths::PROJECT_SITES
         @project_sockets_path = Paths::PROJECT_SOCKETS
       end

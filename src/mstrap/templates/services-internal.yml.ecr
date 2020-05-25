@@ -7,6 +7,7 @@ services:
     image: nginx:stable-alpine
     restart: unless-stopped
     volumes:
+      - <%= project_certs_path %>:/etc/nginx/ssl:ro
       - <%= project_sites_path %>:/etc/nginx/conf.d:ro
       - <%= project_sockets_path %>:<%= project_sockets_path %>
     <% if use_host_network? %>
@@ -16,5 +17,6 @@ services:
       - "host.docker.internal:127.0.0.1"
     <% else %>
     ports:
-      - "80:8080"
+      - "80:80"
+      - "443:443"
     <% end %>

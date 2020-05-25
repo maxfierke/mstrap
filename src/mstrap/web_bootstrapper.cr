@@ -18,7 +18,7 @@ module MStrap
       Dir.mkdir_p(Paths::PROJECT_SITES)
       Dir.mkdir_p(Paths::PROJECT_SOCKETS)
 
-      if cmd("mkcert -CAROOT")
+      if cmd("command -v mkcert > /dev/null 2>&1")
         Dir.cd(Paths::PROJECT_CERTS) do
           unless cmd("mkcert -install") && cmd("mkcert #{project.hostname} '*.#{project.hostname}.localhost'")
             logc "An error occurred while making a cert for #{project.hostname}"

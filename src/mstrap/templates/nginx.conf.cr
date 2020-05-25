@@ -26,19 +26,11 @@ module MStrap
       end
 
       def nginx_http_port
-        {% if flag?(:linux) %}
-          80
-        {% else %}
-          8080
-        {% end %}
+        80
       end
 
       def nginx_https_port
-        {% if flag?(:linux) %}
-          443
-        {% else %}
-          8443
-        {% end %}
+        443
       end
 
       def upstream_name

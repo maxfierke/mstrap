@@ -20,7 +20,7 @@ module MStrap
 
       if cmd("command -v mkcert > /dev/null 2>&1")
         Dir.cd(Paths::PROJECT_CERTS) do
-          unless cmd("mkcert -install") && cmd("mkcert #{project.hostname} '*.#{project.hostname}.localhost'")
+          unless cmd("mkcert -install") && cmd("mkcert #{project.hostname} '*.#{project.hostname}'")
             logc "An error occurred while making a cert for #{project.hostname}"
           end
         end

@@ -13,11 +13,13 @@ module MStrap
       ECR.def_to_s "#{__DIR__}/nginx.conf.ecr"
 
       def cert_name
-        "#{project.hostname}.pem"
+        # +1 suffix is for wildcard
+        "#{project.hostname}+1.pem"
       end
 
       def cert_key_name
-        "#{project.hostname}-key.pem"
+        # +1 suffix is for wildcard
+        "#{project.hostname}+1-key.pem"
       end
 
       def has_cert?

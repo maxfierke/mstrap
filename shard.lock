@@ -1,26 +1,26 @@
-version: 1.0
+version: 2.0
 shards:
   baked_file_system:
-    github: schovi/baked_file_system
+    git: https://github.com/schovi/baked_file_system.git
     version: 0.9.8
 
   commander:
-    github: mrrooijen/commander
+    git: https://github.com/mrrooijen/commander.git
     version: 0.3.5
 
   hcl:
-    github: maxfierke/hcl.cr
-    commit: 7b3378dcb89ea41c0149cd2e3fcbddc983bc7c30
+    git: https://github.com/maxfierke/hcl.cr.git
+    version: 0.1.0+git.commit.7b3378dcb89ea41c0149cd2e3fcbddc983bc7c30
 
   minitest:
-    github: ysbaddaden/minitest.cr
+    git: https://github.com/ysbaddaden/minitest.cr.git
     version: 0.5.1
 
   pegmatite:
-    github: jemc/crystal-pegmatite
-    commit: c3a6ae2eebce9ba7c08d08eb9cfedeb13f8a3646
+    git: https://github.com/jemc/crystal-pegmatite.git
+    version: 0.1.0+git.commit.c3a6ae2eebce9ba7c08d08eb9cfedeb13f8a3646
 
   readline:
-    github: crystal-lang/crystal-readline
+    git: https://github.com/crystal-lang/crystal-readline.git
     version: 0.1.0
 

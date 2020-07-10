@@ -66,7 +66,7 @@ module MStrap
         if !File.exists?(Paths::BREWFILE) || force?
           logw "No Brewfile found or update requested with --force"
           log "--> Copying default Brewfile to #{Paths::BREWFILE}: "
-          brewfile_contents = FS.get("Brewfile").gets_to_end
+          brewfile_contents = Templates::Brewfile.new.to_s
           File.write(Paths::BREWFILE, brewfile_contents)
           success "OK"
         end

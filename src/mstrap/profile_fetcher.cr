@@ -147,7 +147,7 @@ module MStrap
     private def revision_checksum_valid?(file_path, revision)
       algo, hsh = revision.split(":")
       digester = OpenSSL::Digest.new(algo.upcase)
-      digester.file(file_path).hexdigest != hsh
+      digester.file(file_path).final.hexstring != hsh
     end
 
     private def git_clone_profile!(url)

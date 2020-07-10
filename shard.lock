@@ -1,9 +1,5 @@
 version: 2.0
 shards:
-  baked_file_system:
-    git: https://github.com/schovi/baked_file_system.git
-    version: 0.9.8
-
   commander:
     git: https://github.com/mrrooijen/commander.git
     version: 0.3.5

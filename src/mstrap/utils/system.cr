@@ -65,7 +65,7 @@ module MStrap
         at_exit {
           # Cleanup this process when we exit, if it's still running. (e.g. receiving SIGINT)
           unless !child || child.terminated?
-            child.kill
+            child.terminate
           end
         }
 

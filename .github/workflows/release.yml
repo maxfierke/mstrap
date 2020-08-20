@@ -6,13 +6,9 @@ on:
       - 'v*'
 
 jobs:
-  release_linux_amd64:
+  build_linux_amd64:
     runs-on: ubuntu-latest
     steps:
-    - name: Determine version
-      id: version
-      run: "echo ::set-output name=version::${GITHUB_REF:11}"
-
     - name: Checkout
       uses: actions/checkout@v2
 
@@ -29,35 +25,15 @@ jobs:
       run: |
         make release RELEASE=1 STATIC=1
 
-    - name: Create release
-      id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Upload release bundle artifact
+      uses: actions/upload-artifact@v2
       with:
-        tag_name: ${{ github.ref }}
-        release_name: ${{ github.ref }}
-        draft: false
-        prerelease: false
+        name: mstrap_linux_amd64.zip
+        path: dist/mstrap.zip
 
-    - name: Upload release zip
-      id: upload-release-asset
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: dist/mstrap.zip
-        asset_name: mstrap-${{ steps.version.outputs.version }}_linux_amd64.zip
-        asset_content_type: application/zip
-
-  release_macos_amd64:
+  build_macos_amd64:
     runs-on: macos-latest
     steps:
-    - name: Determine version
-      id: version
-      run: "echo ::set-output name=version::${GITHUB_REF:11}"
-
     - name: Checkout
       uses: actions/checkout@v2
 
@@ -85,6 +61,32 @@ jobs:
       run: |
         make release RELEASE=1 GON_CONFIG=./gon.ci.hcl
 
+    - name: Upload release bundle artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: mstrap_macos_amd64.zip
+        path: dist/mstrap.zip
+
+  release:
+    needs: [build_linux_amd64, build_macos_amd64]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Determine version
+      id: version
+      run: "echo ::set-output name=version::${GITHUB_REF:11}"
+
+    - name: Download mstrap_linux_amd64.zip artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: mstrap_linux_amd64.zip
+        path: dist/
+
+    - name: Download mstrap_macos_amd64.zip artifact
+      uses: actions/download-artifact@v2
+      with:
+        name: mstrap_macos_amd64.zip
+        path: dist/
+
     - name: Create release
       id: create_release
       uses: actions/create-release@v1
@@ -96,13 +98,24 @@ jobs:
         draft: false
         prerelease: false
 
-    - name: Upload release zip
+    - name: Upload release zip for linux amd64
       id: upload-release-asset
       uses: actions/upload-release-asset@v1
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: dist/mstrap.zip
+        asset_path: dist/mstrap_linux_amd64.zip
+        asset_name: mstrap-${{ steps.version.outputs.version }}_linux_amd64.zip
+        asset_content_type: application/zip
+
+    - name: Upload release zip for macos amd64
+      id: upload-release-asset
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: dist/mstrap_macos_amd64.zip
         asset_name: mstrap-${{ steps.version.outputs.version }}_macos_amd64.zip
         asset_content_type: application/zip

@@ -8,6 +8,7 @@ SHELL := bash
 CRYSTAL_BIN       ?= $(shell which crystal)
 SHARDS_BIN        ?= $(shell which shards)
 MSTRAP_BIN        ?= $(shell which mstrap)
+GON_CONFIG        ?= ./gon.hcl
 PREFIX            ?= /usr/local
 LDFLAGS           ?=
 RELEASE           ?=
@@ -116,7 +117,11 @@ test: spec check-libraries
 
 release: gon.hcl bin/mstrap
 	mkdir -p ./dist
-	gon -log-level=debug ./gon.hcl
+	@if [ "$(UNAME_S)" == "Darwin" ]; then \
+		gon -log-level=debug $(GON_CONFIG); \
+	else \
+		zip --junk-paths dist/mstrap.zip bin/mstrap; \
+	fi
 
 .PHONY: install
 install: bin/mstrap

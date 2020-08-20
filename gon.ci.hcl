@@ -2,7 +2,7 @@ source = ["./bin/mstrap"]
 bundle_id = "com.maxfierke.mstrap"
 
 apple_id {
-  password = "@keychain:gon"
+  password = "@env:AC_PASSWORD"
 }
 
 sign {

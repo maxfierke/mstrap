@@ -4,7 +4,9 @@ on:
   push:
     paths-ignore:
     - 'docs/**'
+    - '*.hcl'
     - '*.md'
+    - '*.yml'
 
 jobs:
   macos-tests:

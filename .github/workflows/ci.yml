@@ -3,6 +3,7 @@ name: Tests
 on:
   push:
     paths-ignore:
+    - 'Dockerfile'
     - 'docs/**'
     - '*.hcl'
     - '*.md'

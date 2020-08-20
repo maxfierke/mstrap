@@ -28,8 +28,8 @@ jobs:
     - name: Upload release bundle artifact
       uses: actions/upload-artifact@v2
       with:
-        name: mstrap_linux_amd64.zip
-        path: dist/mstrap.zip
+        name: mstrap_linux_amd64
+        path: dist
 
   build_macos_amd64:
     runs-on: macos-latest
@@ -64,8 +64,8 @@ jobs:
     - name: Upload release bundle artifact
       uses: actions/upload-artifact@v2
       with:
-        name: mstrap_macos_amd64.zip
-        path: dist/mstrap.zip
+        name: mstrap_macos_amd64
+        path: dist
 
   release:
     needs: [build_linux_amd64, build_macos_amd64]
@@ -79,15 +79,15 @@ jobs:
       id: download_linux_amd64
       uses: actions/download-artifact@v2
       with:
-        name: mstrap_linux_amd64.zip
-        path: dist/
+        name: mstrap_linux_amd64
+        path: dist-linux-amd64
 
     - name: Download mstrap_macos_amd64.zip artifact
       id: download_macos_amd64
       uses: actions/download-artifact@v2
       with:
-        name: mstrap_macos_amd64.zip
-        path: dist/
+        name: mstrap_macos_amd64
+        path: dist-macos-amd64
 
     - name: Create release
       id: create_release
@@ -106,7 +106,7 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{ steps.download_linux_amd64.outputs.download-path }}
+        asset_path: dist-linux-amd64/mstrap.zip
         asset_name: mstrap-v${{ steps.version.outputs.version }}_linux_amd64.zip
         asset_content_type: application/zip
 
@@ -116,6 +116,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ${{ steps.download_macos_amd64.outputs.download-path }}
+        asset_path: dist-macos-amd64/mstrap.zip
         asset_name: mstrap-v${{ steps.version.outputs.version }}_macos_amd64.zip
         asset_content_type: application/zip

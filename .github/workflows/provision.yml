@@ -7,7 +7,9 @@ on:
     branches:
     - master
     paths-ignore:
+    - 'Dockerfile'
     - 'docs/**'
+    - '*.hcl'
     - '*.md'
 
 jobs:
@@ -15,11 +17,15 @@ jobs:
     runs-on: macOS-latest
 
     steps:
-    - uses: actions/checkout@v1
+    - name: Checkout
+      uses: actions/checkout@v2
+
     - name: Install crystal
       run: brew install crystal-lang
+
     - name: Install dependencies
       run: shards install
+
     - name: Build mstrap
       run: make build
 
@@ -54,16 +60,21 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v1
+    - name: Checkout
+      uses: actions/checkout@v2
+
     - name: Add Crystal repos
       run: curl -sSL https://dist.crystal-lang.org/apt/setup.sh | sudo bash
+
     - name: Install crystal
       run: |
         sudo apt install -y crystal libevent-dev libpcre3-dev libreadline-dev libssl-dev \
           curl \
           ruby ruby-bundler
+
     - name: Install dependencies
       run: shards install
+
     - name: Build mstrap
       run: make build
 

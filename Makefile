@@ -8,6 +8,7 @@ SHELL := bash
 CRYSTAL_BIN       ?= $(shell which crystal)
 SHARDS_BIN        ?= $(shell which shards)
 MSTRAP_BIN        ?= $(shell which mstrap)
+GON_CONFIG        ?= ./gon.hcl
 PREFIX            ?= /usr/local
 LDFLAGS           ?=
 RELEASE           ?=
@@ -56,7 +57,7 @@ bin/mstrap: deps libs $(SOURCES)
 	mkdir -p bin
 	@if [ ! -z "$(STATIC)" ] && [ $(STATIC) -eq 1 ] && [ "$(UNAME_S)" == "Linux" ]; then \
 		DOCKER_BUILDKIT=1 docker build -t mstrap-static-builder .; \
-		docker run --rm -it -v $(CURDIR):/workspace -w /workspace mstrap-static-builder:latest \
+		docker run --rm -v $(CURDIR):/workspace -w /workspace mstrap-static-builder:latest \
 			crystal build -o bin/mstrap src/cli.cr $(CRFLAGS); \
 	else \
 		$(CRYSTAL_BIN) build -o bin/mstrap src/cli.cr $(CRFLAGS); \
@@ -116,7 +117,11 @@ test: spec check-libraries
 
 release: gon.hcl bin/mstrap
 	mkdir -p ./dist
-	gon -log-level=debug ./gon.hcl
+	@if [ "$(UNAME_S)" == "Darwin" ]; then \
+		gon -log-level=debug $(GON_CONFIG); \
+	else \
+		zip --junk-paths dist/mstrap.zip bin/mstrap; \
+	fi
 
 .PHONY: install
 install: bin/mstrap

@@ -1,0 +1,121 @@
+name: Build and sign binaries
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  build_linux_amd64:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Add Crystal repos
+      run: curl -sSL https://dist.crystal-lang.org/apt/setup.sh | sudo bash
+
+    - name: Install crystal
+      run: sudo apt install -y crystal libevent-dev libpcre3-dev libreadline-dev libssl-dev
+
+    - name: Install dependencies
+      run: shards install
+
+    - name: Build release bundle
+      run: |
+        make release RELEASE=1 STATIC=1
+
+    - name: Upload release bundle artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: mstrap_linux_amd64
+        path: dist
+
+  build_macos_amd64:
+    runs-on: macos-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Install crystal
+      run: brew install crystal-lang
+
+    - name: Install gon via homebrew for code signing and app notarization
+      run: |
+        brew tap mitchellh/gon
+        brew install mitchellh/gon/gon
+
+    - name: Install dependencies
+      run: shards install
+
+    - name: Import Developer ID Application cert for signing and notorizing
+      uses: Apple-Actions/import-codesign-certs@253ddeeac23f2bdad1646faac5c8c2832e800071
+      with:
+        p12-file-base64: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_P12_BASE64 }}
+        p12-password: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_PASSWORD }}
+
+    - name: Build signed & notorized release bundle
+      env:
+        AC_USERNAME: ${{ secrets.AC_USERNAME }}
+        AC_PASSWORD: ${{ secrets.AC_PASSWORD }}
+      run: |
+        make release RELEASE=1 GON_CONFIG=./gon.ci.hcl
+
+    - name: Upload release bundle artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: mstrap_macos_amd64
+        path: dist
+
+  release:
+    needs: [build_linux_amd64, build_macos_amd64]
+    runs-on: ubuntu-latest
+    steps:
+    - name: Determine version
+      id: version
+      run: "echo ::set-output name=version::${GITHUB_REF:11}"
+
+    - name: Download mstrap_linux_amd64.zip artifact
+      id: download_linux_amd64
+      uses: actions/download-artifact@v2
+      with:
+        name: mstrap_linux_amd64
+        path: dist-linux-amd64
+
+    - name: Download mstrap_macos_amd64.zip artifact
+      id: download_macos_amd64
+      uses: actions/download-artifact@v2
+      with:
+        name: mstrap_macos_amd64
+        path: dist-macos-amd64
+
+    - name: Create release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ github.ref }}
+        release_name: ${{ github.ref }}
+        draft: false
+        prerelease: false
+
+    - name: Upload release zip for linux amd64
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: dist-linux-amd64/mstrap.zip
+        asset_name: mstrap-v${{ steps.version.outputs.version }}_linux_amd64.zip
+        asset_content_type: application/zip
+
+    - name: Upload release zip for macos amd64
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: dist-macos-amd64/mstrap.zip
+        asset_name: mstrap-v${{ steps.version.outputs.version }}_macos_amd64.zip
+        asset_content_type: application/zip

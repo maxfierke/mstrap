@@ -9,6 +9,10 @@ jobs:
   release_linux_amd64:
     runs-on: ubuntu-latest
     steps:
+    - name: Determine version
+      id: version
+      run: "echo ::set-output name=version::${GITHUB_REF:11}"
+
     - name: Checkout
       uses: actions/checkout@v2
 
@@ -44,12 +48,16 @@ jobs:
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: dist/mstrap.zip
-        asset_name: mstrap-${{ github.ref }}_linux_amd64.zip
+        asset_name: mstrap-${{ steps.version.outputs.version }}_linux_amd64.zip
         asset_content_type: application/zip
 
   release_macos_amd64:
     runs-on: macos-latest
     steps:
+    - name: Determine version
+      id: version
+      run: "echo ::set-output name=version::${GITHUB_REF:11}"
+
     - name: Checkout
       uses: actions/checkout@v2
 
@@ -96,5 +104,5 @@ jobs:
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: dist/mstrap.zip
-        asset_name: mstrap-${{ github.ref }}_macos_amd64.zip
+        asset_name: mstrap-${{ steps.version.outputs.version }}_macos_amd64.zip
         asset_content_type: application/zip

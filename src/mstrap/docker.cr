@@ -195,8 +195,6 @@ module MStrap
         logn "Installing Docker from Fedora repos"
 
         success = cmd("sudo dnf -y install moby-engine grubby") &&
-                  cmd("sudo firewall-cmd --permanent --zone=trusted --add-interface=docker0") &&
-                  cmd("sudo firewall-cmd --permanent --zone=FedoraWorkstation --add-masquerade") &&
                   fedora_disable_cgroups_v2!
 
         success

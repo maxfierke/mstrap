@@ -146,7 +146,7 @@ module MStrap
     end
 
     private def has_git?
-      cmd("command -v git > /dev/null 2>&1")
+      cmd("command -v git", quiet: true)
     end
   end
 end

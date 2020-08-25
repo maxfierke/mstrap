@@ -84,13 +84,13 @@ module MStrap
                            arr_args = args.to_a
 
                            if arr_args.is_a?(Array(NoReturn))
-                             [] of String
+                             nil
                            else
                              arr_args.as(Array(String))
                            end
                          end
                        else
-                         [] of String
+                         nil
                        end
 
         cmd(env, command, command_args, **kwargs)

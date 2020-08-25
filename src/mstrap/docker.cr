@@ -6,6 +6,7 @@ module MStrap
 
     @app_path : String? = nil
     @requires_sudo : Bool? = nil
+    @postinstall_reboot_required = false
 
     # :nodoc:
     APT_KEY_FINGERPRINT = "9DC8 5822 9FC7 DD38 854A  E2D8 8D81 803C 0EBF CD88"
@@ -57,6 +58,7 @@ module MStrap
       file_args
     end
 
+    # Returns whether Docker requires sudo to run (i.e. is the user in the docker group or not)
     def requires_sudo?
       requires_sudo = @requires_sudo
       return requires_sudo unless requires_sudo.nil?
@@ -68,6 +70,8 @@ module MStrap
         {% end %}
     end
 
+    # Check for docker-compose and raise if not found. On macOS, this will loop until you confirm the
+    # command line tools have been installed for Docker for Mac
     def ensure_compose!
       found_docker = false
 
@@ -91,6 +95,9 @@ module MStrap
       end
     end
 
+    # Installs Docker on the target system, if it's not installed.
+    # On certain platforms, this may exit `mstrap` and print a message about
+    # requiring a reboot.
     def install_docker!
       {% if flag?(:darwin) %}
         unless app_path || cmd "brew cask install docker"
@@ -100,49 +107,19 @@ module MStrap
         if !cmd("docker version", quiet: true, sudo: requires_sudo?)
           logn "Docker has not been installed. Attempting to install Docker now."
           logn "You may be prompted by sudo"
-          distro_name = MStrap.linux_distro
-          distro_codename = MStrap.linux_distro_codename
           require_reboot = false
 
           success =
-            if MStrap.debian_distro?
-              # https://docs.docker.com/engine/install/ubuntu/#installation-methods
-              logn "Installing Docker from Official Docker Repos"
-              cmd("sudo apt-get update") &&
-                cmd("sudo apt-get -y install apt-transport-https ca-certificates curl gnupg-agent software-properties-common") &&
-                cmd("curl -fsSL https://download.docker.com/linux/#{distro_name}/gpg | sudo apt-key add -") &&
-                cmd("sudo add-apt-repository \"deb [arch=amd64] https://download.docker.com/linux/#{distro_name} #{distro_codename} stable\"") &&
-                cmd("sudo apt-get update") &&
-                cmd("sudo apt-get -y install docker-ce docker-ce-cli containerd.io")
-            elsif MStrap.fedora?
-              # https://docs.docker.com/engine/install/fedora/#installation-methods
-              logn "Installing Docker from Official Docker Repos"
-              install_success =
-                cmd("sudo dnf -y install dnf-plugins-core grubby") &&
-                  cmd("sudo dnf config-manager -y --add-repo https://download.docker.com/linux/fedora/docker-ce.repo") &&
-                  cmd("sudo dnf install -y docker-ce docker-ce-cli containerd.io")
-
-              logn "Enabling cgroup backwards compatiblity (requires reboot)"
-              require_reboot = true
-              install_success && cmd("sudo grubby --update-kernel=ALL --args=\"systemd.unified_cgroup_hierarchy=0\"")
-            elsif MStrap.centos?
-              # https://docs.docker.com/engine/install/centos/#installation-methods
-              logn "Installing Docker from Official Docker Repos"
-              cmd("sudo yum install -y yum-utils") &&
-                cmd("sudo yum-config-manager -y --add-repo https://download.docker.com/linux/centos/docker-ce.repo") &&
-                cmd("sudo yum install -y docker-ce docker-ce-cli containerd.io")
-            elsif MStrap.rhel?
-              logc <<-REDHAT
-              docker-ce (community edition) is not officially supported on RHEL.
-              You'll need to install it manually via supported channels or use
-              docker-ee (enterprise edition) instead.
-              REDHAT
-              false
+            if MStrap::Linux.debian_distro?
+              install_docker_debian!
+            elsif MStrap::Linux.rhel_distro?
+              install_docker_rhel!
             else
               logw "Cannot determine your distribution, so skipping Docker installation."
               logw "This will error if Docker is not installed."
               true
             end
+
           unless success
             logc "Could not install Docker successfully."
           end
@@ -157,7 +134,7 @@ module MStrap
             success "OK. You may need to log-out and back in, or restart for it to take effect."
           end
 
-          if require_reboot
+          if postinstall_reboot_required?
             logw "Docker install successfully, but unfortunately a reboot is required for Docker to work correctly."
             logw "You may run this again to continue anyway, but Docker may fail to launch containers."
             exit
@@ -172,6 +149,84 @@ module MStrap
           end
         end
       {% end %}
+    end
+
+    private def fedora_disable_cgroups_v2!
+      logn "Enabling cgroup backwards compatiblity (requires reboot)"
+      success = cmd("sudo grubby --update-kernel=ALL --args=\"systemd.unified_cgroup_hierarchy=0\"")
+
+      if success
+        @postinstall_reboot_required = true
+      end
+
+      success
+    end
+
+    private def install_docker_centos!
+      # https://docs.docker.com/engine/install/centos/#installation-methods
+      logn "Installing Docker from Official Docker Repos"
+      success = cmd("sudo yum install -y yum-utils") &&
+                cmd("sudo yum-config-manager -y --add-repo https://download.docker.com/linux/centos/docker-ce.repo") &&
+                cmd("sudo yum install -y docker-ce docker-ce-cli containerd.io")
+
+      success
+    end
+
+    private def install_docker_debian!
+      distro_name = MStrap::Linux.distro
+      distro_codename = MStrap::Linux.distro_codename
+
+      # https://docs.docker.com/engine/install/ubuntu/#installation-methods
+      logn "Installing Docker from Official Docker Repos"
+      success = cmd("sudo apt-get update") &&
+                cmd("sudo apt-get -y install apt-transport-https ca-certificates curl gnupg-agent software-properties-common") &&
+                cmd("curl -fsSL https://download.docker.com/linux/#{distro_name}/gpg | sudo apt-key add -") &&
+                cmd("sudo add-apt-repository \"deb [arch=amd64] https://download.docker.com/linux/#{distro_name} #{distro_codename} stable\"") &&
+                cmd("sudo apt-get update") &&
+                cmd("sudo apt-get -y install docker-ce docker-ce-cli containerd.io")
+
+      success
+    end
+
+    private def install_docker_fedora!
+      distro_version = MStrap::Linux.distro_version
+
+      if distro_version == "32"
+        logn "Installing Docker from Fedora repos"
+
+        success = cmd("sudo dnf -y install moby-engine grubby") &&
+                  fedora_disable_cgroups_v2!
+
+        success
+      else
+        # https://docs.docker.com/engine/install/fedora/#installation-methods
+        logn "Installing Docker from Official Docker Repos"
+        success = cmd("sudo dnf -y install dnf-plugins-core grubby") &&
+                  cmd("sudo dnf config-manager -y --add-repo https://download.docker.com/linux/fedora/docker-ce.repo") &&
+                  cmd("sudo dnf install -y docker-ce docker-ce-cli containerd.io") &&
+                  fedora_disable_cgroups_v2!
+
+        success
+      end
+    end
+
+    private def install_docker_rhel!
+      if MStrap::Linux.centos?
+        install_docker_centos!
+      elsif MStrap::Linux.fedora?
+        install_docker_fedora!
+      else
+        logc <<-REDHAT
+        docker-ce (community edition) is not officially supported on RHEL.
+        You'll need to install it manually via supported channels or via RedHat
+        directly.
+        REDHAT
+        false
+      end
+    end
+
+    private def postinstall_reboot_required?
+      @postinstall_reboot_required
     end
   end
 end

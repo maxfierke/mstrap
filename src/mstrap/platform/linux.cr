@@ -1,5 +1,9 @@
 {% skip_file unless flag?(:linux) %}
 
+require "./linux/debian"
+require "./linux/rhel"
+require "./linux/*"
+
 module MStrap
   module Linux
     class UnsupportedDistroError < Exception; end

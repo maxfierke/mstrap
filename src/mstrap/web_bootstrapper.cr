@@ -16,10 +16,6 @@ module MStrap
 
     # Executes the bootstrapper
     def bootstrap
-      Dir.mkdir_p(Paths::PROJECT_CERTS)
-      Dir.mkdir_p(Paths::PROJECT_SITES)
-      Dir.mkdir_p(Paths::PROJECT_SOCKETS)
-
       if mkcert.installed?
         Dir.cd(Paths::PROJECT_CERTS) do
           mkcert.install!

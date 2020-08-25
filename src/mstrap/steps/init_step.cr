@@ -46,13 +46,16 @@ module MStrap
       end
 
       private def create_rc_dir
-        FileUtils.mkdir_p(Paths::RC_DIR, 0o755)
+        Dir.mkdir_p(Paths::RC_DIR, mode: 0o755)
+        Dir.mkdir_p(Paths::PROJECT_CERTS)
+        Dir.mkdir_p(Paths::PROJECT_SITES)
+        Dir.mkdir_p(Paths::PROJECT_SOCKETS)
       end
 
       private def fetch_strap_sh
         if update_strap_sh?
           log "--> Fetching latest strap.sh (older than 30 days or missing): "
-          FileUtils.mkdir_p("#{Paths::RC_DIR}/vendor")
+          Dir.mkdir_p(File.join(Paths::RC_DIR, "vendor"))
 
           HTTP::Client.get(Paths::STRAP_SH_URL, tls: MStrap.tls_client) do |response|
             File.write(Paths::STRAP_SH_PATH, response.body_io.gets_to_end)

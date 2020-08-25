@@ -13,10 +13,8 @@ brew 'gnu-sed'
 brew 'gnu-tar'
 brew 'jpeg'
 brew 'jq'
-brew 'libiconv' if /darwin/ =~ RUBY_PLATFORM
 brew 'libpng'
 brew 'mkcert'
-brew 'nss'
 brew 'openssl'
 brew 'pkg-config'
 brew 'readline'
@@ -25,9 +23,12 @@ brew 'zlib'
 # Language runtime managers
 brew 'asdf'
 
-# Resolve *.localhost
 if /darwin/ =~ RUBY_PLATFORM
-  brew "launchdns", restart_service: true
+  brew 'libiconv'
+  brew 'nss'
+
+  # Resolve *.localhost
+  brew 'launchdns', restart_service: true
 else
   # TODO: dnsmasq or something
 end

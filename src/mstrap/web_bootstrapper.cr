@@ -9,20 +9,17 @@ module MStrap
     # Project to run bootstrapper on
     getter :project
 
-    def initialize(@project : Project)
+    def initialize(project : Project)
+      @project = project
+      @mkcert = Mkcert.new
     end
 
     # Executes the bootstrapper
     def bootstrap
-      Dir.mkdir_p(Paths::PROJECT_CERTS)
-      Dir.mkdir_p(Paths::PROJECT_SITES)
-      Dir.mkdir_p(Paths::PROJECT_SOCKETS)
-
-      if cmd("command -v mkcert > /dev/null 2>&1")
+      if mkcert.installed?
         Dir.cd(Paths::PROJECT_CERTS) do
-          unless cmd("mkcert -install") && cmd("mkcert #{project.hostname} '*.#{project.hostname}'")
-            logc "An error occurred while making a cert for #{project.hostname}"
-          end
+          mkcert.install!
+          mkcert.install_cert!(project.hostname)
         end
       else
         logw "mkcert not found. Skipping cert setup."
@@ -30,5 +27,7 @@ module MStrap
 
       Templates::NginxConf.new(project).write_to_config!
     end
+
+    private getter :mkcert
   end
 end

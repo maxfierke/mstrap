@@ -22,7 +22,7 @@ module MStrap
     # (enabled by default)
     def install_cert!(hostname, wildcard = true)
       args = [hostname]
-      args << "'*.#{hostname}'" if wildcard
+      args << "*.#{hostname}" if wildcard
       unless cmd("mkcert", args)
         logc "An error occurred while making a cert for #{hostname}"
       end

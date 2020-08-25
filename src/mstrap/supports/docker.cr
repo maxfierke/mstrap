@@ -98,7 +98,7 @@ module MStrap
     # Installs Docker on the target system, if it's not installed.
     # On certain platforms, this may exit `mstrap` and print a message about
     # requiring a reboot.
-    def install_docker!
+    def install!
       {% if flag?(:darwin) %}
         unless app_path || cmd "brew cask install docker"
           logc "Could not install docker via Homebrew cask"

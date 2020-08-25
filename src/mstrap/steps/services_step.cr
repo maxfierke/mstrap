@@ -20,7 +20,7 @@ module MStrap
         end
 
         if file_args.any?
-          docker.install_docker!
+          docker.install!
           docker.ensure_compose!
           logn "==> Setting up managed services"
           unless start_services(file_args)

@@ -39,7 +39,6 @@ describe "dependencies step" do
       'jq',
       'libpng',
       'mkcert',
-      'nss',
       'openssl@1.1',
       'pkg-config',
       'readline',

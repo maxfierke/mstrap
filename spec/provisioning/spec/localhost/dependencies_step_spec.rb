@@ -53,8 +53,17 @@ describe "dependencies step" do
       end
     end
 
-    describe package('libiconv'), :if => os[:family] == 'darwin' do
-      it { is_expected.to be_installed.by('homebrew') }
+    describe "darwin packages", if: os[:family] == 'darwin' do
+      DARWIN_PACKAGES = [
+        'libiconv',
+        'nss',
+      ].freeze
+
+      DARWIN_PACKAGES.each do |pkg|
+        describe package(pkg) do
+          it { is_expected.to be_installed.by('homebrew') }
+        end
+      end
     end
   end
 

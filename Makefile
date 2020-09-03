@@ -56,7 +56,7 @@ all: build
 bin/mstrap: deps libs $(SOURCES)
 	mkdir -p bin
 	@if [ ! -z "$(STATIC)" ] && [ $(STATIC) -eq 1 ] && [ "$(UNAME_S)" == "Linux" ]; then \
-		DOCKER_BUILDKIT=1 docker build -t mstrap-static-builder .; \
+		DOCKER_BUILDKIT=1 docker build --file docker/alpine-build.Dockerfile -t mstrap-static-builder .; \
 		docker run --rm -v $(CURDIR):/workspace -w /workspace mstrap-static-builder:latest \
 			crystal build -o bin/mstrap src/cli.cr $(CRFLAGS); \
 	else \

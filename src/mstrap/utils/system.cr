@@ -64,8 +64,12 @@ module MStrap
 
         at_exit {
           # Cleanup this process when we exit, if it's still running. (e.g. receiving SIGINT)
-          unless !child || child.terminated?
-            child.terminate
+          unless child.terminated?
+            # Reap the whole process group, otherwise nested processes may live
+            # to print output another day
+            pgid = Process.pgid(child.pid)
+            Process.signal(Signal::TERM, -pgid)
+            child.wait
           end
         }
 

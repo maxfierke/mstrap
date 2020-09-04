@@ -228,6 +228,11 @@ module MStrap
     end
 
     def run!
+      # Setup signal traps so that our `at_exit` hooks run
+      # Needed until https://github.com/crystal-lang/crystal/issues/8687 is resolved
+      Signal::INT.trap { exit 1 }
+      Signal::TERM.trap { exit 1 }
+
       Commander.run(cli, options.argv)
     end
 

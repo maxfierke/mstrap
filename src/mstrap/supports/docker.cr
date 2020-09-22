@@ -176,12 +176,24 @@ module MStrap
       distro_name = MStrap::Linux.distro
       distro_codename = MStrap::Linux.distro_codename
 
+      uname_m = `uname -m`.chomp
+      docker_arch =
+        case uname_m
+        when "x86_64", "amd64"
+          "amd64"
+        when "aarch64", "arm64"
+          "arm64"
+        else
+          # TODO: should we error instead?
+          uname_m
+        end
+
       # https://docs.docker.com/engine/install/ubuntu/#installation-methods
       logn "Installing Docker from Official Docker Repos"
       success = cmd("sudo apt-get update") &&
                 cmd("sudo apt-get -y install apt-transport-https ca-certificates curl gnupg-agent software-properties-common") &&
                 cmd("curl -fsSL https://download.docker.com/linux/#{distro_name}/gpg | sudo apt-key add -") &&
-                cmd("sudo add-apt-repository \"deb [arch=amd64] https://download.docker.com/linux/#{distro_name} #{distro_codename} stable\"") &&
+                cmd("sudo add-apt-repository \"deb [arch=#{docker_arch}] https://download.docker.com/linux/#{distro_name} #{distro_codename} stable\"") &&
                 cmd("sudo apt-get update") &&
                 cmd("sudo apt-get -y install docker-ce docker-ce-cli containerd.io")
 

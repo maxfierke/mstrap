@@ -39,6 +39,20 @@ Please refer to the [documentation site](https://mstrap.dev) for documentation
 3. `make`
 4. `bin/mstrap` will be created
 
+### Building multi-arch
+
+To build multi-arch, you'll need to configure Docker to enable BuildKit-based
+multi-arch support, and register the proper binfmt handlers to run ARM binaries
+through QEMU.
+
+On Ubuntu 20.04, this can be done via the following:
+
+```sh
+$ sudo apt install --no-install-recommends qemu-user-static binfmt-support
+$ docker run --privileged --rm tonistiigi/binfmt --install arm64,arm
+$ sudo systemctl restart docker.service
+```
+
 ## Contributing
 
 1. Fork it (<https://github.com/maxfierke/mstrap/fork>)

@@ -18,8 +18,4 @@ RUN apk add --update --no-cache \
   --repository=http://dl-cdn.alpinelinux.org/alpine/edge/community \
   crystal
 
-RUN adduser -D crystal
-
-USER crystal
-
 CMD [ "/bin/sh" ]

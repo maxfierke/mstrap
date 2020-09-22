@@ -64,7 +64,7 @@ bin/mstrap: deps libs $(SOURCES)
 		else \
 			PLATFORM_ARCH=$(TARGET_ARCH); \
 		fi; \
-		docker buildx build --platform linux/$$PLATFORM_ARCH -t mstrap-static-builder-$$PLATFORM_ARCH .; \
+		docker buildx build --load --platform linux/$$PLATFORM_ARCH -t mstrap-static-builder-$$PLATFORM_ARCH .; \
 		docker run --rm -v $(CURDIR):/workspace -w /workspace mstrap-static-builder-$$PLATFORM_ARCH:latest \
 			crystal build -o bin/mstrap src/cli.cr $(CRFLAGS); \
 	else \

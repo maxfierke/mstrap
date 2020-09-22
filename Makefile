@@ -15,9 +15,10 @@ RELEASE           ?=
 STATIC            ?=
 STATIC_LIBS_DIR   := $(CURDIR)/vendor
 SOURCES           := src/*.cr src/**/*.cr
-UNAME_S           := $(shell uname -s)
+TARGET_ARCH       := $(shell uname -m)
+TARGET_OS         := $(shell uname -s | tr '[:upper:]' '[:lower:]')
 
-ifeq ($(UNAME_S),Darwin)
+ifeq ($(TARGET_OS),darwin)
   override LDFLAGS += -L$(STATIC_LIBS_DIR)
   export MACOSX_DEPLOYMENT_TARGET=10.12
   LIBEVENT_LIB_PATH ?= $(shell pkg-config --libs-only-L libevent | cut -c 3-)
@@ -55,16 +56,23 @@ all: build
 
 bin/mstrap: deps libs $(SOURCES)
 	mkdir -p bin
-	@if [ ! -z "$(STATIC)" ] && [ $(STATIC) -eq 1 ] && [ "$(UNAME_S)" == "Linux" ]; then \
-		DOCKER_BUILDKIT=1 docker build -t mstrap-static-builder .; \
-		docker run --rm -v $(CURDIR):/workspace -w /workspace mstrap-static-builder:latest \
+	@if [ ! -z "$(STATIC)" ] && [ $(STATIC) -eq 1 ] && [ "$(TARGET_OS)" == "linux" ]; then \
+		if [ "$(TARGET_ARCH)" == "x86_64" ]; then \
+			PLATFORM_ARCH=amd64; \
+		elif [ "$(TARGET_ARCH)" == "aarch64" ]; then\
+			PLATFORM_ARCH=arm64; \
+		else \
+			PLATFORM_ARCH=$(TARGET_ARCH); \
+		fi; \
+		docker buildx build --platform linux/$$PLATFORM_ARCH -t mstrap-static-builder-$$PLATFORM_ARCH .; \
+		docker run --rm -v $(CURDIR):/workspace -w /workspace mstrap-static-builder-$$PLATFORM_ARCH:latest \
 			crystal build -o bin/mstrap src/cli.cr $(CRFLAGS); \
 	else \
 		$(CRYSTAL_BIN) build -o bin/mstrap src/cli.cr $(CRFLAGS); \
-	fi
-	@if [ "$(UNAME_S)" == "Linux" ] && readelf -p1 bin/mstrap | grep -q 'linuxbrew'; then \
-		patchelf --remove-rpath bin/mstrap; \
-		patchelf --set-interpreter /lib64/ld-linux-x86-64.so.2 bin/mstrap; \
+		if [ "$(TARGET_OS)" == "linux" ] && readelf -p1 bin/mstrap | grep -q 'linuxbrew'; then \
+			patchelf --remove-rpath bin/mstrap; \
+			patchelf --set-interpreter /lib64/ld-linux-x86-64.so.2 bin/mstrap; \
+		fi; \
 	fi
 
 .PHONY: build
@@ -85,12 +93,12 @@ clean:
 	rm -f ./bin/mstrap*
 	rm -rf ./dist
 	rm -rf ./docs
-	@[ "$(UNAME_S)" == "Darwin" ] && rm -rf ./vendor/*.a || true
+	@[ "$(TARGET_OS)" == "darwin" ] && rm -rf ./vendor/*.a || true
 
 .PHONY: spec
 spec: libs deps $(SOURCES)
 	$(CRYSTAL_BIN) tool format --check
-	@if [ "$(UNAME_S)" == "Darwin" ]; then \
+	@if [ "$(TARGET_OS)" == "darwin" ]; then \
 		LIBRARY_PATH=$(STATIC_LIBS_DIR) $(CRYSTAL_BIN) spec -Dmt_no_expectations; \
 	else \
 		$(CRYSTAL_BIN) spec -Dmt_no_expectations; \
@@ -98,7 +106,7 @@ spec: libs deps $(SOURCES)
 
 .PHONY: check-libraries
 check-libraries: bin/mstrap
-	@if [ "$(UNAME_S)" == "Darwin" ] && [ "$$(otool -LX bin/mstrap | awk '{print $$1}')" != "$$(cat expected.libs.darwin)" ]; then \
+	@if [ "$(TARGET_OS)" == "darwin" ] && [ "$$(otool -LX bin/mstrap | awk '{print $$1}')" != "$$(cat expected.libs.darwin)" ]; then \
 		echo "FAIL: bin/mstrap has non-allowed dynamic libraries"; \
 		exit 1; \
 	else \
@@ -117,7 +125,7 @@ test: spec check-libraries
 
 release: gon.hcl bin/mstrap
 	mkdir -p ./dist
-	@if [ "$(UNAME_S)" == "Darwin" ]; then \
+	@if [ "$(TARGET_OS)" == "darwin" ]; then \
 		gon -log-level=debug $(GON_CONFIG); \
 	else \
 		zip --junk-paths dist/mstrap.zip bin/mstrap; \

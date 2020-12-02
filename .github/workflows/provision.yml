@@ -83,11 +83,6 @@ jobs:
         sudo apt remove --purge build-essential git file
         sudo apt install curl
 
-    # See https://github.com/Homebrew/linuxbrew-core/issues/20914
-    - name: Workaround Linuxbrew perl postinstall fail
-      run: |
-        sudo ln -s /usr/include/locale.h /usr/include/xlocale.h
-
     - name: Run initial mstrap process
       env:
         SHELL: /bin/bash

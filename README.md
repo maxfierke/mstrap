@@ -31,7 +31,7 @@ Please refer to the [documentation site](https://mstrap.dev) for documentation
 ## Development
 
 1. Install dependencies
-  * macOS: `brew install crystal-lang libevent pcre openssl@1.1`
+  * macOS: `brew install crystal libevent pcre openssl@1.1`
   * Debian/Ubuntu:
     1. [Install Crystal](https://crystal-lang.org/install/)
     2. `sudo apt install libevent-dev libpcre3-dev libreadline-dev libssl-dev patchelf`

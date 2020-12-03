@@ -58,6 +58,7 @@ jobs:
         BUNDLE_DEPLOYMENT: true
       run: |
         sudo gem update --system \
+        && sudo gem install bundler:2.1.4 \
         && source ~/.mstrap/env.sh \
         && make check-provisioning
 

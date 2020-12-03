@@ -30,6 +30,9 @@ jobs:
       run: make build
 
     # Based on https://raw.githubusercontent.com/MikeMcQuaid/strap/master/.github/workflows/tests.yml
+
+    - run: brew test-bot --only-cleanup-before
+
     - name: Make macOS like new
       run: |
         sudo rm -rf /usr/local/bin/brew /usr/local/.??* \

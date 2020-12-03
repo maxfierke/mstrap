@@ -53,14 +53,16 @@ jobs:
       run: |
         source ~/.mstrap/env.sh && bin/mstrap --debug
 
+    - name: Ruby
+      uses: actions/setup-ruby@v1
+      with:
+        ruby-version: 2.7.1
+
     - name: Run serverspecs
       env:
         BUNDLE_DEPLOYMENT: true
       run: |
-        sudo gem update --system \
-        && sudo gem install bundler:2.1.4 \
-        && source ~/.mstrap/env.sh \
-        && make check-provisioning
+        source ~/.mstrap/env.sh && make check-provisioning
 
   ubuntu-provision:
     runs-on: ubuntu-latest

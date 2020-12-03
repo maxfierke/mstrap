@@ -31,7 +31,8 @@ jobs:
 
     # Based on https://raw.githubusercontent.com/MikeMcQuaid/strap/master/.github/workflows/tests.yml
 
-    - run: brew test-bot --only-cleanup-before
+    - name: Run brew bot's cleanup
+      run: brew test-bot --only-cleanup-before
 
     - name: Make macOS like new
       run: |
@@ -56,7 +57,9 @@ jobs:
       env:
         BUNDLE_DEPLOYMENT: true
       run: |
-        source ~/.mstrap/env.sh && make check-provisioning
+        sudo gem update --system \
+        && source ~/.mstrap/env.sh \
+        && make check-provisioning
 
   ubuntu-provision:
     runs-on: ubuntu-latest

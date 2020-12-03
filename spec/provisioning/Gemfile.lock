@@ -40,6 +40,3 @@ PLATFORMS
 
 DEPENDENCIES
   serverspec
-
-BUNDLED WITH
-   2.0.2

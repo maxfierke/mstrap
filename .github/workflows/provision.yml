@@ -53,10 +53,8 @@ jobs:
       run: |
         source ~/.mstrap/env.sh && bin/mstrap --debug
 
-    - name: Ruby
-      uses: actions/setup-ruby@v1
-      with:
-        ruby-version: 2.7
+    - name: Workaround by using homebrew ruby
+      run: brew install ruby && gem install bundler
 
     - name: Run serverspecs
       env:

@@ -13,15 +13,15 @@ PREFIX            ?= /usr/local
 LDFLAGS           ?=
 RELEASE           ?=
 STATIC            ?=
+STATIC_LIBS       ?=
 STATIC_LIBS_DIR   := $(CURDIR)/vendor
 STRIP_RPATH       ?=
 SOURCES           := src/*.cr src/**/*.cr
 TARGET_ARCH       := $(shell uname -m)
 TARGET_OS         := $(shell uname -s | tr '[:upper:]' '[:lower:]')
 
-ifeq ($(TARGET_OS),darwin)
+ifeq ($(shell [[ "$(TARGET_OS)" == "darwin" && "$(STATIC_LIBS)" != "" ]] && echo true),true)
   override LDFLAGS += -L$(STATIC_LIBS_DIR)
-  export MACOSX_DEPLOYMENT_TARGET=10.12
   LIBEVENT_LIB_PATH ?= $(shell pkg-config --libs-only-L libevent | cut -c 3-)
   LIBPCRE_LIB_PATH  ?= $(shell pkg-config --libs-only-L libpcre | cut -c 3-)
   OPENSSL_LIB_PATH ?= $(shell brew --prefix openssl@1.1)/lib
@@ -107,7 +107,7 @@ spec: libs deps $(SOURCES)
 
 .PHONY: check-libraries
 check-libraries: bin/mstrap
-	@if [ "$(TARGET_OS)" == "darwin" ] && [ "$$(otool -LX bin/mstrap | awk '{print $$1}')" != "$$(cat expected.libs.darwin)" ]; then \
+	@if [ ! -z "$(STATIC_LIBS)" ] && [ "$(TARGET_OS)" == "darwin" ] && [ "$$(otool -LX bin/mstrap | awk '{print $$1}')" != "$$(cat expected.libs.darwin)" ]; then \
 		echo "FAIL: bin/mstrap has non-allowed dynamic libraries"; \
 		exit 1; \
 	else \

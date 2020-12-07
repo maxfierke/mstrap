@@ -95,7 +95,7 @@ jobs:
         AC_USERNAME: ${{ secrets.AC_USERNAME }}
         AC_PASSWORD: ${{ secrets.AC_PASSWORD }}
       run: |
-        make release RELEASE=1 GON_CONFIG=./gon.ci.hcl
+        make release RELEASE=1 STATIC_LIBS=1 GON_CONFIG=./gon.ci.hcl
 
     - name: Upload release bundle artifact
       uses: actions/upload-artifact@v2

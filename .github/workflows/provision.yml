@@ -27,7 +27,7 @@ jobs:
       run: shards install
 
     - name: Build mstrap
-      run: make build
+      run: make build STATIC_LIBS=1
 
     # Based on https://raw.githubusercontent.com/MikeMcQuaid/strap/master/.github/workflows/tests.yml
 

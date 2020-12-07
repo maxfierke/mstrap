@@ -24,7 +24,7 @@ jobs:
       run: shards install
 
     - name: Run tests
-      run: make test
+      run: make test STATIC_LIBS=1
 
   ubuntu-tests:
     runs-on: ubuntu-latest

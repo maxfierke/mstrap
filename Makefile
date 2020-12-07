@@ -14,6 +14,7 @@ LDFLAGS           ?=
 RELEASE           ?=
 STATIC            ?=
 STATIC_LIBS_DIR   := $(CURDIR)/vendor
+STRIP_RPATH       ?=
 SOURCES           := src/*.cr src/**/*.cr
 TARGET_ARCH       := $(shell uname -m)
 TARGET_OS         := $(shell uname -s | tr '[:upper:]' '[:lower:]')
@@ -69,7 +70,7 @@ bin/mstrap: deps libs $(SOURCES)
 			crystal build -o bin/mstrap src/cli.cr $(CRFLAGS); \
 	else \
 		$(CRYSTAL_BIN) build -o bin/mstrap src/cli.cr $(CRFLAGS); \
-		if [ "$(TARGET_OS)" == "linux" ] && readelf -p1 bin/mstrap | grep -q 'linuxbrew'; then \
+		if [ ! -z "$(STRIP_RPATH)" ] && [ "$(TARGET_OS)" == "linux" ] && readelf -p1 bin/mstrap | grep -q 'linuxbrew'; then \
 			patchelf --remove-rpath bin/mstrap; \
 			patchelf --set-interpreter /lib64/ld-linux-x86-64.so.2 bin/mstrap; \
 		fi; \

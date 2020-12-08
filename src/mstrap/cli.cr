@@ -38,7 +38,15 @@ module MStrap
       @options = CLIOptions.new(argv: args.dup)
       @cli = Commander::Command.new do |cmd|
         cmd.use = "mstrap"
-        cmd.long = "mstrap is a tool for bootstrapping development machines"
+        cmd.long = <<-DESC
+mstrap is a tool for bootstrapping development machines
+
+  Version v#{MStrap::VERSION} (git: #{MStrap::REVISION})
+  Compiled at #{MStrap::COMPILED_AT}
+
+  Documentation: https://mstrap.dev/docs
+  Issue tracker: https://github.com/maxfierke/mstrap/issues
+DESC
 
         cmd.flags.add do |flag|
           flag.name = "config_path"

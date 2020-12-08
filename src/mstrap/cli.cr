@@ -41,7 +41,7 @@ module MStrap
         cmd.long = <<-DESC
 mstrap is a tool for bootstrapping development machines
 
-  Version v#{MStrap::VERSION} (git: #{MStrap::REVISION})
+  Version v#{MStrap::VERSION}
   Compiled at #{MStrap::COMPILED_AT}
 
   Documentation: https://mstrap.dev/docs

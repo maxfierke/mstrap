@@ -6,5 +6,5 @@ module MStrap
   REVISION = {{`git describe --long --dirty`.chomp.stringify}}
 
   # `mstrap` version
-  VERSION = "0.2.6"
+  VERSION = "0.2.7"
 end

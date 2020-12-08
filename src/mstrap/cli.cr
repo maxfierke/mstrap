@@ -38,15 +38,9 @@ module MStrap
       @options = CLIOptions.new(argv: args.dup)
       @cli = Commander::Command.new do |cmd|
         cmd.use = "mstrap"
-        cmd.long = <<-DESC
-mstrap is a tool for bootstrapping development machines
 
-  Version v#{MStrap::VERSION}
-  Compiled at #{MStrap::COMPILED_AT}
-
-  Documentation: https://mstrap.dev/docs
-  Issue tracker: https://github.com/maxfierke/mstrap/issues
-DESC
+        # TODO: Use heredoc. Bug in Crystal 0.35.1 formatted required workaround
+        cmd.long = "mstrap is a tool for bootstrapping development machines\n\n  Version v#{MStrap::VERSION} \n  Compiled at #{MStrap::COMPILED_AT}\n\n  Documentation: https://mstrap.dev/docs\n  Issue tracker: https://github.com/maxfierke/mstrap/issues"
 
         cmd.flags.add do |flag|
           flag.name = "config_path"

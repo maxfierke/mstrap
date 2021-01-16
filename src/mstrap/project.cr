@@ -119,14 +119,15 @@ module MStrap
     def pull
       Dir.cd(path) do
         git_checkpoint do
-          success = if current_branch != "master"
-                      cmd("git checkout master", quiet: true) && cmd("git pull origin master --rebase", quiet: true) && cmd("git checkout -", quiet: true)
+          remote_branch = remote_head_branch_name
+          success = if current_branch != remote_branch
+                      cmd("git checkout #{remote_branch}", quiet: true) && cmd("git pull origin #{remote_branch} --rebase", quiet: true) && cmd("git checkout -", quiet: true)
                     else
-                      cmd "git pull origin master --rebase", quiet: true
+                      cmd "git pull origin #{remote_branch} --rebase", quiet: true
                     end
 
           unless success
-            logw "Failed to update 'master' branch from remote. There may be a problem that needs to be resolved manually."
+            logw "Failed to update '#{remote_branch}' branch from remote. There may be a problem that needs to be resolved manually."
           end
 
           success
@@ -199,6 +200,15 @@ module MStrap
         if cmd("git stash list | grep '#{stash_message}'", quiet: true)
           cmd "git stash pop", quiet: true
         end
+      end
+    end
+
+    private def remote_head_branch_name
+      meta = `git remote show origin`.chomp.match(/HEAD branch: (.+)\n/)
+      if meta && (branch_name = meta[1]?)
+        branch_name
+      else
+        "master"
       end
     end
   end

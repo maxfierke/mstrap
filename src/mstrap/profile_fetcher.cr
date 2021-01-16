@@ -181,7 +181,7 @@ module MStrap
 
           git_checkout_profile_revision!
         else
-          unless cmd("git", "pull", "origin", "master", quiet: true)
+          unless cmd("git", "pull", quiet: true)
             raise GitProfileFetchError.new(config)
           end
         end

@@ -19,6 +19,7 @@ module MStrap
       :javascript,
       :python,
       :ruby,
+      :rust,
     ]
 
     @config_def : Defs::ConfigDef?

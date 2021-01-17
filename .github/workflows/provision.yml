@@ -104,6 +104,9 @@ jobs:
       run: |
         source ~/.mstrap/env.sh && bin/mstrap --debug
 
+    - name: Workaround by using homebrew ruby
+      run: brew install ruby && gem install bundler
+
     - name: Run serverspecs
       env:
         SHELL: /bin/bash

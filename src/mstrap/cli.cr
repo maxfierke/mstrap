@@ -14,14 +14,6 @@ module MStrap
       :runtimes,
     ]
 
-    PROJECT_RUNTIMES = [
-      :unknown,
-      :javascript,
-      :python,
-      :ruby,
-      :rust,
-    ]
-
     @config_def : Defs::ConfigDef?
     @cli : Commander::Command
     @options : CLIOptions

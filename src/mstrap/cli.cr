@@ -210,8 +210,6 @@ module MStrap
           load_cli_options!(options)
           load_bootstrap_options!(options)
 
-          MStrap.initialize_logger!
-
           config = load_configuration!
 
           logw "Strap in!"
@@ -254,6 +252,8 @@ module MStrap
       self.options.config_path = options.string["config_path"] if options.string.has_key?("config_path")
       self.options.force = options.bool["force"] if options.bool.has_key?("force")
       self.options.skip_project_update = options.bool["skip_project_update"] if options.bool.has_key?("skip_project_update")
+
+      MStrap.initialize_logger!
     end
 
     private def load_bootstrap_options!(options)

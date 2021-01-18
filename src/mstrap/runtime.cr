@@ -39,6 +39,31 @@ module MStrap
       @asdf_version_env_var ||= "ASDF_#{asdf_plugin_name.upcase}_VERSION"
     end
 
+    # :nodoc:
+    def asdf_version_from_env
+      ENV[asdf_version_env_var]?
+    end
+
+    # :nodoc:
+    def asdf_version_from_tool_versions
+      tool_versions_path = File.join(Dir.current, ".tool-versions")
+      return nil unless File.exists?(tool_versions_path)
+
+      tool_versions = File.read(tool_versions_path).strip
+      if matches = tool_versions.match(/^#{asdf_plugin_name}\s+([^\s]+)$/m)
+        matches[1].strip
+      else
+        nil
+      end
+    end
+
+    # :nodoc:
+    def asdf_version_from_legacy_version_file
+      version_path = File.join(Dir.current, ".#{language_name}-version")
+      return nil unless File.exists?(version_path)
+      File.read(version_path).strip
+    end
+
     # Bootstrap the current directory for the runtime
     abstract def bootstrap
 
@@ -47,12 +72,11 @@ module MStrap
     #
     # NOTE: This will not traverse parent directories to find versions files.
     def current_version
-      version_path = File.join(Dir.current, ".#{language_name}-version")
-      version = if File.exists?(version_path)
-                  File.read(version_path).strip
-                else
-                  ENV[asdf_version_env_var]?
-                end
+      [
+        asdf_version_from_env,
+        asdf_version_from_tool_versions,
+        asdf_version_from_legacy_version_file,
+      ].find { |version| version }
     end
 
     # Returns whether the ASDF plugin has been installed for a language runtime

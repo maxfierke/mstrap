@@ -1,71 +1,83 @@
 require "../spec_helper"
 
-describe MStrap::Paths do
+Spectator.describe MStrap::Paths do
   MSTRAP_TEST_RC_DIR = File.join(MSTRAP_TEST_HOME, ".mstrap")
 
   describe "RC_DIR" do
     it "must be relative to the home directory" do
-      expect(MStrap::Paths::RC_DIR).must_equal(MSTRAP_TEST_RC_DIR)
+      expect(MStrap::Paths::RC_DIR).to eq(MSTRAP_TEST_RC_DIR)
     end
   end
 
   describe "SRC_DIR" do
     it "must be relative to the home directory" do
-      expect(MStrap::Paths::SRC_DIR).must_equal(File.join(MSTRAP_TEST_HOME, "src"))
+      expect(MStrap::Paths::SRC_DIR).to eq(File.join(MSTRAP_TEST_HOME, "src"))
     end
   end
 
   describe "XDG_CONFIG_DIR" do
     it "must be relative to the home directory" do
-      expect(MStrap::Paths::XDG_CONFIG_DIR).must_equal(File.join(MSTRAP_TEST_HOME, ".config"))
+      expect(MStrap::Paths::XDG_CONFIG_DIR).to eq(File.join(MSTRAP_TEST_HOME, ".config"))
     end
   end
 
   describe "BREWFILE" do
     it "must be relative to the runtime config directory" do
-      expect(MStrap::Paths::BREWFILE).must_equal(File.join(MSTRAP_TEST_RC_DIR, "Brewfile"))
+      expect(MStrap::Paths::BREWFILE).to eq(File.join(MSTRAP_TEST_RC_DIR, "Brewfile"))
+    end
+  end
+
+  describe "CA_CERT_BUNDLE" do
+    it "must be relative to the runtime config directory" do
+      expect(MStrap::Paths::CA_CERT_BUNDLE).to eq(File.join(MSTRAP_TEST_RC_DIR, "cacert.pem"))
     end
   end
 
   describe "CONFIG_HCL" do
     it "must be relative to the runtime config directory" do
-      expect(MStrap::Paths::CONFIG_HCL).must_equal(File.join(MSTRAP_TEST_RC_DIR, "config.hcl"))
+      expect(MStrap::Paths::CONFIG_HCL).to eq(File.join(MSTRAP_TEST_RC_DIR, "config.hcl"))
     end
   end
 
   describe "LOG_FILE" do
     it "must be relative to the runtime config directory" do
-      expect(MStrap::Paths::LOG_FILE).must_equal(File.join(MSTRAP_TEST_RC_DIR, "mstrap.log"))
+      expect(MStrap::Paths::LOG_FILE).to eq(File.join(MSTRAP_TEST_RC_DIR, "mstrap.log"))
+    end
+  end
+
+  describe "PROFILES_DIR" do
+    it "must be relative to the runtime config directory" do
+      expect(MStrap::Paths::PROFILES_DIR).to eq(File.join(MSTRAP_TEST_RC_DIR, "profiles"))
     end
   end
 
   describe "PROJECT_CERTS" do
     it "must be relative to the runtime config directory" do
-      expect(MStrap::Paths::PROJECT_CERTS).must_equal(File.join(MSTRAP_TEST_RC_DIR, "project-certs"))
+      expect(MStrap::Paths::PROJECT_CERTS).to eq(File.join(MSTRAP_TEST_RC_DIR, "project-certs"))
     end
   end
 
   describe "PROJECT_SITES" do
     it "must be relative to the runtime config directory" do
-      expect(MStrap::Paths::PROJECT_SITES).must_equal(File.join(MSTRAP_TEST_RC_DIR, "project-sites"))
+      expect(MStrap::Paths::PROJECT_SITES).to eq(File.join(MSTRAP_TEST_RC_DIR, "project-sites"))
     end
   end
 
   describe "PROJECT_SOCKETS" do
     it "must be relative to the project-sites directory" do
-      expect(MStrap::Paths::PROJECT_SOCKETS).must_equal(File.join(MStrap::Paths::PROJECT_SITES, "sockets"))
+      expect(MStrap::Paths::PROJECT_SOCKETS).to eq(File.join(MStrap::Paths::PROJECT_SITES, "sockets"))
     end
   end
 
   describe "SERVICES_YML" do
     it "must be relative to the runtime config directory" do
-      expect(MStrap::Paths::SERVICES_YML).must_equal(File.join(MSTRAP_TEST_RC_DIR, "services.yml"))
+      expect(MStrap::Paths::SERVICES_YML).to eq(File.join(MSTRAP_TEST_RC_DIR, "services.yml"))
     end
   end
 
   describe "STRAP_SH_PATH" do
     it "must be relative to the vendor directory" do
-      expect(MStrap::Paths::STRAP_SH_PATH).must_equal(File.join(MSTRAP_TEST_RC_DIR, "vendor", "strap.sh"))
+      expect(MStrap::Paths::STRAP_SH_PATH).to eq(File.join(MSTRAP_TEST_RC_DIR, "vendor", "strap.sh"))
     end
   end
 
@@ -74,11 +86,11 @@ describe MStrap::Paths do
       {% if flag?(:darwin) %}
         expect(
           MStrap::Paths::STRAP_SH_URL
-        ).must_equal("https://raw.githubusercontent.com/MikeMcQuaid/strap/master/bin/strap.sh")
+        ).to eq("https://raw.githubusercontent.com/MikeMcQuaid/strap/master/bin/strap.sh")
       {% elsif flag?(:linux) %}
         expect(
           MStrap::Paths::STRAP_SH_URL
-        ).must_equal("https://raw.githubusercontent.com/maxfierke/strap-linux/master/bin/strap.sh")
+        ).to eq("https://raw.githubusercontent.com/maxfierke/strap-linux/master/bin/strap.sh")
       {% else %}
         {{ raise "Unsupported platform" }}
       {% end %}

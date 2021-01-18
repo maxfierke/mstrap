@@ -6,13 +6,13 @@ shards:
 
   hcl:
     git: https://github.com/maxfierke/hcl.cr.git
-    version: 0.1.0+git.commit.a9b667dcb4f51398fc2e520bcfa467fafbc6d396
-
-  minitest:
-    git: https://github.com/maxfierke/minitest.cr.git
-    version: 0.5.1+git.commit.a5004e4d5bb2c13fc15e58835d98b5a02dd1a5fc
+    version: 0.1.0+git.commit.91d59c6a08491e84be1c23d6c41b18825959822a
 
   pegmatite:
-    git: https://github.com/maxfierke/crystal-pegmatite.git
-    version: 0.1.0+git.commit.d8ce5cdb99a8f21b17cbb462f1d629c07f2b9e49
+    git: https://github.com/jemc/crystal-pegmatite.git
+    version: 0.1.1+git.commit.efe2b551acad0399b9e2dd4fde25ebf406e5f64e
+
+  spectator:
+    git: https://gitlab.com/arctic-fox/spectator.git
+    version: 0.9.34
 

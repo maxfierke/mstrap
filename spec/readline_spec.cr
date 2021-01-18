@@ -1,6 +1,6 @@
 require "./spec_helper"
 
-describe Readline do
+Spectator.describe Readline do
   typeof(Readline.readline)
   typeof(Readline.readline("Hello", true))
   typeof(Readline.readline(prompt: "Hello"))
@@ -10,11 +10,11 @@ describe Readline do
   typeof(Readline.autocomplete { |s| %w(foo bar) })
 
   it "gets prefix in bytesize between two strings" do
-    expect(Readline.common_prefix_bytesize("", "foo")).must_equal(0)
-    expect(Readline.common_prefix_bytesize("foo", "")).must_equal(0)
-    expect(Readline.common_prefix_bytesize("a", "a")).must_equal(1)
-    expect(Readline.common_prefix_bytesize("open", "operate")).must_equal(3)
-    expect(Readline.common_prefix_bytesize("operate", "open")).must_equal(3)
-    expect(Readline.common_prefix_bytesize(["operate", "open", "optional"])).must_equal(2)
+    expect(Readline.common_prefix_bytesize("", "foo")).to eq(0)
+    expect(Readline.common_prefix_bytesize("foo", "")).to eq(0)
+    expect(Readline.common_prefix_bytesize("a", "a")).to eq(1)
+    expect(Readline.common_prefix_bytesize("open", "operate")).to eq(3)
+    expect(Readline.common_prefix_bytesize("operate", "open")).to eq(3)
+    expect(Readline.common_prefix_bytesize(["operate", "open", "optional"])).to eq(2)
   end
 end

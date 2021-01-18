@@ -22,9 +22,9 @@ module MStrap
       def bootstrap
         if File.exists?("yarn.lock")
           cmd "brew install yarn", quiet: true
-          cmd "yarn install", quiet: true
+          skip_reshim { cmd "yarn install", quiet: true }
         elsif File.exists?("package.json")
-          cmd "npm install", quiet: true
+          skip_reshim { cmd "npm install", quiet: true }
         end
       end
 
@@ -39,7 +39,7 @@ module MStrap
           end
         end
 
-        asdf_exec "npm", cmd_args, runtime_version: runtime_version
+        skip_reshim { asdf_exec "npm", cmd_args, runtime_version: runtime_version }
       end
 
       def matches? : Bool
@@ -49,6 +49,16 @@ module MStrap
           ".node-version",
         ].any? do |file|
           File.exists?(file)
+        end
+      end
+
+      private def skip_reshim
+        begin
+          ENV["ASDF_SKIP_RESHIM"] = "1"
+          yield
+        ensure
+          ENV.delete("ASDF_SKIP_RESHIM")
+          asdf_exec "asdf", ["reshim", "nodejs"]
         end
       end
     end

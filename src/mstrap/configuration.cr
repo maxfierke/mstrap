@@ -14,8 +14,7 @@ module MStrap
     include Utils::Logging
     include Utils::System
 
-    @cli : CLIOptions
-    @config_hcl_def : Defs::ConfigDef
+    @config_def : Defs::ConfigDef
     @loaded_profile_configs : Array(Defs::ProfileConfigDef)
     @loaded_profiles : Array(Defs::ProfileDef)
     @known_profile_configs : Array(Defs::ProfileConfigDef)
@@ -24,8 +23,8 @@ module MStrap
 
     DEFAULT_PROFILE_DEF = Defs::DefaultProfileDef.new
 
-    # Returns CLI options
-    getter :cli
+    # Returns path to configuration file
+    getter :config_path
 
     # Returns known profile configurations
     getter :known_profile_configs
@@ -43,9 +42,12 @@ module MStrap
     # Returns the mstrap user
     getter :user
 
-    def initialize(cli : CLIOptions, config : Defs::ConfigDef)
-      @cli = cli
-      @config_hcl_def = config
+    def initialize(
+      config : Defs::ConfigDef,
+      config_path : String
+    )
+      @config_def = config
+      @config_path = config_path
       @loaded_profile_configs = [] of Defs::ProfileConfigDef
       @loaded_profiles = [] of Defs::ProfileDef
       @known_profile_configs = config.profiles + [DEFAULT_PROFILE_DEF]
@@ -56,7 +58,7 @@ module MStrap
     # Loads all profiles and resolves them into the resolve_profile
     #
     # Raises ConfigurationNotFoundError if a profile cannot be found.
-    def load_profiles!(force = nil)
+    def load_profiles!(force = false)
       return self if loaded_profiles?
 
       known_profile_configs.each do |profile_config|
@@ -67,7 +69,7 @@ module MStrap
             next
           end
         else
-          fetcher = ProfileFetcher.new(profile_config, force || cli.force?)
+          fetcher = ProfileFetcher.new(profile_config, force: force)
 
           if !mstrapped? && fetcher.git_url? && !has_git?
             logw "Skipping profile '#{profile_config.name}' fetch, as git has not yet been installed."
@@ -112,15 +114,15 @@ module MStrap
     #
     # Raises ConfigurationNotFoundError if the mstrap configuration cannot be
     # found or accessed, or any managed profiles cannot be found or accessed.
-    def reload!(force = nil)
+    def reload!(force = false)
       if File.exists?(config_path)
         config_hcl = File.read(config_path)
         config = Defs::ConfigDef.from_hcl(config_hcl)
 
         # TODO: This is gross, but the initialization logic can't happen inside
         # another method for types to be correctly inferred (w/o making them nilable)
-        initialize(cli, config)
-        load_profiles!(force)
+        initialize(config, config_path)
+        load_profiles!(force: force)
       else
         raise ConfigurationNotFoundError.new(config_path)
       end
@@ -128,17 +130,9 @@ module MStrap
 
     # Saves configuration back to disk
     def save!
-      config_hcl = @config_hcl_def.to_hcl
+      config_hcl = @config_def.to_hcl
       FileUtils.mkdir_p(Paths::RC_DIR, 0o755)
       File.write(config_path, config_hcl, perm: 0o600)
-    end
-
-    private def config_path
-      if cli.config_path.starts_with?("https://")
-        Paths::CONFIG_HCL
-      else
-        cli.config_path
-      end
     end
 
     private def resolve_profile!

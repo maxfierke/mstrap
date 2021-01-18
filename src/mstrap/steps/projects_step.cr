@@ -66,7 +66,7 @@ module MStrap
       end
 
       private def restart_internal_services!
-        ServicesStep.new(config).bootstrap(
+        ServicesStep.new(config, options).bootstrap(
           services_yml: Paths::SERVICES_INTERNAL_YML
         )
       end

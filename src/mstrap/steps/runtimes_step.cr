@@ -45,8 +45,7 @@ module MStrap
                            runtime.installed_versions.last
                          end
 
-        logn "--> Setting default #{runtime.language_name} version to #{latest_version}: "
-        log "Setting default #{runtime.language_name} version to #{latest_version}: "
+        log "--> Setting default #{runtime.language_name} version to #{latest_version}: "
         unless cmd "asdf global #{runtime.asdf_plugin_name} #{latest_version}", quiet: true
           logc "Could not set global #{runtime.language_name} version to #{latest_version}"
         end

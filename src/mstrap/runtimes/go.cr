@@ -27,7 +27,9 @@ module MStrap
             cmd_args << pkg.name
           end
 
-          asdf_exec "go", cmd_args, runtime_version: runtime_version
+          disable_go_modules do
+            asdf_exec "go", cmd_args, runtime_version: runtime_version
+          end
         end
       end
 
@@ -37,6 +39,17 @@ module MStrap
           ".go-version",
         ].any? do |file|
           File.exists?(file)
+        end
+      end
+
+      private def disable_go_modules
+        current_module_setting = ENV["GO111MODULE"]?
+
+        begin
+          ENV["GO111MODULE"] = "off"
+          yield
+        ensure
+          ENV["GO111MODULE"] = current_module_setting
         end
       end
     end

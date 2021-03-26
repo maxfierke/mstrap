@@ -1,22 +1,18 @@
 version: 2.0
 shards:
   commander:
-    git: https://github.com/mrrooijen/commander.git
-    version: 0.3.5
+    git: https://github.com/maxfierke/commander.git
+    version: 0.3.5+git.commit.06cfe39ddd4b0582d3887342371b80e433d4373a
 
   hcl:
     git: https://github.com/maxfierke/hcl.cr.git
-    version: 0.1.0+git.commit.7b3378dcb89ea41c0149cd2e3fcbddc983bc7c30
+    version: 0.1.0+git.commit.a9b667dcb4f51398fc2e520bcfa467fafbc6d396
 
   minitest:
-    git: https://github.com/ysbaddaden/minitest.cr.git
-    version: 0.5.1
+    git: https://github.com/maxfierke/minitest.cr.git
+    version: 0.5.1+git.commit.a5004e4d5bb2c13fc15e58835d98b5a02dd1a5fc
 
   pegmatite:
-    git: https://github.com/jemc/crystal-pegmatite.git
-    version: 0.1.0+git.commit.c3a6ae2eebce9ba7c08d08eb9cfedeb13f8a3646
-
-  readline:
-    git: https://github.com/crystal-lang/crystal-readline.git
-    version: 0.1.0
+    git: https://github.com/maxfierke/crystal-pegmatite.git
+    version: 0.1.0+git.commit.d8ce5cdb99a8f21b17cbb462f1d629c07f2b9e49
 

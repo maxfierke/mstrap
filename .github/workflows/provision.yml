@@ -53,8 +53,10 @@ jobs:
       run: |
         source ~/.mstrap/env.sh && bin/mstrap --debug
 
-    - name: Workaround by using homebrew ruby
-      run: brew install ruby && gem install bundler
+    - uses: ruby/setup-ruby@v1
+      with:
+        bundler-cache: true
+        working-directory: spec/provisioning
 
     - name: Run serverspecs
       env:
@@ -104,8 +106,10 @@ jobs:
       run: |
         source ~/.mstrap/env.sh && bin/mstrap --debug
 
-    - name: Workaround by using homebrew ruby
-      run: brew install ruby && gem install bundler
+    - uses: ruby/setup-ruby@v1
+      with:
+        bundler-cache: true
+        working-directory: spec/provisioning
 
     - name: Run serverspecs
       env:

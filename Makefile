@@ -22,6 +22,7 @@ TARGET_OS         := $(shell uname -s | tr '[:upper:]' '[:lower:]')
 
 ifeq ($(shell [[ "$(TARGET_OS)" == "darwin" && "$(STATIC_LIBS)" != "" ]] && echo true),true)
   override LDFLAGS += -L$(STATIC_LIBS_DIR)
+  BDWGC_LIB_PATH    ?= $(shell pkg-config --libs-only-L bdw-gc | cut -c 3-)
   LIBEVENT_LIB_PATH ?= $(shell pkg-config --libs-only-L libevent | cut -c 3-)
   LIBPCRE_LIB_PATH  ?= $(shell pkg-config --libs-only-L libpcre | cut -c 3-)
   OPENSSL_LIB_PATH ?= $(shell brew --prefix openssl@1.1)/lib
@@ -35,6 +36,10 @@ ifeq ($(shell [[ "$(TARGET_OS)" == "darwin" && "$(STATIC_LIBS)" != "" ]] && echo
 		mkdir -p $(STATIC_LIBS_DIR)
 		cp -f $(LIBEVENT_LIB_PATH)/libevent.a $(STATIC_LIBS_DIR)
 
+  vendor/libgc.a: $(BDWGC_LIB_PATH)/libgc.a
+		mkdir -p $(STATIC_LIBS_DIR)
+		cp -f $(BDWGC_LIB_PATH)/libgc.a $(STATIC_LIBS_DIR)
+
   vendor/libpcre.a: $(LIBPCRE_LIB_PATH)/libpcre.a
 		mkdir -p $(STATIC_LIBS_DIR)
 		cp -f $(LIBPCRE_LIB_PATH)/libpcre.a $(STATIC_LIBS_DIR)
@@ -44,7 +49,7 @@ ifeq ($(shell [[ "$(TARGET_OS)" == "darwin" && "$(STATIC_LIBS)" != "" ]] && echo
 		cp -f $(OPENSSL_LIB_PATH)/libssl.a $(STATIC_LIBS_DIR)
 
   .PHONY: libs
-  libs: vendor/libcrypto.a vendor/libssl.a vendor/libevent.a vendor/libpcre.a
+  libs: vendor/libcrypto.a vendor/libgc.a vendor/libssl.a vendor/libevent.a vendor/libpcre.a
 else
   .PHONY: libs
   libs:

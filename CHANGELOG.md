@@ -13,10 +13,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Compiling mstrap under Crystal 1.0.0 ([#31](https://github.com/maxfierke/mstrap/pull/31))
+
 ### Fixed
 
 - Fix excessive reshimming during batch npm/yarn installs ([#27](https://github.com/maxfierke/mstrap/pull/27))
 - Fix excessive logging verbosity on sub-step runs ([#28](https://github.com/maxfierke/mstrap/pull/28))
+- Fix cURL CA cert fetching ([#31](https://github.com/maxfierke/mstrap/pull/31))
 
 ### Removed
 

@@ -41,6 +41,18 @@ module MStrap
       getter? upstream_present = false
       getter? web_present = false
 
+      def_equals_and_hash @cname,
+        @name,
+        @hostname,
+        @path,
+        @port,
+        @repo,
+        @run_scripts,
+        @runtimes,
+        @upstream,
+        @websocket,
+        @web
+
       def initialize
       end
 

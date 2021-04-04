@@ -2,7 +2,7 @@ module MStrap
   class User
     @name : String
     @email : String
-    @github : String
+    @github : String?
 
     # Returns name of user
     getter :name
@@ -16,10 +16,10 @@ module MStrap
     def initialize(user : Defs::UserDef)
       @name = user.name.not_nil!
       @email = user.email.not_nil!
-      @github = user.github.not_nil!
+      @github = user.github
     end
 
-    def initialize(@name, @email, @github)
+    def initialize(@name, @email, @github = nil)
     end
   end
 end

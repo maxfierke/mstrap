@@ -7,7 +7,6 @@ module MStrap
     @args : Array(String)
     @docker : Docker? = nil
     # BUG?: Why aren't these inferred correctly?
-    @options : CLIOptions
     @profile : Defs::ProfileDef
     @user : User
 
@@ -28,10 +27,10 @@ module MStrap
 
     # Initializes the step. Called by `MStrap::Bootsrapper`. Typically not
     # called directly.
-    def initialize(config : Configuration, args = [] of String)
+    def initialize(config : Configuration, cli_options : CLIOptions, args = [] of String)
       @args = args
       @config = config
-      @options = config.cli
+      @options = cli_options
       @profile = config.resolved_profile
       @user = config.user
     end

@@ -105,9 +105,9 @@ clean:
 spec: libs deps $(SOURCES)
 	$(CRYSTAL_BIN) tool format --check
 	@if [ "$(TARGET_OS)" == "darwin" ]; then \
-		LIBRARY_PATH=$(STATIC_LIBS_DIR) $(CRYSTAL_BIN) spec -Dmt_no_expectations; \
+		LIBRARY_PATH=$(STATIC_LIBS_DIR) $(CRYSTAL_BIN) spec -Dmt_no_expectations --error-trace; \
 	else \
-		$(CRYSTAL_BIN) spec -Dmt_no_expectations; \
+		$(CRYSTAL_BIN) spec -Dmt_no_expectations --error-trace; \
 	fi
 
 .PHONY: check-libraries

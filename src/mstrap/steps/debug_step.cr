@@ -18,7 +18,7 @@ module MStrap
       def bootstrap
         puts "mstrap v#{MStrap::VERSION}"
         puts "Loaded Config:"
-        puts "  #{config.cli.config_path}"
+        puts "  #{options.config_path}"
         puts "Known Profiles:"
         config.known_profile_configs.each do |profile|
           puts "  #{profile.name}"

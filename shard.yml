@@ -13,9 +13,9 @@ dependencies:
     branch: master
 
 development_dependencies:
-  minitest:
-    github: maxfierke/minitest.cr
-    branch: mf-crystal_1.0.0
+  spectator:
+    gitlab: arctic-fox/spectator
+    version: ~> 0.9.34
 
 libraries:
   readline: "*"

@@ -101,10 +101,10 @@ module MStrap
             cmd.run do |options, arguments|
               validate_step!(key)
 
-              load_cli_options!(options)
+              cli_options = load_cli_options!(options)
               config = load_configuration!
 
-              run_step!(key, config, args: arguments)
+              run_step!(key, config, cli_options, args: arguments)
               success "`mstrap #{key}` has completed successfully!"
               print_shell_reload_warning if step.requires_shell_restart?
             end
@@ -207,13 +207,13 @@ module MStrap
         end
 
         cmd.run do |options, arguments|
-          load_cli_options!(options)
+          cli_options = load_cli_options!(options)
           load_bootstrap_options!(options)
 
           config = load_configuration!
 
           logw "Strap in!"
-          DEFAULT_STEPS.each { |s| run_step!(s, config) }
+          DEFAULT_STEPS.each { |s| run_step!(s, config, cli_options) }
           success "mstrap has completed successfully!"
           print_shell_reload_warning
         end
@@ -230,21 +230,22 @@ module MStrap
     end
 
     private def config_def
-      @config_def ||= if options.config_path.starts_with?("https://")
-                        CACertInstaller.install!
-                        Defs::ConfigDef.from_url(options.config_path)
-                      elsif File.exists?(options.config_path)
-                        config_hcl = File.read(options.config_path)
-                        Defs::ConfigDef.from_hcl(config_hcl)
-                      else
-                        Defs::ConfigDef.new(
-                          user: Defs::UserDef.new(
-                            name: name.not_nil!,
-                            email: email.not_nil!,
-                            github: github.not_nil!
-                          ),
-                        )
-                      end.not_nil!
+      @config_def ||=
+        if options.config_path.starts_with?("https://")
+          CACertInstaller.install!
+          Defs::ConfigDef.from_url(options.config_path)
+        elsif File.exists?(options.config_path)
+          config_hcl = File.read(options.config_path)
+          Defs::ConfigDef.from_hcl(config_hcl)
+        else
+          Defs::ConfigDef.new(
+            user: Defs::UserDef.new(
+              name: name.not_nil!,
+              email: email.not_nil!,
+              github: github
+            ),
+          )
+        end.not_nil!
     end
 
     private def load_cli_options!(options)
@@ -254,6 +255,8 @@ module MStrap
       self.options.skip_project_update = options.bool["skip_project_update"] if options.bool.has_key?("skip_project_update")
 
       MStrap.initialize_logger!
+
+      self.options
     end
 
     private def load_bootstrap_options!(options)
@@ -268,14 +271,34 @@ module MStrap
       if options.string.has_key?("name") && !options.string["name"].empty?
         @name = options.string["name"]
       end
+
+      self
     end
 
     private def load_configuration!
+      is_remote_config_path = options.config_path.starts_with?("https://")
+
+      config_path = if is_remote_config_path
+                      Paths::CONFIG_HCL
+                    else
+                      options.config_path
+                    end
+
       configuration = Configuration.new(
-        cli: options,
-        config: config_def
+        config: config_def,
+        config_path: config_path
       )
-      configuration.load_profiles!
+
+      if is_remote_config_path
+        if File.exists?(config_path) && !confirm_config_replace?(config_path, options.config_path)
+          logc "Aborting due to existing configuration and choice not to replace."
+        end
+
+        # Download and save remote config
+        configuration.save!
+      end
+
+      configuration.load_profiles!(force: options.force?)
 
       configuration
     end
@@ -305,13 +328,34 @@ module MStrap
       end
     end
 
+    private def confirm_config_replace?(config_path, new_config_path)
+      return true unless STDIN.tty?
+
+      config_path = config_path.gsub(ENV["HOME"], "~")
+
+      logn "There is already a configuration at #{config_path}, but you have "
+      logn "requested to replace with one from '#{new_config_path}'."
+      log "Do you want to continue and replace the existing configuration (Y/n)?: "
+
+      input = nil
+
+      loop do
+        input = STDIN.gets
+        input = input.strip if input
+        break if ["Y", "n"].includes?(input)
+      end
+
+      input == "Y"
+    end
+
     private def print_shell_reload_warning
       logw "Remember to restart your terminal, as the contents of your environment may have shifted."
     end
 
-    private def run_step!(step, config, args = [] of String)
+    private def run_step!(step, config, cli_options, args = [] of String)
       Step.all[step].new(
         config,
+        cli_options,
         args: args
       ).bootstrap
     end

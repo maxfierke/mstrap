@@ -195,7 +195,7 @@ Spectator.describe MStrap::Configuration do
 
       context "not-mstrapped and git is not installed" do
         around_each do |proc|
-          orig_mstrap = ENV["MSTRAP"]
+          orig_mstrap = ENV["MSTRAP"]?
           ENV["MSTRAP"] = nil
           ENV["MSTRAP_IGNORE_GIT"] = "true"
           begin

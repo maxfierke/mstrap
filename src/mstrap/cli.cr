@@ -329,6 +329,8 @@ module MStrap
     end
 
     private def confirm_config_replace?(config_path, new_config_path)
+      return true unless STDIN.tty?
+
       config_path = config_path.gsub(ENV["HOME"], "~")
 
       logn "There is already a configuration at #{config_path}, but you have "

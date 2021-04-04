@@ -10,6 +10,8 @@ module MStrap
       @[HCL::Block(key: "runtime")]
       property runtimes = [] of ::MStrap::Defs::RuntimeDef
 
+      def_equals_and_hash @version, @projects, @runtimes
+
       def initialize
       end
 

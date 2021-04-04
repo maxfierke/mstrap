@@ -10,6 +10,8 @@ module MStrap
       @[HCL::Attribute]
       property url : String
 
+      def_equals_and_hash @name, @revision, @url, @dir
+
       def initialize(@name, @url, @revision = nil)
       end
 
@@ -29,7 +31,7 @@ module MStrap
       end
     end
 
-    class DefaultProfileDef < ProfileConfigDef
+    class DefaultProfileConfigDef < ProfileConfigDef
       def initialize
         @name = "default"
         @url = ""

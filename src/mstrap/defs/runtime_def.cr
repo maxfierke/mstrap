@@ -10,6 +10,8 @@ module MStrap
       @[HCL::Block(key: "package")]
       property packages = [] of ::MStrap::Defs::PkgDef
 
+      def_equals_and_hash @name, @default_version, @packages
+
       def merge!(other : self)
         if other.default_version
           self.default_version = other.default_version

@@ -21,7 +21,7 @@ module MStrap
     @resolved_profile : Defs::ProfileDef
     @user : User
 
-    DEFAULT_PROFILE_DEF = Defs::DefaultProfileDef.new
+    DEFAULT_PROFILE_CONFIG_DEF = Defs::DefaultProfileConfigDef.new
 
     # Returns path to configuration file
     getter :config_path
@@ -44,25 +44,25 @@ module MStrap
 
     def initialize(
       config : Defs::ConfigDef,
-      config_path : String
+      config_path : String = Paths::CONFIG_HCL
     )
       @config_def = config
       @config_path = config_path
       @loaded_profile_configs = [] of Defs::ProfileConfigDef
       @loaded_profiles = [] of Defs::ProfileDef
-      @known_profile_configs = config.profiles + [DEFAULT_PROFILE_DEF]
+      @known_profile_configs = config.profiles + [DEFAULT_PROFILE_CONFIG_DEF]
       @resolved_profile = Defs::ProfileDef.new
       @user = User.new(user: config.user)
     end
 
-    # Loads all profiles and resolves them into the resolve_profile
+    # Loads all profiles and resolves them into the resolved_profile
     #
     # Raises ConfigurationNotFoundError if a profile cannot be found.
     def load_profiles!(force = false)
       return self if loaded_profiles?
 
       known_profile_configs.each do |profile_config|
-        if profile_config == DEFAULT_PROFILE_DEF
+        if profile_config == DEFAULT_PROFILE_CONFIG_DEF
           # Ignore but treat as loaded
           if !File.exists?(profile_config.path)
             loaded_profile_configs << profile_config
@@ -137,10 +137,6 @@ module MStrap
 
     private def resolve_profile!
       resolved_profile.merge!(profiles)
-    end
-
-    private def has_git?
-      cmd("command -v git", quiet: true)
     end
   end
 end

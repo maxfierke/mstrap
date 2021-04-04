@@ -12,6 +12,8 @@ module MStrap
       @[HCL::Block]
       property user = ::MStrap::Defs::UserDef.new
 
+      def_equals_and_hash @version, @profiles, @user
+
       def self.from_url(url : String)
         HTTP::Client.get(url, tls: MStrap.tls_client) do |response|
           self.from_hcl(response.body_io.gets_to_end)

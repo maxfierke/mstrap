@@ -242,7 +242,7 @@ module MStrap
             user: Defs::UserDef.new(
               name: name.not_nil!,
               email: email.not_nil!,
-              github: github.not_nil!
+              github: github
             ),
           )
         end.not_nil!

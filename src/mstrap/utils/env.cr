@@ -6,6 +6,10 @@ module MStrap
         MStrap.debug?
       end
 
+      def has_git?
+        ENV["MSTRAP_IGNORE_GIT"]? != "true" && (`command -v git` && $?.success?)
+      end
+
       # Alias for `MStrap.logger`
       def logger
         MStrap.logger

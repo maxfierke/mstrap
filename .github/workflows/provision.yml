@@ -76,7 +76,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Add Crystal repos
-      run: curl -sSL https://dist.crystal-lang.org/apt/setup.sh | sudo bash
+      run: curl -sSL https://crystal-lang.org/install.sh | sudo bash
 
     - name: Install crystal
       run: |

@@ -29,7 +29,7 @@ describe "dependencies step" do
       'git',
       'jq',
       'mkcert',
-      'openssl',
+      'openssl@1.1',
       'pkg-config',
       'readline',
       'zlib',

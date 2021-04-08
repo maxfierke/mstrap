@@ -1,7 +1,6 @@
 module MStrap
   module Linux
     module Fedora
-      extend Utils::Env
       extend Utils::Logging
       extend Utils::System
       extend RHEL

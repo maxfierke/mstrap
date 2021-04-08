@@ -1,7 +1,6 @@
 module MStrap
   class Project
     include Utils::Logging
-    include Utils::Env
     include Utils::System
 
     # :nodoc:

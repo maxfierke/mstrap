@@ -1,7 +1,6 @@
 module MStrap
   module Linux
     module Debian
-      extend Utils::Env
       extend Utils::Logging
       extend Utils::System
 

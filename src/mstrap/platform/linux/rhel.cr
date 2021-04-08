@@ -1,7 +1,6 @@
 module MStrap
   module Linux
     module RHEL
-      extend Utils::Env
       extend Utils::Logging
       extend Utils::System
 

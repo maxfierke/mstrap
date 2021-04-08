@@ -19,7 +19,6 @@ module MStrap
       end
     end
 
-    include Utils::Env
     include Utils::Logging
     include Utils::System
 

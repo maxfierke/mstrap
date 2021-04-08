@@ -1,6 +1,5 @@
 module MStrap
   class CLI
-    include Utils::Env
     include Utils::Logging
 
     # The default step run list. Running `mstrap` with no arguments
@@ -361,7 +360,7 @@ module MStrap
     end
 
     private def validate_step!(step)
-      if Step.all[step].requires_mstrap? && !mstrapped?
+      if Step.all[step].requires_mstrap? && !MStrap.mstrapped?
         logc "You must do a full mstrap run before you can run `mstrap #{step}`"
       end
     end

@@ -1,6 +1,5 @@
 module MStrap
   class Docker
-    include Utils::Env
     include Utils::Logging
     include Utils::System
 

@@ -1,6 +1,5 @@
 module MStrap
   class CACertInstaller
-    include Utils::Env
     include Utils::Logging
     include Utils::System
 

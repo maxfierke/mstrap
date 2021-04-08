@@ -15,6 +15,7 @@ require "./mstrap/version"
 require "./mstrap/paths"
 require "./mstrap/utils/**"
 require "./mstrap/platform/*"
+require "./mstrap/platform"
 require "./mstrap/cli_options"
 require "./mstrap/def"
 require "./mstrap/defs/**"
@@ -86,6 +87,12 @@ module MStrap
     end
 
     nil
+  end
+
+  # Returns whether or not the `mstrap` environment file (`env.sh`) has been
+  # loaded into the environment.
+  def self.mstrapped?
+    ENV["MSTRAP"]? == "true"
   end
 
   # Returns a TLS client that uses a local version of the cURL CA bundle.

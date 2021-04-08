@@ -3,7 +3,7 @@ module MStrap
     module Logging
       # Logs a message, without appending a newline.
       def log(msg)
-        return logn(msg) if debug?
+        return logn(msg) if MStrap.debug?
         print msg
         Log.info { msg }
       end
@@ -37,7 +37,7 @@ module MStrap
       # will output in red. In debug, this will also print the stacktrace.
       def logc(msg)
         Log.fatal { msg }
-        if debug?
+        if MStrap.debug?
           abort msg.colorize(:red)
         else
           puts "!!! #{msg}".colorize(:red)

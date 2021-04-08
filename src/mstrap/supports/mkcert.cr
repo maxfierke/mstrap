@@ -1,7 +1,6 @@
 module MStrap
   # Manages the integration with mkcert for issuing localhost certificates
   class Mkcert
-    include Utils::Env
     include Utils::Logging
     include Utils::System
 

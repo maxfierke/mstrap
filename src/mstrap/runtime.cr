@@ -1,7 +1,6 @@
 module MStrap
   # Base class for working with language runtimes
   abstract class Runtime
-    include Utils::Env
     include Utils::Logging
     include Utils::System
 

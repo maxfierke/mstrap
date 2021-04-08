@@ -1,7 +1,6 @@
 module MStrap
   class CACertInstaller
-    include Utils::Logging
-    include Utils::System
+    include DSL
 
     def self.install!
       new.install!

@@ -1,8 +1,7 @@
 module MStrap
   module Linux
     module Fedora
-      extend Utils::Logging
-      extend Utils::System
+      extend DSL
       extend RHEL
 
       def self.install_packages!(packages : Array(String))

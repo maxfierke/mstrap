@@ -1,6 +1,6 @@
 module MStrap
   class CLI
-    include Utils::Logging
+    include DSL::Logging
 
     # The default step run list. Running `mstrap` with no arguments
     # will run these steps in order.

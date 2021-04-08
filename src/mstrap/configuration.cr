@@ -10,8 +10,7 @@ module MStrap
       end
     end
 
-    include Utils::Logging
-    include Utils::System
+    include DSL
 
     @config_def : Defs::ConfigDef
     @loaded_profile_configs : Array(Defs::ProfileConfigDef)

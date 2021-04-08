@@ -1,7 +1,6 @@
 module MStrap
   class Project
-    include Utils::Logging
-    include Utils::System
+    include DSL
 
     # :nodoc:
     ABSOLUTE_REPO_URL_REGEX = /\A(git|https?|ftps?|ssh|file):\/\//

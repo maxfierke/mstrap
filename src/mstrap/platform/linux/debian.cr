@@ -1,8 +1,7 @@
 module MStrap
   module Linux
     module Debian
-      extend Utils::Logging
-      extend Utils::System
+      extend DSL
 
       def self.install_packages!(packages : Array(String))
         cmd("apt-get", ["-y", "install"] + packages, sudo: true)

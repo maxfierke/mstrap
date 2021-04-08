@@ -1,5 +1,5 @@
 module MStrap
-  module Utils
+  module DSL
     module System
       # Executes a given command and waits for it to complete, returning whether
       # the exit status indicated success.

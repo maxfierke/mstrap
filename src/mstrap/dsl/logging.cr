@@ -1,5 +1,5 @@
 module MStrap
-  module Utils
+  module DSL
     module Logging
       # Logs a message, without appending a newline.
       def log(msg)

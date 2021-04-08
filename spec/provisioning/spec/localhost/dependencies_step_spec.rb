@@ -24,25 +24,14 @@ describe "dependencies step" do
     PACKAGES = [
       'ack',
       'asdf',
-      'autoconf',
-      'automake',
       'bash-completion',
-      'bison',
-      'coreutils',
       'curl',
-      'findutils',
-      'gettext',
       'git',
-      'gnu-sed',
-      'gnu-tar',
-      'jpeg',
       'jq',
-      'libpng',
       'mkcert',
-      'openssl@1.1',
+      'openssl',
       'pkg-config',
       'readline',
-      'unixodbc',
       'zlib',
     ].freeze
 
@@ -54,6 +43,14 @@ describe "dependencies step" do
 
     describe "darwin packages", if: os[:family] == 'darwin' do
       DARWIN_PACKAGES = [
+        'autoconf',
+        'automake',
+        'bison',
+        'coreutils',
+        'findutils',
+        'gnu-sed',
+        'gnu-tar',
+        'gettext',
         'libiconv',
         'nss',
       ].freeze

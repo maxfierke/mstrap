@@ -100,7 +100,7 @@ module MStrap
         cmd(env, command, command_args, **kwargs)
       end
 
-      # ditto
+      # :ditto:
       def cmd(command, *args, **kwargs)
         cmd(nil, command, *args, **kwargs)
       end

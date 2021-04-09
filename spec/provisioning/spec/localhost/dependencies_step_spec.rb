@@ -45,7 +45,7 @@ describe "dependencies step" do
       DARWIN_PACKAGES = [
         'autoconf',
         'automake',
-        'bison',
+        'bison@3.7',
         'coreutils',
         'findutils',
         'gnu-sed',

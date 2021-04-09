@@ -52,7 +52,6 @@ describe "dependencies step" do
         'gnu-tar',
         'gettext',
         'libiconv',
-        'nss',
       ].freeze
 
       DARWIN_PACKAGES.each do |pkg|

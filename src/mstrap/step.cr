@@ -1,8 +1,6 @@
 module MStrap
   abstract class Step
-    include Utils::Env
-    include Utils::Logging
-    include Utils::System
+    include DSL
 
     @args : Array(String)
     @docker : Docker? = nil

@@ -1,5 +1,5 @@
 module MStrap
-  module Utils
+  module DSL
     module System
       # Executes a given command and waits for it to complete, returning whether
       # the exit status indicated success.
@@ -46,7 +46,7 @@ module MStrap
           error:  error,
         }
 
-        if debug?
+        if MStrap.debug?
           named = named.merge({
             input:  Process::Redirect::Inherit,
             output: Process::Redirect::Inherit,

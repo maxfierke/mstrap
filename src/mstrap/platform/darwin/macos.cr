@@ -1,15 +1,14 @@
 module MStrap
-  module Linux
-    module Fedora
+  module Darwin
+    module MacOS
       extend DSL
-      extend RHEL
 
       def self.install_packages!(packages : Array(String))
-        cmd("dnf", ["-y", "install"] + packages, sudo: true)
+        cmd("brew", ["install"] + packages)
       end
 
       def self.package_installed?(package_name : String)
-        cmd("dnf", ["info", "--installed", package_name], quiet: true)
+        cmd("brew list | grep -q '^#{package_name}$'", quiet: true)
       end
     end
   end

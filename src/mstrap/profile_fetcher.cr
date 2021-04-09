@@ -19,9 +19,7 @@ module MStrap
       end
     end
 
-    include Utils::Env
-    include Utils::Logging
-    include Utils::System
+    include DSL
 
     @url : URI
 

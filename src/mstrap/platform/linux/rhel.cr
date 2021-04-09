@@ -1,9 +1,7 @@
 module MStrap
   module Linux
     module RHEL
-      extend Utils::Env
-      extend Utils::Logging
-      extend Utils::System
+      extend DSL
 
       def self.install_packages!(packages : Array(String))
         cmd("yum", ["-y", "install"] + packages, sudo: true)

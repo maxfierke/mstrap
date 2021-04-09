@@ -2,9 +2,7 @@ module MStrap
   # The `WebBootstrapper` is responsible for bootstrapping web-based projects.
   # Currently, this is just setting up an NGINX configuration for the project.
   class WebBootstrapper
-    include Utils::Env
-    include Utils::Logging
-    include Utils::System
+    include DSL
 
     # Project to run bootstrapper on
     getter :project

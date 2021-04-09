@@ -1,8 +1,6 @@
 module MStrap
   class Docker
-    include Utils::Env
-    include Utils::Logging
-    include Utils::System
+    include DSL
 
     @app_path : String? = nil
     @requires_sudo : Bool? = nil

@@ -1,9 +1,7 @@
 module MStrap
   # Manages the integration with mkcert for issuing localhost certificates
   class Mkcert
-    include Utils::Env
-    include Utils::Logging
-    include Utils::System
+    include DSL
 
     # Returns whether mkcert is installed
     def installed?
@@ -29,15 +27,20 @@ module MStrap
     end
 
     private def install_dependencies! : Nil
-      {% if flag?(:linux) %}
-        nss_package_name = MStrap::Linux.debian_distro? ? "libnss3-tools" : "nss-tools"
+      nss_package_name =
+        {% if flag?(:linux) %}
+          MStrap::Linux.debian_distro? ? "libnss3-tools" : "nss-tools"
+        {% elsif flag?(:darwin) %}
+          "nss"
+        {% else %}
+          {{ raise "Unsupported platform" }}
+        {% end %}
 
-        return if MStrap::Linux.package_installed?(nss_package_name)
+      return if MStrap::Platform.package_installed?(nss_package_name)
 
-        unless MStrap::Linux.install_package!(nss_package_name)
-          logc "Could not install '#{nss_package_name}' support package for mkcert"
-        end
-      {% end %}
+      unless MStrap::Platform.install_package!(nss_package_name)
+        logc "Could not install '#{nss_package_name}' support package for mkcert"
+      end
     end
   end
 end

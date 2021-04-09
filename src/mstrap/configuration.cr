@@ -10,9 +10,7 @@ module MStrap
       end
     end
 
-    include Utils::Env
-    include Utils::Logging
-    include Utils::System
+    include DSL
 
     @config_def : Defs::ConfigDef
     @loaded_profile_configs : Array(Defs::ProfileConfigDef)
@@ -71,7 +69,7 @@ module MStrap
         else
           fetcher = ProfileFetcher.new(profile_config, force: force)
 
-          if !mstrapped? && fetcher.git_url? && !has_git?
+          if !MStrap.mstrapped? && fetcher.git_url? && !MStrap::Platform.has_git?
             logw "Skipping profile '#{profile_config.name}' fetch, as git has not yet been installed."
             logw "This should be okay, as it will be fetched & loaded following installation of git via strap.sh"
             next

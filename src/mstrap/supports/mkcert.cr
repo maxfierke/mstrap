@@ -29,13 +29,15 @@ module MStrap
     private def install_dependencies! : Nil
       {% if flag?(:linux) %}
         nss_package_name = MStrap::Linux.debian_distro? ? "libnss3-tools" : "nss-tools"
-
-        return if MStrap::Linux.package_installed?(nss_package_name)
-
-        unless MStrap::Linux.install_package!(nss_package_name)
-          logc "Could not install '#{nss_package_name}' support package for mkcert"
-        end
+      {% elsif flag?(:nss) %}
+        nss_package_name = "nss"
       {% end %}
+
+      return if MStrap::Platform.package_installed?(nss_package_name)
+
+      unless MStrap::Platform.install_package!(nss_package_name)
+        logc "Could not install '#{nss_package_name}' support package for mkcert"
+      end
     end
   end
 end

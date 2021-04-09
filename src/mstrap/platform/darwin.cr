@@ -1,7 +1,9 @@
+{% skip_file unless flag?(:darwin) %}
+
 module MStrap
   module Darwin
     def self.platform
-      self
+      Darwin::MacOS
     end
   end
 end

@@ -3,6 +3,7 @@ module MStrap
     {% if flag?(:linux) %}
       extend ::MStrap::Linux
     {% elsif flag?(:darwin) %}
+      extend ::MStrap::Darwin
     {% else %}
       {{ raise "Unsupported platform" }}
     {% end %}
@@ -19,7 +20,7 @@ module MStrap
 
     # Installs a single package using the platform's package manager
     def self.install_package!(package_name : String)
-      platform.install_packages!([package_name])
+      install_packages!([package_name])
     end
 
     # Install a single package using the platform's package manager

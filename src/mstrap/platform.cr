@@ -20,7 +20,7 @@ module MStrap
 
     # Installs a single package using the platform's package manager
     def self.install_package!(package_name : String)
-      install_packages!([package_name])
+      platform.install_packages!([package_name])
     end
 
     # Install a single package using the platform's package manager

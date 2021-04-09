@@ -27,11 +27,14 @@ module MStrap
     end
 
     private def install_dependencies! : Nil
-      {% if flag?(:linux) %}
-        nss_package_name = MStrap::Linux.debian_distro? ? "libnss3-tools" : "nss-tools"
-      {% elsif flag?(:nss) %}
-        nss_package_name = "nss"
-      {% end %}
+      nss_package_name =
+        {% if flag?(:linux) %}
+          MStrap::Linux.debian_distro? ? "libnss3-tools" : "nss-tools"
+        {% elsif flag?(:darwin) %}
+          "nss"
+        {% else %}
+          {{ raise "Unsupported platform" }}
+        {% end %}
 
       return if MStrap::Platform.package_installed?(nss_package_name)
 

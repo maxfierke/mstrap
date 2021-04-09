@@ -1,8 +1,13 @@
 {% skip_file unless flag?(:darwin) %}
 
+require "./darwin/macos"
+
 module MStrap
   module Darwin
-    def self.platform
+    extend self
+
+    # :nodoc:
+    def platform
       Darwin::MacOS
     end
   end

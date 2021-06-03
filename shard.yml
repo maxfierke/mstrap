@@ -1,16 +1,16 @@
 name: mstrap
-version: 0.3.1
+version: 0.3.2
 
 authors:
   - Max Fierke <max@maxfierke.com>
 
 dependencies:
   commander:
-    github: maxfierke/commander
-    branch: mf-crystal_1.0.0
+    github: mrrooijen/commander
+    version: ~> 0.4.0
   hcl:
     github: maxfierke/hcl.cr
-    branch: master
+    version: ~> 0.2.0
 
 development_dependencies:
   spectator:
@@ -24,6 +24,6 @@ targets:
   mstrap:
     main: src/cli.cr
 
-crystal: '>= 0.35.1'
+crystal: '>= 1.0.0'
 
 license: MIT

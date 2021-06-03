@@ -1,18 +1,18 @@
 version: 2.0
 shards:
   commander:
-    git: https://github.com/maxfierke/commander.git
-    version: 0.3.5+git.commit.06cfe39ddd4b0582d3887342371b80e433d4373a
+    git: https://github.com/mrrooijen/commander.git
+    version: 0.4.0
 
   hcl:
     git: https://github.com/maxfierke/hcl.cr.git
-    version: 0.1.0+git.commit.91d59c6a08491e84be1c23d6c41b18825959822a
+    version: 0.2.0
 
   pegmatite:
     git: https://github.com/jemc/crystal-pegmatite.git
-    version: 0.1.1+git.commit.efe2b551acad0399b9e2dd4fde25ebf406e5f64e
+    version: 0.2.0+git.commit.52483e2ffdfac6913342b2dae16ba11d6e4b8d07
 
   spectator:
     git: https://gitlab.com/arctic-fox/spectator.git
-    version: 0.9.34
+    version: 0.9.38
 

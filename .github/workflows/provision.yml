@@ -94,6 +94,7 @@ jobs:
       run: |
         sudo apt remove --purge build-essential git file
         sudo apt install curl
+        sudo apt update
 
     - name: Run initial mstrap process
       env:

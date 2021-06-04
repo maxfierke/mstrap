@@ -24,7 +24,6 @@ describe "dependencies step" do
     PACKAGES = [
       'ack',
       'asdf',
-      'bash-completion',
       'curl',
       'git',
       'jq',

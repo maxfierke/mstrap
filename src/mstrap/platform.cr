@@ -8,9 +8,14 @@ module MStrap
       {{ raise "Unsupported platform" }}
     {% end %}
 
-    # Indicates whether the host platform has Git installed
+    # Indicates whether the host platform has Git available
     def self.has_git?
       ENV["MSTRAP_IGNORE_GIT"]? != "true" && (`command -v git` && $?.success?)
+    end
+
+    # Indicates whether the host platform has gpg available
+    def self.has_gpg?
+      `command -v gpg` && $?.success?
     end
 
     # Installs a list of packages using the platform's package manager

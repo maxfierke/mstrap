@@ -12,6 +12,26 @@ module MStrap
       end
 
       def asdf_pre_version_install
+        unless MStrap::Platform.has_gpg?
+          log "--> Installing gpg (to validate node.js releases)"
+          pkg_name =
+            {% if flag?(:linux) %}
+              if MStrap::Platform.rhel_distro?
+                "gpg2"
+              else
+                "gpg"
+              end
+            {% else %}
+              "gpg"
+            {% end %}
+
+          unless MStrap::Platform.install_package!(pkg_name)
+            logc "There was an error installing gpg"
+          end
+
+          success "OK"
+        end
+
         log "--> Ensure node.js release team keyring is up-to-date: "
         unless cmd "bash ~/.asdf/plugins/nodejs/bin/import-release-team-keyring", quiet: true
           logc "There was an error updating the node.js release team keyring. Check #{MStrap::Paths::LOG_FILE} or run again with --debug"

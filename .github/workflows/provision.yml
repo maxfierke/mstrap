@@ -11,6 +11,9 @@ on:
     - 'docs/**'
     - '*.hcl'
     - '*.md'
+  schedule:
+  # Fridays at midnight
+  - cron: '0 0 * * 5'
 
 jobs:
   macos-provision:

@@ -3,6 +3,8 @@
 /bin/
 /dist/
 /builddir/
+/subprojects/*
+!/subprojects/*.wrap
 /.crystal/
 /.shards/
 *.dwarf

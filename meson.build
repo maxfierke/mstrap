@@ -1,6 +1,6 @@
 project('mstrap',
   'c',
-  meson_version : '>= 0.57.0',
+  meson_version : '>= 0.60.0',
   license : 'MIT',
   version : '0.4.0',
   default_options : [
@@ -15,10 +15,11 @@ shards = find_program('shards', required : true)
 libcrypto = dependency('libcrypto', version : '>= 1.1.1')
 libevent = dependency('libevent', version : '>= 2.1.2')
 libgc = dependency('bdw-gc', version : '>= 8.0.4' )
+libiconv = dependency('iconv')
 libm = cc.find_library('m', required : false)
 libpcre = dependency('libpcre', version : '>= 8.37')
 libssl = dependency('libssl', version : '>= 1.1.1')
-readline = dependency('readline')
+readline = dependency('readline', 'libedit')
 zlib = dependency('zlib')
 thread_dep = dependency('threads')
 
@@ -31,7 +32,7 @@ if target_system == 'linux'
   target_triple += '-gnu'
 endif
 
-if run_command(shards, 'check').returncode() != 0
+if run_command(shards, 'check', check : false).returncode() != 0
   run_command(shards, 'install', '--frozen', check : true)
 endif
 
@@ -70,6 +71,7 @@ executable(
     libcrypto,
     libevent,
     libgc,
+    libiconv,
     libm,
     libpcre,
     libssl,

@@ -19,6 +19,7 @@ if target_system == 'linux'
 endif
 
 
+buildtype = get_option('buildtype')
 is_darwin = target_system == 'darwin'
 is_static = get_option('default_library') == 'static'
 
@@ -49,19 +50,28 @@ env = environment({
 })
 env.prepend('CRYSTAL_PATH', join_paths(meson.project_source_root(), 'lib'))
 
+crystal_build_flags = [
+  '--cross-compile',
+  '--target',
+  target_triple,
+]
+
+if buildtype.contains('debug')
+  crystal_build_flags += ['--debug']
+else
+  crystal_build_flags += ['--no-debug']
+endif
+
+if buildtype in ['release', 'debugoptimized']
+  crystal_build_flags += ['--release']
+endif
+
+mstrap_build_cmd = [crystal, 'build'] + crystal_build_flags + ['-o', 'mstrap', '@INPUT@']
+
 mstrap_o = custom_target(
   'mstrap.o',
   build_always_stale : true,
-  command : [
-    crystal,
-    'build',
-    '--cross-compile',
-    '--target',
-    target_triple,
-    '-o',
-    'mstrap',
-    '@INPUT@'
-  ],
+  command : mstrap_build_cmd,
   depend_files : [files('shard.lock')],
   env : env,
   input : [files('src/cli.cr')],

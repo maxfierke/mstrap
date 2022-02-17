@@ -4,24 +4,10 @@ project('mstrap',
   license : 'MIT',
   version : '0.4.0',
   default_options : [
+    'buildtype=debugoptimized',
     'default_library=static'
   ]
 )
-
-cc = meson.get_compiler('c')
-crystal = find_program('crystal', required : true)
-shards = find_program('shards', required : true)
-
-libcrypto = dependency('libcrypto', version : '>= 1.1.1')
-libevent = dependency('libevent', version : '>= 2.1.2')
-libgc = dependency('bdw-gc', version : '>= 8.0.4' )
-libiconv = dependency('iconv')
-libm = cc.find_library('m', required : false)
-libpcre = dependency('libpcre', version : '>= 8.37')
-libssl = dependency('libssl', version : '>= 1.1.1')
-readline = dependency('readline', 'libedit')
-zlib = dependency('zlib')
-thread_dep = dependency('threads')
 
 target_arch = host_machine.cpu_family()
 target_system = host_machine.system()
@@ -31,6 +17,24 @@ if target_system == 'linux'
   # TODO: musl
   target_triple += '-gnu'
 endif
+
+
+is_darwin = target_system == 'darwin'
+is_static = get_option('default_library') == 'static'
+
+cc = meson.get_compiler('c')
+crystal = find_program('crystal', required : true)
+shards = find_program('shards', required : true)
+libcrypto = dependency('libcrypto', version : '>= 1.1.1', static : is_static)
+libevent = dependency('libevent', version : '>= 2.1.2', static : is_static)
+libgc = dependency('bdw-gc', version : '>= 8.0.4', static : is_static)
+libiconv = dependency('iconv', static : is_static and not is_darwin)
+libm = cc.find_library('m', required : false, static : is_static)
+libpcre = dependency('libpcre', version : '>= 8.37', static : is_static)
+libssl = dependency('libssl', version : '>= 1.1.1', static : is_static)
+readline = dependency('readline', 'libedit', static : is_static and not is_darwin)
+zlib = dependency('zlib', static : is_static and not is_darwin)
+thread_dep = dependency('threads', static : is_static)
 
 if run_command(shards, 'check', check : false).returncode() != 0
   run_command(shards, 'install', '--frozen', check : true)

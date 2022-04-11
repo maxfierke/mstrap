@@ -31,6 +31,8 @@ jobs:
 
     - name: Build mstrap
       run: make build STATIC=1
+      env:
+        PKG_CONFIG_PATH: "/usr/local/opt/openssl@3/lib/pkgconfig"
 
     # Based on https://raw.githubusercontent.com/MikeMcQuaid/strap/master/.github/workflows/tests.yml
 
@@ -85,8 +87,8 @@ jobs:
       run: |
         sudo apt install -y crystal libevent-dev libpcre3-dev libssl-dev \
           curl \
-          ruby ruby-bundler && \
-        sudo apt purge meson && \
+          ruby ruby-bundler
+        sudo apt purge meson
         sudo pip3 install meson
 
     - name: Install dependencies

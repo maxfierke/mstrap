@@ -16,8 +16,9 @@ jobs:
       run: curl -sSL https://crystal-lang.org/install.sh | sudo bash
 
     - name: Install crystal and tool dependencies
-      run: sudo apt install -y crystal libevent-dev libpcre3-dev libssl-dev && \
-        sudo apt purge meson && \
+      run: |
+        sudo apt install -y crystal libevent-dev libpcre3-dev libssl-dev
+        sudo apt purge meson
         sudo pip3 install meson
 
     - name: Install dependencies
@@ -55,8 +56,9 @@ jobs:
       run: curl -sSL https://crystal-lang.org/install.sh | sudo bash
 
     - name: Install crystal and tool dependencies
-      run: sudo apt install -y crystal libevent-dev libpcre3-dev libssl-dev && \
-        sudo apt purge meson && \
+      run: |
+        sudo apt install -y crystal libevent-dev libpcre3-dev libssl-dev
+        sudo apt purge meson
         sudo pip3 install meson
 
     - name: Install dependencies
@@ -111,6 +113,7 @@ jobs:
       env:
         AC_USERNAME: ${{ secrets.AC_USERNAME }}
         AC_PASSWORD: ${{ secrets.AC_PASSWORD }}
+        PKG_CONFIG_PATH: "/usr/local/opt/openssl@3/lib/pkgconfig"
       run: |
         make release RELEASE=1 STATIC=1 GON_CONFIG=./gon.ci.hcl
 

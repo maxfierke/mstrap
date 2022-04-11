@@ -93,7 +93,7 @@ jobs:
       uses: actions/checkout@v2
 
     - name: Install crystal and tool dependencies
-      run: brew install crystal meson
+      run: brew install crystal meson openssl@3
 
     - name: Install gon via homebrew for code signing and app notarization
       run: |

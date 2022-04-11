@@ -17,8 +17,8 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Install crystal
-      run: brew install crystal
+    - name: Install crystal and tool dependencies
+      run: brew install crystal meson
 
     - name: Install dependencies
       run: shards install
@@ -36,8 +36,10 @@ jobs:
     - name: Add Crystal repos
       run: curl -sSL https://crystal-lang.org/install.sh | sudo bash
 
-    - name: Install crystal
-      run: sudo apt install -y crystal libevent-dev libpcre3-dev libssl-dev
+    - name: Install crystal and tool dependencies
+      run: sudo apt install -y crystal libevent-dev libpcre3-dev libssl-dev && \
+        sudo apt purge meson && \
+        sudo pip3 install meson
 
     - name: Install dependencies
       run: shards install

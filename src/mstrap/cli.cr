@@ -19,8 +19,10 @@ module MStrap
     @name : String?
     @email : String?
     @github : String?
+    @prompt = Term::Prompt.new
 
     getter :cli, :options
+    private getter :prompt
 
     def self.run!(args)
       new(args).run!
@@ -317,14 +319,7 @@ module MStrap
     end
 
     private def ask(question = "", default = nil)
-      question += " (Default: #{default})" if default
-      question += ": "
-      response = Readline.readline(question, true).not_nil!.squeeze(' ').strip
-      if response && response.size > 0
-        response
-      else
-        default
-      end
+      prompt.ask(question, default: default)
     end
 
     private def confirm_config_replace?(config_path, new_config_path)
@@ -334,17 +329,8 @@ module MStrap
 
       logn "There is already a configuration at #{config_path}, but you have "
       logn "requested to replace with one from '#{new_config_path}'."
-      log "Do you want to continue and replace the existing configuration (Y/n)?: "
 
-      input = nil
-
-      loop do
-        input = STDIN.gets
-        input = input.strip if input
-        break if ["Y", "n"].includes?(input)
-      end
-
-      input == "Y"
+      prompt.yes?("Do you want to continue and replace the existing configuration?")
     end
 
     private def print_shell_reload_warning

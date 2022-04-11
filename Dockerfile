@@ -8,10 +8,6 @@ RUN \
     # Crystal
     crystal shards \
     # mstrap depedencies (used by Crystal stdlib)
-    readline-dev \
-    readline-static \
-    ncurses-dev \
-    ncurses-static \
     openssl-libs-static \
     zlib-static
 

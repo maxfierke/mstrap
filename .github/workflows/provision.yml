@@ -83,7 +83,7 @@ jobs:
 
     - name: Install crystal
       run: |
-        sudo apt install -y crystal libevent-dev libpcre3-dev libreadline-dev libssl-dev \
+        sudo apt install -y crystal libevent-dev libpcre3-dev libssl-dev \
           curl \
           ruby ruby-bundler
 

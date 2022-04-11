@@ -4,6 +4,7 @@
 /dist/
 /subprojects/*
 !/subprojects/*.wrap
+!/subprojects/packagefiles
 /.crystal/
 /.shards/
 *.dwarf

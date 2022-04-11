@@ -1,0 +1,6 @@
+[wrap-file]
+directory = gc-8.2.0
+
+source_url = https://github.com/ivmai/bdwgc/releases/download/v8.2.0/gc-8.2.0.tar.gz
+source_filename = gc-8.2.0.tar.gz
+source_hash = 2540f7356cb74f6c5b75326c6d38a066edd796361fd7d4ed26e494d9856fed8f

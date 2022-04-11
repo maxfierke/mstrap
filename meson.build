@@ -14,8 +14,7 @@ target_system = host_machine.system()
 target_triple = target_arch + '-unknown-' + target_system
 
 if target_system == 'linux'
-  # TODO: musl
-  target_triple += '-gnu'
+  target_triple += '-' + meson.get_external_property('target_triple_suffix', 'gnu')
 endif
 
 
@@ -26,16 +25,67 @@ is_static = get_option('default_library') == 'static'
 cc = meson.get_compiler('c')
 crystal = find_program('crystal', required : true)
 shards = find_program('shards', required : true)
-libcrypto = dependency('libcrypto', version : '>= 1.1.1', static : is_static)
-libevent = dependency('libevent', version : '>= 2.1.2', static : is_static)
-libgc = dependency('bdw-gc', version : '>= 8.0.4', static : is_static)
-libiconv = dependency('iconv', static : is_static and not is_darwin)
-libm = cc.find_library('m', required : false, static : is_static)
-libpcre = dependency('libpcre', version : '>= 8.37', static : is_static)
-libssl = dependency('libssl', version : '>= 1.1.1', static : is_static)
-readline = dependency('readline', 'libedit', static : is_static and not is_darwin)
-zlib = dependency('zlib', static : is_static and not is_darwin)
+
+# Basics
+libiconv_dep = dependency('iconv', static : is_static and not is_darwin)
+libm_dep = cc.find_library('m', required : false, static : is_static)
+libpcre_dep = dependency('libpcre', static : is_static)
 thread_dep = dependency('threads', static : is_static)
+zlib_dep = dependency('zlib', static : is_static and not is_darwin)
+
+# OpenSSL/LibreSSL (for fetching profiles & strap.sh over HTTPS)
+libcrypto_dep = dependency('libcrypto', version : '>= 1.1.1', static : is_static)
+libssl_dep = dependency('libssl', version : '>= 1.1.1', static : is_static)
+
+# Libevent (required for Crystal runtime)
+libevent_dep = dependency(
+  'libevent',
+  version : '>= 2.1.2',
+  static : is_static,
+  required : false,
+)
+if not libevent_dep.found()
+  cmake = import('cmake')
+  libevent_options = cmake.subproject_options()
+  libevent_options.add_cmake_defines({
+    'EVENT__LIBRARY_TYPE': 'STATIC',
+    'BUILD_SHARED_LIBS': false,
+    'BUILD_SHARED_AND_STATIC_LIBS': false,
+    'CMAKE_C_FLAGS':  '-fPIC',
+    'EVENT__DISABLE_OPENSSL': true,
+    'EVENT__DISABLE_BENCHMARK': true,
+    'EVENT__DISABLE_TESTS': true,
+    'EVENT__DISABLE_REGRESS': true,
+    'EVENT__DISABLE_SAMPLES': true,
+  })
+  libevent_options.set_override_option('werror', 'false')
+  libevent_options.set_override_option('warning_level', '0')
+  libevent_proj = cmake.subproject('libevent', options: libevent_options)
+  libevent_dep = libevent_proj.dependency('event_core_static')
+endif
+
+# libgc (required for Crystal runtime)
+libgc_dep = dependency(
+  'bdw-gc',
+  version : '>= 8.0.4',
+  static : is_static,
+  required : false
+)
+if not libgc_dep.found()
+  cmake = import('cmake')
+  libgc_options = cmake.subproject_options()
+  libgc_options.add_cmake_defines({
+    'BUILD_SHARED_LIBS': false,
+    'enable_docs': false,
+    'enable_large_config': true,
+    'disable_gc_debug': true,
+    'CMAKE_C_FLAGS':  '-fPIC',
+  })
+  libgc_options.set_override_option('werror', 'false')
+  libgc_options.set_override_option('warning_level', '0')
+  libgc_proj = cmake.subproject('bdwgc', options: libgc_options)
+  libgc_dep = libgc_proj.dependency('gc')
+endif
 
 if run_command(shards, 'check', check : false).returncode() != 0
   run_command(shards, 'install', '--frozen', check : true)
@@ -57,7 +107,7 @@ crystal_build_flags = [
 ]
 
 if buildtype.contains('debug')
-  crystal_build_flags += ['--debug']
+  crystal_build_flags += ['--debug', '--error-trace']
 else
   crystal_build_flags += ['--no-debug']
 endif
@@ -82,15 +132,14 @@ executable(
   'mstrap',
   mstrap_o,
   dependencies : [
-    libcrypto,
-    libevent,
-    libgc,
-    libiconv,
-    libm,
-    libpcre,
-    libssl,
-    readline,
-    zlib,
+    libcrypto_dep,
+    libevent_dep,
+    libgc_dep,
+    libiconv_dep,
+    libm_dep,
+    libpcre_dep,
+    libssl_dep,
+    zlib_dep,
     thread_dep
   ],
 )

@@ -17,7 +17,7 @@ jobs:
 
     - name: Install crystal and tool dependencies
       run: |
-        sudo apt install -y crystal libevent-dev libpcre3-dev libssl-dev ninja-build
+        sudo apt install -y crystal ninja-build
         sudo apt purge meson
         sudo pip3 install meson
 
@@ -38,7 +38,7 @@ jobs:
 
     - name: Build release bundle
       run: |
-        make release RELEASE=1 STATIC=1 TARGET_CABI=musl
+        make release RELEASE=1 STATIC=1 TARGET_CABI=musl CC=x86_64-linux-musl-gcc CXX=x86_64-linux-musl-g++
 
     - name: Upload release bundle artifact
       uses: actions/upload-artifact@v2
@@ -57,7 +57,7 @@ jobs:
 
     - name: Install crystal and tool dependencies
       run: |
-        sudo apt install -y crystal libevent-dev libpcre3-dev libssl-dev ninja-build
+        sudo apt install -y crystal ninja-build
         sudo apt purge meson
         sudo pip3 install meson
 

@@ -38,7 +38,10 @@ jobs:
 
     - name: Build release bundle
       run: |
-        make release RELEASE=1 STATIC=1 TARGET_CABI=musl CC=x86_64-linux-musl-gcc CXX=x86_64-linux-musl-g++
+        make release RELEASE=1 STATIC=1 TARGET_CABI=musl
+      env:
+        CC_FOR_BUILD: x86_64-linux-musl-gcc
+        CXX_FOR_BUILD: x86_64-linux-musl-g++
 
     - name: Upload release bundle artifact
       uses: actions/upload-artifact@v2

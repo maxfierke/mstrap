@@ -37,11 +37,15 @@ zlib_dep = dependency('zlib', static : is_static and not is_darwin)
 libcrypto_dep = dependency('libcrypto', version : '>= 1.1.1', static : is_static)
 libssl_dep = dependency('libssl', version : '>= 1.1.1', static : is_static)
 
-pkg = import('pkgconfig')
-libcrypto = library('crypto', dependencies : [libcrypto_dep])
-libssl = library('ssl', dependencies : [libssl_dep])
-pkg.generate(libcrypto, name : 'libcrypto', version : libcrypto_dep.version())
-pkg.generate(libssl, name : 'libssl', version : libssl_dep.version())
+embedded_openssl = libcrypto_dep.type_name() != 'pkgconfig'
+
+if embedded_openssl
+  pkg = import('pkgconfig')
+  libcrypto = library('crypto', dependencies : [libcrypto_dep])
+  libssl = library('ssl', dependencies : [libssl_dep])
+  pkg.generate(libcrypto, name : 'libcrypto', version : libcrypto_dep.version())
+  pkg.generate(libssl, name : 'libssl', version : libssl_dep.version())
+endif
 
 # Libevent (required for Crystal runtime)
 libevent_dep = dependency(
@@ -103,9 +107,12 @@ crystal_path = run_command(
 ).stdout().strip()
 env = environment({
   'CRYSTAL_PATH': crystal_path,
-  'PKG_CONFIG_PATH': join_paths(meson.project_build_root(), 'meson-uninstalled'),
 })
 env.prepend('CRYSTAL_PATH', join_paths(meson.project_source_root(), 'lib'))
+
+if embedded_openssl
+  env.set('PKG_CONFIG_PATH', join_paths(meson.project_build_root(), 'meson-uninstalled'))
+endif
 
 crystal_build_flags = [
   '--cross-compile',

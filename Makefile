@@ -44,7 +44,7 @@ $(TARGET_BUILD_DIR)/mstrap: $(SOURCES)
 	@if [ ! -z "$(MESON)" ]; then \
 		mkdir -p $(TARGET_BUILD_DIR); \
 		meson setup $(MESON_FLAGS) $(TARGET_BUILD_DIR); \
-		meson compile -C $(TARGET_BUILD_DIR); \
+		meson compile -v -C $(TARGET_BUILD_DIR); \
 	else \
 		echo "FAIL: meson must be installed"; \
 		exit 1; \

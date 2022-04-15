@@ -42,8 +42,8 @@ jobs:
       run: |
         make release RELEASE=1 STATIC=1 TARGET_CABI=musl
       env:
-        CC_FOR_BUILD: /usr/bin/gcc
-        CXX_FOR_BUILD: /usr/bin/g++
+        CC_FOR_BUILD: /usr/bin/clang
+        CXX_FOR_BUILD: /usr/bin/clang++
         LD_FOR_BUILD: /usr/bin/ld
 
     - name: Upload release bundle artifact

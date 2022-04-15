@@ -42,6 +42,7 @@ jobs:
       env:
         CC_FOR_BUILD: gcc
         CXX_FOR_BUILD: g++
+        LD_FOR_BUILD: ld
 
     - name: Upload release bundle artifact
       uses: actions/upload-artifact@v2

@@ -13,14 +13,21 @@ target_arch = host_machine.cpu_family()
 target_system = host_machine.system()
 target_triple = target_arch + '-unknown-' + target_system
 
-if target_system == 'linux'
-  target_triple += '-' + meson.get_external_property('target_triple_suffix', 'gnu')
-endif
-
-
 buildtype = get_option('buildtype')
 is_darwin = target_system == 'darwin'
 is_static = get_option('default_library') == 'static'
+is_static_libc = false
+
+if target_system == 'linux'
+  target_cabi = meson.get_external_property('target_triple_suffix', 'gnu')
+
+  target_triple += '-' + target_cabi
+
+  if target_cabi == 'musl' and is_static
+    is_static_libc = true
+    add_global_link_arguments('-static', language : 'c')
+  endif
+endif
 
 cc = meson.get_compiler('c')
 crystal = find_program('crystal', required : true)
@@ -128,6 +135,10 @@ endif
 
 if buildtype in ['release', 'debugoptimized']
   crystal_build_flags += ['--release']
+endif
+
+if is_static_libc
+  crystal_build_flags += ['--static']
 endif
 
 mstrap_build_cmd = [crystal, 'build'] + crystal_build_flags + ['-o', 'mstrap', '@INPUT@']

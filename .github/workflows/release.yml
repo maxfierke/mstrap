@@ -32,10 +32,6 @@ jobs:
 
     - run: x86_64-linux-musl-gcc --version
 
-    - name: Patch cross file
-      run: |
-        sed -i 's/x86_64-unknown-linux-musl-/x86_64-linux-musl-/' config/linux-x86_64-musl.ini
-
     - name: Build release bundle
       run: |
         make release RELEASE=1 STATIC=1 TARGET_CABI=musl
@@ -75,10 +71,6 @@ jobs:
         echo "/opt/aarch64-linux-musl-cross/bin" >> $GITHUB_PATH
 
     - run: aarch64-linux-musl-gcc --version
-
-    - name: Patch cross file
-      run: |
-        sed -i 's/aarch64-unknown-linux-musl-/aarch64-linux-musl-/' config/linux-aarch64-musl.ini
 
     - name: Build release bundle
       run: |

@@ -15,15 +15,30 @@ jobs:
     - name: Add Crystal repos
       run: curl -sSL https://crystal-lang.org/install.sh | sudo bash
 
-    - name: Install crystal
-      run: sudo apt install -y crystal libevent-dev libpcre3-dev libreadline-dev libssl-dev
+    - name: Install crystal and tool dependencies
+      run: |
+        sudo apt install -y crystal ninja-build
+        sudo apt purge meson
+        sudo pip3 install meson
 
     - name: Install dependencies
       run: shards install
 
+    - name: Install musl compiler
+      run: |
+        curl -O https://more.musl.cc/x86_64-linux-musl/x86_64-linux-musl-cross.tgz
+        tar xzf x86_64-linux-musl-cross.tgz -C /opt
+        echo "/opt/x86_64-linux-musl-cross/bin" >> $GITHUB_PATH
+
+    - run: x86_64-linux-musl-gcc --version
+
     - name: Build release bundle
       run: |
-        make release RELEASE=1 STATIC=1
+        make release RELEASE=1 STATIC=1 TARGET_CABI=musl
+      env:
+        CC_FOR_BUILD: /usr/bin/clang
+        CXX_FOR_BUILD: /usr/bin/clang++
+        LD_FOR_BUILD: lld
 
     - name: Upload release bundle artifact
       uses: actions/upload-artifact@v2
@@ -40,26 +55,26 @@ jobs:
     - name: Add Crystal repos
       run: curl -sSL https://crystal-lang.org/install.sh | sudo bash
 
-    - name: Install crystal
-      run: sudo apt install -y crystal libevent-dev libpcre3-dev libreadline-dev libssl-dev
+    - name: Install crystal and tool dependencies
+      run: |
+        sudo apt install -y crystal ninja-build
+        sudo apt purge meson
+        sudo pip3 install meson
 
     - name: Install dependencies
       run: shards install
 
-    - name: Set up QEMU
-      uses: docker/setup-qemu-action@v1
-      with:
-        image: tonistiigi/binfmt:latest
-        platforms: arm64
+    - name: Install musl cross-compiler
+      run: |
+        curl -O https://more.musl.cc/x86_64-linux-musl/aarch64-linux-musl-cross.tgz
+        tar xzf aarch64-linux-musl-cross.tgz -C /opt
+        echo "/opt/aarch64-linux-musl-cross/bin" >> $GITHUB_PATH
 
-    - name: Set up Docker Buildx
-      uses: docker/setup-buildx-action@v1
-      with:
-        version: latest
+    - run: aarch64-linux-musl-gcc --version
 
     - name: Build release bundle
       run: |
-        make release RELEASE=1 STATIC=1 TARGET_ARCH=aarch64
+        make release RELEASE=1 STATIC=1 TARGET_ARCH=aarch64 TARGET_CABI=musl
 
     - name: Upload release bundle artifact
       uses: actions/upload-artifact@v2
@@ -73,8 +88,45 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Install crystal
-      run: brew install crystal
+    - name: Install crystal and tool dependencies
+      run: brew install crystal meson openssl@3
+
+    - name: Install gon via homebrew for code signing and app notarization
+      run: |
+        brew tap mitchellh/gon
+        brew install mitchellh/gon/gon
+
+    - name: Install dependencies
+      run: shards install
+
+    - name: Import Developer ID Application cert for signing and notorizing
+      uses: Apple-Actions/import-codesign-certs@253ddeeac23f2bdad1646faac5c8c2832e800071
+      with:
+        p12-file-base64: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_P12_BASE64 }}
+        p12-password: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_PASSWORD }}
+
+    - name: Build signed & notorized release bundle
+      env:
+        AC_USERNAME: ${{ secrets.AC_USERNAME }}
+        AC_PASSWORD: ${{ secrets.AC_PASSWORD }}
+        PKG_CONFIG_PATH: "/usr/local/opt/openssl@3/lib/pkgconfig"
+      run: |
+        make release RELEASE=1 STATIC=1 GON_CONFIG=./gon.ci.hcl
+
+    - name: Upload release bundle artifact
+      uses: actions/upload-artifact@v2
+      with:
+        name: mstrap_macos_amd64
+        path: dist
+
+  build_macos_arm64:
+    runs-on: macos-latest
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v2
+
+    - name: Install crystal and tool dependencies
+      run: brew install crystal meson openssl@3
 
     - name: Install gon via homebrew for code signing and app notarization
       run: |
@@ -95,16 +147,16 @@ jobs:
         AC_USERNAME: ${{ secrets.AC_USERNAME }}
         AC_PASSWORD: ${{ secrets.AC_PASSWORD }}
       run: |
-        make release RELEASE=1 STATIC_LIBS=1 GON_CONFIG=./gon.ci.hcl
+        make release RELEASE=1 STATIC=1 TARGET_ARCH=arm64 GON_CONFIG=./gon.ci.hcl
 
     - name: Upload release bundle artifact
       uses: actions/upload-artifact@v2
       with:
-        name: mstrap_macos_amd64
+        name: mstrap_macos_arm64
         path: dist
 
   release:
-    needs: [build_linux_amd64, build_linux_aarch64, build_macos_amd64]
+    needs: [build_linux_amd64, build_linux_aarch64, build_macos_amd64, build_macos_arm64]
     runs-on: ubuntu-latest
     steps:
     - name: Determine version
@@ -131,6 +183,13 @@ jobs:
       with:
         name: mstrap_macos_amd64
         path: dist-macos-amd64
+
+    - name: Download mstrap_macos_arm64.zip artifact
+      id: download_macos_arm64
+      uses: actions/download-artifact@v2
+      with:
+        name: mstrap_macos_arm64
+        path: dist-macos-arm64
 
     - name: Create release
       id: create_release
@@ -171,4 +230,14 @@ jobs:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
         asset_path: dist-macos-amd64/mstrap.zip
         asset_name: mstrap-v${{ steps.version.outputs.version }}_macos_amd64.zip
+        asset_content_type: application/zip
+
+    - name: Upload release zip for macos arm64
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: dist-macos-arm64/mstrap.zip
+        asset_name: mstrap-v${{ steps.version.outputs.version }}_macos_arm64.zip
         asset_content_type: application/zip

@@ -31,27 +31,13 @@ Please refer to the [documentation site](https://mstrap.dev) for documentation
 ## Development
 
 1. Install dependencies
-  * macOS: `brew install crystal libevent pcre openssl@1.1`
+  * macOS: `brew install crystal meson libevent pcre openssl`
   * Debian/Ubuntu:
     1. [Install Crystal](https://crystal-lang.org/install/)
-    2. `sudo apt install libevent-dev libpcre3-dev libreadline-dev libssl-dev patchelf`
+    2. `sudo apt install libevent-dev libpcre3-dev libssl-dev patchelf`
 2. `git clone git@github.com:maxfierke/mstrap.git`
 3. `make`
 4. `bin/mstrap` will be created
-
-### Building multi-arch
-
-To build multi-arch, you'll need to configure Docker to enable BuildKit-based
-multi-arch support, and register the proper binfmt handlers to run ARM binaries
-through QEMU.
-
-On Ubuntu 20.04, this can be done via the following:
-
-```sh
-$ sudo apt install --no-install-recommends qemu-user-static binfmt-support
-$ docker run --privileged --rm tonistiigi/binfmt --install arm64,arm
-$ sudo systemctl restart docker.service
-```
 
 ## Contributing
 

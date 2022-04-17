@@ -7,10 +7,10 @@ require "json"
 require "log"
 require "openssl"
 require "option_parser"
+require "term-prompt"
 require "uri"
 require "yaml"
 
-require "./readline"
 require "./mstrap/version"
 require "./mstrap/paths"
 require "./mstrap/dsl/*"
@@ -31,6 +31,14 @@ require "./mstrap/project"
 require "./mstrap/step"
 require "./mstrap/templates/**"
 require "./mstrap/steps/**"
+
+module Term
+  module Screen
+    def size_from_readline
+      DEFAULT_SIZE
+    end
+  end
+end
 
 # Defines top-level constants and shared utilities
 module MStrap

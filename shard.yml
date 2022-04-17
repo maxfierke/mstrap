@@ -11,6 +11,8 @@ dependencies:
   hcl:
     github: maxfierke/hcl.cr
     version: ~> 0.2.0
+  term-prompt:
+    github: crystal-term/prompt
 
 development_dependencies:
   spectator:
@@ -18,7 +20,9 @@ development_dependencies:
     version: ~> 0.10.2
 
 libraries:
-  readline: "*"
+  libevent: "*"
+  libpcre: "*"
+  openssl: "*"
 
 targets:
   mstrap:

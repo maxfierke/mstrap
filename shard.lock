@@ -4,9 +4,17 @@ shards:
     git: https://github.com/mrrooijen/commander.git
     version: 0.4.0
 
+  cor:
+    git: https://github.com/watzon/cor.git
+    version: 0.1.0+git.commit.9c9e51ac6168f3bd4fdc51d679b65de09ef76cac
+
   hcl:
     git: https://github.com/maxfierke/hcl.cr.git
     version: 0.2.0
+
+  ioctl:
+    git: https://github.com/crystal-posix/ioctl.cr.git
+    version: 0.1.2
 
   pegmatite:
     git: https://github.com/jemc/crystal-pegmatite.git
@@ -15,4 +23,20 @@ shards:
   spectator:
     git: https://gitlab.com/arctic-fox/spectator.git
     version: 0.10.2
+
+  term-cursor:
+    git: https://github.com/crystal-term/cursor.git
+    version: 0.1.0+git.commit.8805d5f686d153db92cf2ce3333433f8ed3708d0
+
+  term-prompt:
+    git: https://github.com/crystal-term/prompt.git
+    version: 0.1.0+git.commit.bf2b17f885a6c660aea0dda62b0b9da4343ab295
+
+  term-reader:
+    git: https://github.com/crystal-term/reader.git
+    version: 0.1.0+git.commit.e174733435c96c745bee31ac5c5d4def3ccf4285
+
+  term-screen:
+    git: https://github.com/crystal-term/screen.git
+    version: 0.1.0+git.commit.b3a57931b529d60f4e626913feef21b30a6e697a
 

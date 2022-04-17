@@ -17,14 +17,16 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v2
 
-    - name: Install crystal
-      run: brew install crystal
+    - name: Install crystal and tool dependencies
+      run: brew install crystal meson openssl@3
 
     - name: Install dependencies
       run: shards install
 
     - name: Run tests
-      run: make test STATIC_LIBS=1
+      run: make test STATIC=1
+      env:
+        PKG_CONFIG_PATH: "/usr/local/opt/openssl@3/lib/pkgconfig"
 
   ubuntu-tests:
     runs-on: ubuntu-latest
@@ -36,8 +38,11 @@ jobs:
     - name: Add Crystal repos
       run: curl -sSL https://crystal-lang.org/install.sh | sudo bash
 
-    - name: Install crystal
-      run: sudo apt install -y crystal libevent-dev libpcre3-dev libreadline-dev libssl-dev
+    - name: Install crystal and tool dependencies
+      run: |
+        sudo apt install -y crystal libevent-dev libpcre3-dev libssl-dev ninja-build
+        sudo apt purge meson
+        sudo pip3 install meson
 
     - name: Install dependencies
       run: shards install

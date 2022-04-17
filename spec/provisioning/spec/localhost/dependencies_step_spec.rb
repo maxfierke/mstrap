@@ -30,7 +30,6 @@ describe "dependencies step" do
       'mkcert',
       'openssl@1.1',
       'pkg-config',
-      'readline',
       'zlib',
     ].freeze
 

@@ -182,4 +182,5 @@ executable(
     zlib_dep,
     thread_dep
   ],
+  install : true
 )

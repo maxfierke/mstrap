@@ -112,4 +112,4 @@ release: gon.hcl bin/mstrap
 
 .PHONY: install
 install: $(TARGET_BUILD_DIR)/mstrap
-	meson install -C $(TARGET_BUILD_DIR)
+	meson install -C $(TARGET_BUILD_DIR) --tags runtime

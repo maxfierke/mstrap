@@ -27,6 +27,13 @@ if target_system == 'linux'
     is_static_libc = true
     add_global_link_arguments('-static', language : 'c')
   endif
+elif target_system == 'darwin'
+  macos_abi = meson.get_external_property('macos_version', '11')
+  macos_arch = target_arch == 'aarch64' ? 'arm64' : target_arch
+
+  target_triple = macos_arch + '-apple-macos' + macos_abi
+  add_global_arguments('-target', target_triple, language : 'c', native : false)
+  add_global_link_arguments('-target', target_triple, language : 'c', native : false)
 endif
 
 cc = meson.get_compiler('c')
@@ -48,10 +55,18 @@ embedded_openssl = libcrypto_dep.type_name() != 'pkgconfig'
 
 if embedded_openssl
   pkg = import('pkgconfig')
-  libcrypto = library('crypto', dependencies : [libcrypto_dep])
-  libssl = library('ssl', dependencies : [libssl_dep])
-  pkg.generate(libcrypto, name : 'libcrypto', version : libcrypto_dep.version())
-  pkg.generate(libssl, name : 'libssl', version : libssl_dep.version())
+  pkg.generate(
+    name : 'libcrypto',
+    description: 'OpenSSL-libcrypto',
+    version : libcrypto_dep.version(),
+    libraries : [libcrypto_dep]
+  )
+  pkg.generate(
+    name : 'libssl',
+    description: 'OpenSSL-libssl',
+    version : libssl_dep.version(),
+    libraries : [libssl_dep]
+  )
 endif
 
 # Libevent (required for Crystal runtime)

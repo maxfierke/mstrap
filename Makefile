@@ -7,7 +7,6 @@ SHELL := bash
 
 CRYSTAL           ?= $(shell which crystal)
 SHARDS            ?= $(shell which shards)
-MSTRAP            ?= $(shell which mstrap)
 MESON             ?= $(shell which meson)
 GON_CONFIG        ?= ./gon.hcl
 HOST_ARCH         := $(shell uname -m)

@@ -43,8 +43,8 @@ all: build
 $(TARGET_BUILD_DIR)/mstrap: $(SOURCES)
 	@if [ ! -z "$(MESON)" ]; then \
 		mkdir -p $(TARGET_BUILD_DIR); \
-		meson setup $(MESON_FLAGS) $(TARGET_BUILD_DIR); \
-		meson compile -v -C $(TARGET_BUILD_DIR); \
+		$(MESON) setup $(MESON_FLAGS) $(TARGET_BUILD_DIR); \
+		$(MESON) compile -v -C $(TARGET_BUILD_DIR); \
 	else \
 		echo "FAIL: meson must be installed"; \
 		exit 1; \
@@ -112,4 +112,4 @@ release: gon.hcl bin/mstrap
 
 .PHONY: install
 install: $(TARGET_BUILD_DIR)/mstrap
-	meson install -C $(TARGET_BUILD_DIR) --tags runtime
+	$(MESON) install -C $(TARGET_BUILD_DIR) --tags runtime

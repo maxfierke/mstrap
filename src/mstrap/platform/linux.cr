@@ -1,5 +1,6 @@
 {% skip_file unless flag?(:linux) %}
 
+require "./linux/archlinux"
 require "./linux/debian"
 require "./linux/rhel"
 require "./linux/*"
@@ -10,13 +11,19 @@ module MStrap
 
     class UnsupportedDistroError < Exception; end
 
-    DISTRO_CENTOS  = "centos"
-    DISTRO_DEBIAN  = "debian"
-    DISTRO_FEDORA  = "fedora"
-    DISTRO_REDHAT  = "redhat"
-    DISTRO_UBUNTU  = "ubuntu"
-    DISTRO_UNKNOWN = "unknown"
+    DISTRO_ARCHLINUX = "arch"
+    DISTRO_CENTOS    = "centos"
+    DISTRO_DEBIAN    = "debian"
+    DISTRO_FEDORA    = "fedora"
+    DISTRO_MANJARO   = "manjarolinux"
+    DISTRO_REDHAT    = "redhat"
+    DISTRO_UBUNTU    = "ubuntu"
+    DISTRO_UNKNOWN   = "unknown"
 
+    ARCH_DISTROS = [
+      DISTRO_ARCHLINUX,
+      DISTRO_MANJARO,
+    ]
     DEBIAN_DISTROS = [
       DISTRO_DEBIAN,
       DISTRO_UBUNTU,
@@ -27,6 +34,7 @@ module MStrap
       DISTRO_REDHAT,
     ]
 
+    DISTRO_FAMILY_ARCH   = "arch"
     DISTRO_FAMILY_RHEL   = "rhel"
     DISTRO_FAMILY_DEBIAN = "debian"
 
@@ -56,6 +64,16 @@ module MStrap
     # Returns distro version codename
     def distro_codename
       `lsb_release -sc`.strip.downcase
+    end
+
+    # Returns true if on ArchLinux
+    def archlinux?
+      distro == DISTRO_ARCHLINUX
+    end
+
+    # Returns true on ArchLinux-based distros (e.g. Arch, Manjaro)
+    def arch_distro?
+      distro_family == DISTRO_FAMILY_ARCH
     end
 
     # Returns true if on CentOS
@@ -100,7 +118,9 @@ module MStrap
 
     # :nodoc:
     def platform
-      if debian_distro?
+      if arch_distro?
+        Linux::Archlinux
+      elsif debian_distro?
         Linux::Debian
       elsif fedora?
         Linux::Fedora

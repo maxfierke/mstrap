@@ -19,6 +19,9 @@ module MStrap
       @[HCL::Attribute]
       property repo : String = ""
 
+      @[HCL::Attribute(presence: true)]
+      property repo_upstream : String? = nil
+
       @[HCL::Attribute]
       property? run_scripts = true
 
@@ -37,6 +40,7 @@ module MStrap
       getter? hostname_present = false
       getter? path_present = false
       getter? port_present = false
+      getter? repo_upstream_present = false
       getter? runtimes_present = false
       getter? upstream_present = false
       getter? web_present = false
@@ -47,6 +51,7 @@ module MStrap
         @path,
         @port,
         @repo,
+        @repo_upstream,
         @run_scripts,
         @runtimes,
         @upstream,
@@ -62,6 +67,7 @@ module MStrap
         self.path = other.path if other.path_present?
         self.port = other.port if other.port_present?
         self.repo = other.repo
+        self.repo_upstream = other.repo_upstream if other.repo_upstream_present?
         self.run_scripts = other.run_scripts?
         self.runtimes = other.runtimes if other.runtimes_present?
         self.upstream = other.upstream if other.upstream_present?

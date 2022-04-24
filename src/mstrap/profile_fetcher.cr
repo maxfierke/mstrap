@@ -153,15 +153,15 @@ module MStrap
         raise GitProfileFetchError.new(config)
       end
 
-      if config.revision
-        git_checkout_profile_revision!
+      if revision = config.revision
+        git_checkout_profile_revision!(revision)
       end
     end
 
-    private def git_checkout_profile_revision!
+    private def git_checkout_profile_revision!(revision)
       Dir.cd(config.dir) do
-        unless cmd("git", "checkout", config.revision.not_nil!, quiet: true)
-          ProfileFetchError.new("#{config.name}:  could not checkout revision #{config.revision}")
+        unless cmd("git", "checkout", revision, quiet: true)
+          ProfileFetchError.new("#{config.name}:  could not checkout revision #{revision}")
         end
       end
     end
@@ -172,12 +172,12 @@ module MStrap
 
     private def update_profile_from_git!
       Dir.cd(config.dir) do
-        if config.revision
+        if revision = config.revision
           unless cmd("git", "fetch", "origin", quiet: true)
             raise GitProfileFetchError.new(config)
           end
 
-          git_checkout_profile_revision!
+          git_checkout_profile_revision!(revision)
         else
           unless cmd("git", "pull", quiet: true)
             raise GitProfileFetchError.new(config)

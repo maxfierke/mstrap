@@ -67,7 +67,17 @@ module MStrap
             next
           end
         else
-          fetcher = ProfileFetcher.new(profile_config, force: force)
+          begin
+            fetcher = ProfileFetcher.new(profile_config, force: force)
+          rescue ex : URI::Error
+            logc <<-ERR
+An error occurred while trying to parse the URL for the '#{profile_config.name}' profile:"
+#{ex.message}
+
+The URL provided was '#{profile_config.url}'. Please double-check you have provided a valid
+URL according to the WHATWG URL Standard.
+ERR
+          end
 
           if !MStrap.mstrapped? && fetcher.git_url? && !MStrap::Platform.has_git?
             logw "Skipping profile '#{profile_config.name}' fetch, as git has not yet been installed."

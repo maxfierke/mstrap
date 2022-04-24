@@ -157,7 +157,7 @@ module MStrap
             end
 
           unless success
-            logw "Failed to update '#{remote_branch}' branch from remote '#{remote_name}'. There may be a problem that needs to be resolved manually."
+            logw "Failed to update '#{remote_branch}' branch from '#{remote_name}' remote. There may be a problem that needs to be resolved manually."
           end
 
           success

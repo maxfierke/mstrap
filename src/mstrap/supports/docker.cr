@@ -108,7 +108,9 @@ module MStrap
           require_reboot = false
 
           success =
-            if MStrap::Linux.debian_distro?
+            if MStrap::Linux.arch_distro?
+              install_docker_archlinux!
+            elsif MStrap::Linux.debian_distro?
               install_docker_debian!
             elsif MStrap::Linux.rhel_distro?
               install_docker_rhel!
@@ -158,6 +160,11 @@ module MStrap
       end
 
       success
+    end
+
+    private def install_docker_archlinux!
+      logn "Installing Docker from ArchLinux repos"
+      MStrap::Platform.install_packages!(["docker", "docker-compose"])
     end
 
     private def install_docker_centos!

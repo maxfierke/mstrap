@@ -29,10 +29,6 @@ module MStrap
     end
 
     # :nodoc:
-    def asdf_pre_version_install
-    end
-
-    # :nodoc:
     def asdf_version_env_var
       @asdf_version_env_var ||= "ASDF_#{asdf_plugin_name.upcase}_VERSION"
     end
@@ -125,8 +121,6 @@ module MStrap
 
       with_dir_version(Dir.current) do
         if current_version && current_version != "" && !has_version?(current_version)
-          asdf_pre_version_install
-
           log "--> Installing #{language_name} #{current_version} via asdf-#{asdf_plugin_name}: "
           unless cmd("asdf install #{asdf_plugin_name} #{current_version}", quiet: true)
             logc "There was an error installing the #{language_name} via asdf. Check #{MStrap::Paths::LOG_FILE} or run again with --debug"

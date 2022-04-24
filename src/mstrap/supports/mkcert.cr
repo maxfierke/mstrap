@@ -29,7 +29,13 @@ module MStrap
     private def install_dependencies! : Nil
       nss_package_name =
         {% if flag?(:linux) %}
-          MStrap::Linux.debian_distro? ? "libnss3-tools" : "nss-tools"
+          if MStrap::Linux.arch_distro?
+            "nss"
+          elsif MStrap::Linux.debian_distro?
+            "libnss3-tools"
+          else
+            "nss-tools"
+          end
         {% elsif flag?(:darwin) %}
           "nss"
         {% else %}

@@ -108,7 +108,9 @@ module MStrap
           require_reboot = false
 
           success =
-            if MStrap::Linux.debian_distro?
+            if MStrap::Linux.arch_distro?
+              install_docker_archlinux!
+            elsif MStrap::Linux.debian_distro?
               install_docker_debian!
             elsif MStrap::Linux.rhel_distro?
               install_docker_rhel!
@@ -160,6 +162,11 @@ module MStrap
       success
     end
 
+    private def install_docker_archlinux!
+      logn "Installing Docker from ArchLinux repos"
+      MStrap::Platform.install_packages!(["docker", "docker-compose"])
+    end
+
     private def install_docker_centos!
       # https://docs.docker.com/engine/install/centos/#installation-methods
       logn "Installing Docker from Official Docker Repos"
@@ -201,23 +208,14 @@ module MStrap
     private def install_docker_fedora!
       distro_version = MStrap::Linux.distro_version
 
-      if distro_version == "32"
-        logn "Installing Docker from Fedora repos"
+      # https://docs.docker.com/engine/install/fedora/#installation-methods
+      logn "Installing Docker from Official Docker Repos"
+      success = cmd("sudo dnf -y install dnf-plugins-core grubby") &&
+                cmd("sudo dnf config-manager -y --add-repo https://download.docker.com/linux/fedora/docker-ce.repo") &&
+                cmd("sudo dnf install -y docker-ce docker-ce-cli containerd.io") &&
+                fedora_disable_cgroups_v2!
 
-        success = cmd("sudo dnf -y install moby-engine grubby") &&
-                  fedora_disable_cgroups_v2!
-
-        success
-      else
-        # https://docs.docker.com/engine/install/fedora/#installation-methods
-        logn "Installing Docker from Official Docker Repos"
-        success = cmd("sudo dnf -y install dnf-plugins-core grubby") &&
-                  cmd("sudo dnf config-manager -y --add-repo https://download.docker.com/linux/fedora/docker-ce.repo") &&
-                  cmd("sudo dnf install -y docker-ce docker-ce-cli containerd.io") &&
-                  fedora_disable_cgroups_v2!
-
-        success
-      end
+      success
     end
 
     private def install_docker_rhel!

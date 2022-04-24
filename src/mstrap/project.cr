@@ -20,6 +20,7 @@ module MStrap
     @path : String
     @port : Int32?
     @repo : String
+    @repo_upstream : String?
     @run_scripts : Bool
     @runtimes : Array(String)
     @upstream : String?
@@ -43,6 +44,9 @@ module MStrap
 
     # Returns the configured GitHub path or URI for the project's repo.
     getter :repo
+
+    # Returns the configured GitHub path or URI for the project's upstream repo, if configured.
+    getter :repo_upstream
 
     # Returns the language runtimes of the project, if specified.
     getter :runtimes
@@ -68,6 +72,7 @@ module MStrap
       @path = File.join(MStrap::Paths::SRC_DIR, project_def.path_present? ? project_def.path.not_nil! : cname)
       @port = (port = project_def.port) ? port.to_i32 : nil
       @repo = project_def.repo
+      @repo_upstream = project_def.repo_upstream
       @run_scripts = project_def.run_scripts?
       @runtimes = project_def.runtimes
       @upstream = project_def.upstream
@@ -81,11 +86,24 @@ module MStrap
 
     # Returns a usable Git URI for the project
     def git_uri
-      @git_uri ||= if repo =~ ABSOLUTE_REPO_URL_REGEX || repo =~ SCP_REPO_REGEX
-                     repo
-                   else
-                     "git@github.com:#{repo}.git"
-                   end
+      @git_uri ||=
+        if repo =~ ABSOLUTE_REPO_URL_REGEX || repo =~ SCP_REPO_REGEX
+          repo
+        else
+          "git@github.com:#{repo}.git"
+        end
+    end
+
+    # Returns a usable Git URI for the project's upstream, or nil if not specified
+    def git_upstream_uri
+      @git_upstream_uri ||=
+        if !repo_upstream
+          nil
+        elsif repo_upstream =~ ABSOLUTE_REPO_URL_REGEX || repo_upstream =~ SCP_REPO_REGEX
+          repo_upstream
+        else
+          "git@github.com:#{repo_upstream}.git"
+        end
     end
 
     # Returns the NGINX upstream for the project. Relevant only to web projects.
@@ -109,7 +127,17 @@ module MStrap
 
     # Clones the project from Git
     def clone
-      cmd("git", "clone", git_uri, path, quiet: true)
+      success = cmd("git", "clone", git_uri, path, quiet: true)
+
+      if success && repo_upstream
+        Dir.cd(path) do
+          success =
+            cmd("git", "remote", "add", "upstream", git_upstream_uri.not_nil!, quiet: true) &&
+              cmd("git", "fetch", "upstream", quiet: true)
+        end
+      end
+
+      success
     end
 
     # Updates the project from Git, including auto-stashing any unstaged and
@@ -117,15 +145,19 @@ module MStrap
     def pull
       Dir.cd(path) do
         git_checkpoint do
-          remote_branch = remote_head_branch_name
-          success = if current_branch != remote_branch
-                      cmd("git checkout #{remote_branch}", quiet: true) && cmd("git pull origin #{remote_branch} --rebase", quiet: true) && cmd("git checkout -", quiet: true)
-                    else
-                      cmd "git pull origin #{remote_branch} --rebase", quiet: true
-                    end
+          remote_name = repo_upstream ? "upstream" : "origin"
+          remote_branch = remote_head_branch_name(remote_name)
+          success =
+            if current_branch != remote_branch
+              cmd("git", "checkout", remote_branch, quiet: true) &&
+                cmd("git", "pull", remote_name, remote_branch, "--rebase", quiet: true) &&
+                cmd("git", "checkout", "-", quiet: true)
+            else
+              cmd "git", "pull", remote_name, remote_branch, "--rebase", quiet: true
+            end
 
           unless success
-            logw "Failed to update '#{remote_branch}' branch from remote. There may be a problem that needs to be resolved manually."
+            logw "Failed to update '#{remote_branch}' branch from '#{remote_name}' remote. There may be a problem that needs to be resolved manually."
           end
 
           success
@@ -161,13 +193,14 @@ module MStrap
     # calling into conventional bootstrapping within a project's
     # `script/bootstrap` or `script/setup` from `mstrap project`.
     protected def default_bootstrap
-      runtime_impls = if runtimes.empty?
-                        MStrap::Runtime.all
-                      else
-                        MStrap::Runtime.all.select do |runtime|
-                          runtimes.includes?(runtime.language_name)
-                        end
-                      end
+      runtime_impls =
+        if runtimes.empty?
+          MStrap::Runtime.all
+        else
+          MStrap::Runtime.all.select do |runtime|
+            runtimes.includes?(runtime.language_name)
+          end
+        end
 
       runtime_impls.each do |runtime|
         Dir.cd(path) do
@@ -201,8 +234,8 @@ module MStrap
       end
     end
 
-    private def remote_head_branch_name
-      meta = `git remote show origin`.chomp.match(/HEAD branch: (.+)\n/)
+    private def remote_head_branch_name(remote_name)
+      meta = `git remote show #{remote_name}`.chomp.match(/HEAD branch: (.+)\n/)
       if meta && (branch_name = meta[1]?)
         branch_name
       else

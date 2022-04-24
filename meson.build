@@ -137,6 +137,7 @@ if embedded_openssl
 endif
 
 crystal_build_flags = [
+  '--error-trace',
   '--cross-compile',
   '--target',
   target_triple,

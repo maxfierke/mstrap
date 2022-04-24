@@ -4,7 +4,7 @@ module MStrap
       extend DSL
 
       def self.install_packages!(packages : Array(String))
-        cmd("pacman", ["-Sy"] + packages, sudo: true)
+        cmd("pacman", ["-Sy", "--noconfirm", "--needed"] + packages, sudo: true)
       end
 
       def self.package_installed?(package_name : String)

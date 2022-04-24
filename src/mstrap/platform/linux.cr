@@ -47,7 +47,9 @@ module MStrap
     def distro_family
       d = distro
 
-      if DEBIAN_DISTROS.includes?(d)
+      if ARCH_DISTROS.includes?(d)
+        DISTRO_FAMILY_ARCH
+      elsif DEBIAN_DISTROS.includes?(d)
         DISTRO_FAMILY_DEBIAN
       elsif RHEL_DISTROS.includes?(d)
         DISTRO_FAMILY_RHEL

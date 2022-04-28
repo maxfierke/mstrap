@@ -34,6 +34,19 @@ MESON_FLAGS ?= \
 # Add cross-files if target and host are different
 ifeq ($(shell [[ "$(TARGET_OS)" != "$(HOST_OS)" || "$(TARGET_ARCH)" != "$(HOST_ARCH)" || ! -z "$(TARGET_CABI)" ]] && echo true),true)
   override MESON_FLAGS += --cross-file=config/$(TARGET_OS)-$(TARGET_ARCH)$(if $(TARGET_CABI),-$(TARGET_CABI),).ini
+else
+  # Do some special stuff on macOS
+  ifeq ($(shell [[ "$(TARGET_OS)" == "$(HOST_OS)" && "$(TARGET_OS)" == "darwin" ]] && echo true),true)
+    ifeq ($(shell command -v brew > /dev/null && echo true),true)
+      ifeq ($(shell brew ls --versions openssl@3 > /dev/null && echo true),true)
+        export PKG_CONFIG_PATH=$(shell brew --prefix openssl@3)/lib/pkgconfig
+        override MESON_FLAGS += --pkg-config-path=$(PKG_CONFIG_PATH)
+      else ifeq ($(shell brew ls --versions openssl@1.1 > /dev/null && echo true),true)
+        export PKG_CONFIG_PATH=$(shell brew --prefix openssl@1.1)/lib/pkgconfig
+        override MESON_FLAGS += --pkg-config-path=$(PKG_CONFIG_PATH)
+      endif
+    endif
+  endif
 endif
 
 .PHONY: all

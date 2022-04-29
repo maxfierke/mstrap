@@ -22,7 +22,7 @@ module MStrap
 
       # :nodoc:
       UNSUPPORTED_SHELL_MSG = <<-MSG
-      mstrap couldn't detect a supported shell, so you're on your own here.
+      mstrap couldn't detect a supported shell (bash or zsh).
 
       Using the the runtime configuration of whatever your shell is, make sure that it
       is doing the equivalent of `source ~/.mstrap/env.sh` when the shell is initialized.
@@ -55,8 +55,8 @@ module MStrap
         exit_if_shell_changed!
 
         unless MStrap.mstrapped? || shell_instrumented?
-          if supported_shell?
-            logn "==> Injecting magic shell scripts into your #{shell_file}: "
+          if shell_supported?
+            logn "==> Injecting magic shell scripts into your #{shell_file_name}: "
             `touch #{shell_file_path} && echo '#{SHELL_LINE}' >> #{shell_file_path}`
             success "OK"
             logw SUPPORTED_SHELL_MSG
@@ -70,28 +70,30 @@ module MStrap
       end
 
       private def shell_file_path
-        @shell_file_path ||= File.join(ENV["HOME"], shell_file)
+        @shell_file_path ||= if shell_file_name = self.shell_file_name
+          File.join(ENV["HOME"], shell_file_name)
+        end
       end
 
-      private def shell_file
+      private def shell_file_name
         @shell_file ||=
           if ENV["SHELL"]? && `#{ENV["SHELL"]} -c 'echo $ZSH_VERSION'`.strip != ""
             ".zshrc"
           elsif ENV["SHELL"]? && `#{ENV["SHELL"]} -c 'echo $BASH_VERSION'`.strip != ""
             ".bash_profile"
-          else
-            "wtf"
           end
       end
 
       private def shell_instrumented?
-        if File.exists?(shell_file_path)
-          File.read(shell_file_path).includes?(SHELL_LINE)
+        if (path = shell_file_path) && File.exists?(path)
+          File.read(path).includes?(SHELL_LINE)
+        else
+          false
         end
       end
 
-      private def supported_shell?
-        shell_file != "wtf"
+      private def shell_supported?
+        !shell_file_name.nil?
       end
 
       private def env_sh_path

@@ -70,9 +70,10 @@ module MStrap
       end
 
       private def shell_file_path
-        @shell_file_path ||= if shell_file_name = self.shell_file_name
-          File.join(ENV["HOME"], shell_file_name)
-        end
+        @shell_file_path ||=
+          if shell_file_name = self.shell_file_name
+            File.join(ENV["HOME"], shell_file_name)
+          end
       end
 
       private def shell_file_name

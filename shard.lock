@@ -22,7 +22,7 @@ shards:
 
   spectator:
     git: https://gitlab.com/arctic-fox/spectator.git
-    version: 0.10.2
+    version: 0.10.5
 
   term-cursor:
     git: https://github.com/crystal-term/cursor.git

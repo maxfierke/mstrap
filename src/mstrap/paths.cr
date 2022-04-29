@@ -46,8 +46,13 @@ module MStrap
       # :nodoc:
       STRAP_SH_URL = "https://raw.githubusercontent.com/MikeMcQuaid/strap/master/bin/strap.sh"
 
-      # :nodoc:
-      HOMEBREW_PREFIX = ENV["HOMEBREW_PREFIX"]? || "/usr/local"
+      {% if flag?(:aarch64) %}
+        # :nodoc:
+        HOMEBREW_PREFIX = ENV["HOMEBREW_PREFIX"]? || "/opt/homebrew"
+      {% else %}
+        # :nodoc:
+        HOMEBREW_PREFIX = ENV["HOMEBREW_PREFIX"]? || "/usr/local"
+      {% end %}
     {% elsif flag?(:linux) %}
       # :nodoc:
       STRAP_SH_URL = "https://raw.githubusercontent.com/maxfierke/strap-linux/master/bin/strap.sh"

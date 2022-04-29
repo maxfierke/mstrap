@@ -13,9 +13,12 @@ module MStrap
       # * _args_: optionally specifies arguments for the command. These will not
       #   be processed by the shell.
       # * _shell_: specifies whether to run the command through the system shell
-      # * _input_: specifies
+      # * _input_: specifies where to direct STDIN on the spawned process
+      # * _output_: specifies where to direct STDOUT on the spawned process
+      # * _error_: specifies where to direct STDERR on the spawned process
       # * _quiet_: If passed as `true`, it does no logging. If `mstrap` is
       #   running in debug mode, process output is always logged.
+      # * _sudo_: specifies whether to run the command with superuser privileges
       def cmd(
         env : Hash?,
         command : String,

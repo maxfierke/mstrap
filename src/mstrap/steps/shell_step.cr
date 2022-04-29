@@ -15,9 +15,6 @@ module MStrap
       SUPPORTED_SHELL_MSG = <<-MSG
       mstrap installed a shell script that needs to be loaded before you can
       continue bootstrapping.
-
-      Either restart your current shell or `source ~/.mstrap/env.sh` to load the
-      needed environment to continue.
       MSG
 
       # :nodoc:
@@ -60,12 +57,14 @@ module MStrap
             `touch #{shell_file_path} && echo '#{SHELL_LINE}' >> #{shell_file_path}`
             success "OK"
             logw SUPPORTED_SHELL_MSG
+            logn "==> Reloading mstrap with new shell config..."
+            Process.exec(login_shell, ["-c", "source #{env_sh_path} && #{Process.executable_path}"])
           else
             log "==> Injecting magic shell scripts into your shell config: "
             logn "FAIL".colorize(:red)
             logw UNSUPPORTED_SHELL_MSG
+            exit
           end
-          exit
         end
       end
 

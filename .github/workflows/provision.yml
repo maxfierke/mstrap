@@ -43,18 +43,12 @@ jobs:
                     /usr/local/Homebrew /usr/local/Caskroom \
                     /Library/Developer/CommandLineTools
 
-    - name: Run initial mstrap process
+    - name: Run mstrap
       env:
         STRAP_CI: true
       run: |
         bin/mstrap --debug \
         --config ${{ secrets.TEST_CONFIG_URL }}
-
-    - name: Finish mstrap process
-      env:
-        STRAP_CI: true
-      run: |
-        source ~/.mstrap/env.sh && bin/mstrap --debug
 
     - name: Install required dependencies for ruby
       run: |
@@ -102,20 +96,13 @@ jobs:
         sudo apt update
         sudo apt install curl
 
-    - name: Run initial mstrap process
+    - name: Run mstrap
       env:
         SHELL: /bin/bash
         STRAP_CI: true
       run: |
         bin/mstrap --debug \
         --config ${{ secrets.TEST_CONFIG_URL }}
-
-    - name: Finish mstrap process
-      env:
-        SHELL: /bin/bash
-        STRAP_CI: true
-      run: |
-        source ~/.mstrap/env.sh && bin/mstrap --debug
 
     - uses: ruby/setup-ruby@v1
       with:

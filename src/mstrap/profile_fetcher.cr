@@ -109,7 +109,6 @@ module MStrap
     end
 
     private def fetch_file_profile!(file_url)
-
       if File.file?(file_url.path)
         ensure_profile_dir
         FileUtils.ln_s(file_url.path, config.path)

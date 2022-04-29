@@ -11,7 +11,7 @@ on:
 
 jobs:
   macos-tests:
-    runs-on: macOS-latest
+    runs-on: macos-latest
 
     steps:
     - name: Checkout
@@ -23,10 +23,11 @@ jobs:
     - name: Install dependencies
       run: shards install
 
+    - name: Run lint
+      run: make lint
+
     - name: Run tests
       run: make test STATIC=1
-      env:
-        PKG_CONFIG_PATH: "/usr/local/opt/openssl@3/lib/pkgconfig"
 
   ubuntu-tests:
     runs-on: ubuntu-latest
@@ -46,6 +47,9 @@ jobs:
 
     - name: Install dependencies
       run: shards install
+
+    - name: Run lint
+      run: make lint
 
     - name: Run tests
       run: make test

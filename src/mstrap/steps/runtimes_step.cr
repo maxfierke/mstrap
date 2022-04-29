@@ -16,7 +16,7 @@ module MStrap
             set_default_to_latest(runtime)
             packages = runtime_packages(runtime)
 
-            if packages.any?
+            if !packages.empty?
               install_package_globals(runtime, packages)
             end
           end

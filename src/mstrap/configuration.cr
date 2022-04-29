@@ -105,7 +105,7 @@ ERR
 
     # Returns whether profiles have been loaded
     def loaded_profiles?
-      loaded_profiles.any?
+      !loaded_profiles.empty?
     end
 
     # Returns profile configurations for active profiles

@@ -17,7 +17,7 @@ on:
 
 jobs:
   macos-provision:
-    runs-on: macOS-latest
+    runs-on: macos-latest
 
     steps:
     - name: Checkout
@@ -31,8 +31,6 @@ jobs:
 
     - name: Build mstrap
       run: make build STATIC=1
-      env:
-        PKG_CONFIG_PATH: "/usr/local/opt/openssl@3/lib/pkgconfig"
 
     # Based on https://raw.githubusercontent.com/MikeMcQuaid/strap/master/.github/workflows/tests.yml
 

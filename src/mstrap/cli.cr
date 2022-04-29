@@ -93,13 +93,13 @@ module MStrap
         end
 
         Step.all.each do |key, step|
-          cmd.commands.add do |cmd|
-            cmd.use = key.to_s
-            cmd.short = step.description
-            cmd.long = step.long_description
-            step.setup_cmd!(cmd)
+          cmd.commands.add do |step_cmd|
+            step_cmd.use = key.to_s
+            step_cmd.short = step.description
+            step_cmd.long = step.long_description
+            step.setup_cmd!(step_cmd)
 
-            cmd.run do |options, arguments|
+            step_cmd.run do |options, arguments|
               validate_step!(key)
 
               cli_options = load_cli_options!(options)
@@ -201,13 +201,13 @@ module MStrap
           version_cmd.use = "version"
           version_cmd.short = "Prints version number."
           version_cmd.long = version_cmd.short
-          version_cmd.run do |options, arguments|
+          version_cmd.run do |_, _|
             puts "mstrap v#{MStrap::VERSION}"
             exit
           end
         end
 
-        cmd.run do |options, arguments|
+        cmd.run do |options, _|
           cli_options = load_cli_options!(options)
           load_bootstrap_options!(options)
 

@@ -86,7 +86,7 @@ module MStrap
     # Returns whether any versions of the language runtime have been
     # installed by ASDF.
     def has_versions?
-      installed_versions.any?
+      !installed_versions.empty?
     end
 
     # Returns a list of the versions of the language runtime installed

@@ -56,7 +56,7 @@ module MStrap
       end
 
       private def has_web_projects?
-        @has_web_projects ||= projects.any? { |p| p.web? }
+        @has_web_projects ||= projects.any?(&.web?)
       end
 
       private def create_services_internal_yml!

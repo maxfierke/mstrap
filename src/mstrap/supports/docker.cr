@@ -71,9 +71,7 @@ module MStrap
     # Check for docker-compose and raise if not found. On macOS, this will loop until you confirm the
     # command line tools have been installed for Docker for Mac
     def ensure_compose!
-      found_docker = false
-
-      while !(found_docker = cmd("docker-compose version", quiet: true, sudo: requires_sudo?))
+      while !cmd("docker-compose version", quiet: true, sudo: requires_sudo?)
         logw "Could not find 'docker-compose'."
 
         if app_path && STDIN.tty?
@@ -206,8 +204,6 @@ module MStrap
     end
 
     private def install_docker_fedora!
-      distro_version = MStrap::Linux.distro_version
-
       # https://docs.docker.com/engine/install/fedora/#installation-methods
       logn "Installing Docker from Official Docker Repos"
       success = cmd("sudo dnf -y install dnf-plugins-core grubby") &&

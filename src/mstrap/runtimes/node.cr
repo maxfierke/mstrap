@@ -45,13 +45,11 @@ module MStrap
       end
 
       private def skip_reshim
-        begin
-          ENV["ASDF_SKIP_RESHIM"] = "1"
-          yield
-        ensure
-          ENV.delete("ASDF_SKIP_RESHIM")
-          asdf_exec "asdf", ["reshim", "nodejs"]
-        end
+        ENV["ASDF_SKIP_RESHIM"] = "1"
+        yield
+      ensure
+        ENV.delete("ASDF_SKIP_RESHIM")
+        asdf_exec "asdf", ["reshim", "nodejs"]
       end
     end
   end

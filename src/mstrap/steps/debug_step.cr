@@ -40,6 +40,7 @@ module MStrap
         puts "Resolved Profile:"
         puts profile.to_hcl
         puts "Steps:"
+        # ameba:disable Lint/DebugCalls
         pp! Step.all
       end
     end

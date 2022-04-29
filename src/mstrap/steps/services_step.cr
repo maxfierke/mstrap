@@ -19,7 +19,7 @@ module MStrap
           file_args = docker.compose_file_args(config)
         end
 
-        if file_args.any?
+        if !file_args.empty?
           docker.install!
           docker.ensure_compose!
           logn "==> Setting up managed services"

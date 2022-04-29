@@ -83,6 +83,9 @@ docs: $(SOURCES)
 format:
 	$(CRYSTAL) tool format
 
+lint: deps
+	$(CRYSTAL) bin/ameba.cr
+
 .PHONY: clean
 clean:
 	rm -f ./bin/mstrap*

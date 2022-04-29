@@ -109,7 +109,6 @@ jobs:
       env:
         AC_USERNAME: ${{ secrets.AC_USERNAME }}
         AC_PASSWORD: ${{ secrets.AC_PASSWORD }}
-        PKG_CONFIG_PATH: "/usr/local/opt/openssl@3/lib/pkgconfig"
       run: |
         make release RELEASE=1 STATIC=1 GON_CONFIG=./gon.ci.hcl
 

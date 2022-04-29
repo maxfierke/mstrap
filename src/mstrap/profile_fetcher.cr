@@ -49,17 +49,7 @@ module MStrap
 
       if url.scheme == "file"
         file_url = url.resolve(Paths::RC_DIR)
-
-        if File.file?(file_url.path)
-          ensure_profile_dir
-          FileUtils.ln_s(file_url.path, config.path)
-        elsif File.directory?(file_url.path)
-          FileUtils.ln_s(file_url.path, config.dir)
-        else
-          raise InvalidProfileUrlError.new(
-            "#{config.name}: #{file_url.path} does not exist or is not accessible."
-          )
-        end
+        fetch_file_profile!(file_url)
       elsif git_url?
         if File.directory?(config.dir)
           update_profile_from_git!
@@ -67,31 +57,7 @@ module MStrap
           git_clone_profile!(url)
         end
       elsif https_url?
-        ensure_profile_dir
-        CACertInstaller.install!
-
-        begin
-          tmp_file = File.tempfile
-
-          HTTP::Client.get(url, tls: MStrap.tls_client) do |response|
-            File.write(tmp_file.path, response.body_io.gets_to_end, perm: 0o600)
-          end
-
-          revision = config.revision
-
-          if !revision || revision_checksum_valid?(tmp_file.path, revision)
-            tmp_file.rewind
-            File.write(config.path, tmp_file.gets_to_end, perm: 0o600)
-
-            if !revision
-              logw "Security warning: You did not specify a `revision` with the checksum for remote profile '#{config.name}'. This can be unsafe if you do not trust the source."
-            end
-          else
-            raise ProfileChecksumMismatchError.new(config)
-          end
-        ensure
-          tmp_file.delete if tmp_file
-        end
+        fetch_https_profile!(url)
       else
         raise InvalidProfileUrlError.new(
           "#{config.name}: '#{url.scheme}' is not a supported scheme"
@@ -140,6 +106,48 @@ module MStrap
     # Returns whether to update the profile
     def should_update?
       force? || outdated_revision?
+    end
+
+    private def fetch_file_profile!(file_url)
+
+      if File.file?(file_url.path)
+        ensure_profile_dir
+        FileUtils.ln_s(file_url.path, config.path)
+      elsif File.directory?(file_url.path)
+        FileUtils.ln_s(file_url.path, config.dir)
+      else
+        raise InvalidProfileUrlError.new(
+          "#{config.name}: #{file_url.path} does not exist or is not accessible."
+        )
+      end
+    end
+
+    private def fetch_https_profile!(url)
+      ensure_profile_dir
+      CACertInstaller.install!
+
+      begin
+        tmp_file = File.tempfile
+
+        HTTP::Client.get(url, tls: MStrap.tls_client) do |response|
+          File.write(tmp_file.path, response.body_io.gets_to_end, perm: 0o600)
+        end
+
+        revision = config.revision
+
+        if !revision || revision_checksum_valid?(tmp_file.path, revision)
+          tmp_file.rewind
+          File.write(config.path, tmp_file.gets_to_end, perm: 0o600)
+
+          if !revision
+            logw "Security warning: You did not specify a `revision` with the checksum for remote profile '#{config.name}'. This can be unsafe if you do not trust the source."
+          end
+        else
+          raise ProfileChecksumMismatchError.new(config)
+        end
+      ensure
+        tmp_file.delete if tmp_file
+      end
     end
 
     private def revision_checksum_valid?(file_path, revision)

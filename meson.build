@@ -37,8 +37,8 @@ elif target_system == 'darwin'
 endif
 
 cc = meson.get_compiler('c')
-crystal = find_program('crystal', required : true)
-shards = find_program('shards', required : true)
+crystal = find_program(get_option('crystal'), required : true)
+shards = find_program(get_option('shards'), required : true)
 
 # Basics
 libiconv_dep = dependency('iconv', static : is_static and not is_darwin)

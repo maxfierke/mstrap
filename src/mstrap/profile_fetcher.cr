@@ -1,24 +1,5 @@
 module MStrap
   class ProfileFetcher
-    # Exception class to indicate some failure fetching a profile
-    class ProfileFetchError < Exception; end
-
-    # Exception class to indicate an invalid URL for a profile
-    class InvalidProfileUrlError < ProfileFetchError; end
-
-    # Exception class for Git-related profile fetch errors
-    class GitProfileFetchError < ProfileFetchError
-      def initialize(config)
-        super("#{config.name}: Could not clone profile via git. Ensure you have access.")
-      end
-    end
-
-    class ProfileChecksumMismatchError < ProfileFetchError
-      def initialize(config)
-        super("#{config.name}: Could not fetch profile due to checksum mismatch. The remote contents may have changed. Please verify and update `revision` with latest checksum.")
-      end
-    end
-
     include DSL
 
     @url : URI

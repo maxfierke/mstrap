@@ -9,7 +9,7 @@ module MStrap
   module Linux
     extend self
 
-    class UnsupportedDistroError < Exception; end
+    class UnsupportedDistroError < MStrapError; end
 
     DISTRO_ARCHLINUX = "arch"
     DISTRO_CENTOS    = "centos"

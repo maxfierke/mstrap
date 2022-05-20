@@ -13,6 +13,7 @@ require "yaml"
 
 require "./mstrap/version"
 require "./mstrap/paths"
+require "./mstrap/errors"
 require "./mstrap/dsl/*"
 require "./mstrap/dsl"
 require "./mstrap/platform/*"
@@ -32,9 +33,11 @@ require "./mstrap/step"
 require "./mstrap/templates/**"
 require "./mstrap/steps/**"
 
+# :nodoc:
 module Term
   module Screen
     def size_from_readline
+      # Always return default size to avoid linking to readline
       DEFAULT_SIZE
     end
   end

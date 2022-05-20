@@ -1,15 +1,5 @@
 module MStrap
   class Configuration
-    # Exception class for configuration load errors
-    class ConfigurationLoadError < Exception; end
-
-    # Exception raised if configuration file is not found or is inaccessible.
-    class ConfigurationNotFoundError < ConfigurationLoadError
-      def initialize(path : String)
-        super("#{path} does not exist or is not accessible.")
-      end
-    end
-
     include DSL
 
     @config_def : Defs::ConfigDef

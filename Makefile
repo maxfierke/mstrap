@@ -19,7 +19,9 @@ SOURCES           := src/*.cr src/**/*.cr
 TARGET_ARCH       ?= $(HOST_ARCH)
 TARGET_CABI       ?=
 TARGET_OS         ?= $(HOST_OS)
+
 TARGET_BUILD_DIR  ?= .build/$(TARGET_OS)-$(TARGET_ARCH)
+TARGET_CROSS_FILE ?= config/$(TARGET_OS)-$(TARGET_ARCH)$(if $(TARGET_CABI),-$(TARGET_CABI),).ini
 
 # Force static compilation on musl
 ifeq ($(TARGET_CABI),musl)
@@ -28,12 +30,14 @@ endif
 
 MESON_FLAGS ?= \
   --prefix=$(PREFIX) \
+  -Dcrystal=$(CRYSTAL) \
+  -Dshards=$(SHARDS) \
   $(if $(RELEASE),--buildtype=release --strip,--buildtype=debug) \
   $(if $(STATIC),--default-library=static,--default-library=shared)
 
 # Add cross-files if target and host are different
 ifeq ($(shell [[ "$(TARGET_OS)" != "$(HOST_OS)" || "$(TARGET_ARCH)" != "$(HOST_ARCH)" || ! -z "$(TARGET_CABI)" ]] && echo true),true)
-  override MESON_FLAGS += --cross-file=config/$(TARGET_OS)-$(TARGET_ARCH)$(if $(TARGET_CABI),-$(TARGET_CABI),).ini
+  override MESON_FLAGS += --cross-file=$(TARGET_CROSS_FILE)
 else
   # Do some special stuff on macOS
   ifeq ($(shell [[ "$(TARGET_OS)" == "$(HOST_OS)" && "$(TARGET_OS)" == "darwin" ]] && echo true),true)
@@ -52,10 +56,21 @@ endif
 .PHONY: all
 all: build
 
-$(TARGET_BUILD_DIR)/mstrap: $(SOURCES)
+$(TARGET_BUILD_DIR)/build.ninja: meson.build $(TARGET_CROSS_FILE)
 	@if [ ! -z "$(MESON)" ]; then \
 		mkdir -p $(TARGET_BUILD_DIR); \
-		$(MESON) setup $(MESON_FLAGS) $(TARGET_BUILD_DIR); \
+		if [ -f "$@" ]; then \
+			$(MESON) setup $(MESON_FLAGS) --reconfigure $(TARGET_BUILD_DIR); \
+		else \
+			$(MESON) setup $(MESON_FLAGS) $(TARGET_BUILD_DIR); \
+		fi; \
+	else \
+		echo "FAIL: meson must be installed"; \
+		exit 1; \
+	fi
+
+$(TARGET_BUILD_DIR)/mstrap: $(SOURCES) $(TARGET_BUILD_DIR)/build.ninja
+	@if [ ! -z "$(MESON)" ]; then \
 		$(MESON) compile -v -C $(TARGET_BUILD_DIR); \
 	else \
 		echo "FAIL: meson must be installed"; \
@@ -126,5 +141,5 @@ release: gon.hcl bin/mstrap
 	fi
 
 .PHONY: install
-install: $(TARGET_BUILD_DIR)/mstrap
+install: $(TARGET_BUILD_DIR)/mstrap $(TARGET_BUILD_DIR)/build.ninja meson.build
 	$(MESON) install -C $(TARGET_BUILD_DIR) --tags runtime

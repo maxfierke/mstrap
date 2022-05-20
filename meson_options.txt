@@ -1,0 +1,2 @@
+option('crystal', type : 'string', value : 'crystal', description : 'A path to crystal binary')
+option('shards', type : 'string', value : 'shards', description : 'A path to shards binary')

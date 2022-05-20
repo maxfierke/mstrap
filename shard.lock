@@ -14,7 +14,7 @@ shards:
 
   hcl:
     git: https://github.com/maxfierke/hcl.cr.git
-    version: 0.2.0
+    version: 0.2.1
 
   ioctl:
     git: https://github.com/crystal-posix/ioctl.cr.git
@@ -22,7 +22,7 @@ shards:
 
   pegmatite:
     git: https://github.com/jemc/crystal-pegmatite.git
-    version: 0.2.0+git.commit.52483e2ffdfac6913342b2dae16ba11d6e4b8d07
+    version: 0.2.3+git.commit.59b3afb296e79a0eea1a7d35db1d093cfc03f420
 
   spectator:
     git: https://gitlab.com/arctic-fox/spectator.git

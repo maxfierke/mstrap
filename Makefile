@@ -17,8 +17,8 @@ STATIC            ?=
 STRIP_RPATH       ?=
 SOURCES           := src/*.cr src/**/*.cr
 TARGET_ARCH       ?= $(HOST_ARCH)
-TARGET_CABI       ?=
 TARGET_OS         ?= $(HOST_OS)
+TARGET_CABI       ?= $(if $(ifeq $(TARGET_OS) linux),gnu)
 
 TARGET_BUILD_DIR  ?= .build/$(TARGET_OS)-$(TARGET_ARCH)
 TARGET_CROSS_FILE ?= config/$(TARGET_OS)-$(TARGET_ARCH)$(if $(TARGET_CABI),-$(TARGET_CABI),).ini

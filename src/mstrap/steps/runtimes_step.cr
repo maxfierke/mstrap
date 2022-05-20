@@ -39,11 +39,12 @@ module MStrap
       private def set_default_to_latest(runtime)
         cfg = runtime_config(runtime)
 
-        latest_version = if cfg && cfg.default_version
-                           cfg.default_version
-                         else
-                           runtime.installed_versions.last
-                         end
+        latest_version =
+          if cfg && cfg.default_version
+            cfg.default_version
+          else
+            runtime.installed_versions.last
+          end
 
         log "--> Setting default #{runtime.language_name} version to #{latest_version}: "
         unless cmd "asdf global #{runtime.asdf_plugin_name} #{latest_version}", quiet: true

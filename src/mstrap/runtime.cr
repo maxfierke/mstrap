@@ -3,12 +3,12 @@ module MStrap
   abstract class Runtime
     include DSL
 
-    @asdf_version_env_var : String?
+    @version_env_var : String?
 
     # Execute a command using a specific language runtime version
     def asdf_exec(command : String, args : Array(String), runtime_version : String? = nil)
       if runtime_version
-        env = {asdf_version_env_var => runtime_version}
+        env = {version_env_var => runtime_version}
         cmd env, command, args, quiet: true
       else
         cmd command, args, quiet: true
@@ -28,36 +28,6 @@ module MStrap
       language_name
     end
 
-    # :nodoc:
-    def asdf_version_env_var
-      @asdf_version_env_var ||= "ASDF_#{asdf_plugin_name.upcase}_VERSION"
-    end
-
-    # :nodoc:
-    def asdf_version_from_env
-      ENV[asdf_version_env_var]?
-    end
-
-    # :nodoc:
-    def asdf_version_from_tool_versions
-      tool_versions_path = File.join(Dir.current, ".tool-versions")
-      return nil unless File.exists?(tool_versions_path)
-
-      tool_versions = File.read(tool_versions_path).strip
-      if matches = tool_versions.match(/^#{asdf_plugin_name}\s+([^\s]+)$/m)
-        matches[1].strip
-      else
-        nil
-      end
-    end
-
-    # :nodoc:
-    def asdf_version_from_legacy_version_file
-      version_path = File.join(Dir.current, ".#{language_name}-version")
-      return nil unless File.exists?(version_path)
-      File.read(version_path).strip
-    end
-
     # Bootstrap the current directory for the runtime
     abstract def bootstrap
 
@@ -67,9 +37,9 @@ module MStrap
     # NOTE: This will not traverse parent directories to find versions files.
     def current_version
       [
-        asdf_version_from_env,
-        asdf_version_from_tool_versions,
-        asdf_version_from_legacy_version_file,
+        version_from_env,
+        version_from_tool_versions,
+        version_from_legacy_version_file,
       ].find { |version| version }
     end
 
@@ -111,6 +81,12 @@ module MStrap
     # Name of the language as a string. Always lowercase.
     abstract def language_name : String
 
+    # Returns the latest version available for the language runtime, according
+    # to the asdf plugin
+    def latest_version
+      `asdf latest #{asdf_plugin_name}`.chomp
+    end
+
     # Returns whether the project uses the runtime
     abstract def matches? : Bool
 
@@ -136,15 +112,50 @@ module MStrap
     #
     # NOTE: This will not traverse parent directories to find versions files.
     def with_dir_version(dir)
-      env_version = ENV[asdf_version_env_var]?
+      env_version = ENV[version_env_var]?
       begin
         Dir.cd(dir) do
-          ENV[asdf_version_env_var] = current_version
+          ENV[version_env_var] = current_version
           yield
         end
       ensure
-        ENV[asdf_version_env_var] = env_version
+        ENV[version_env_var] = env_version
       end
+    end
+
+    # :nodoc:
+    def version_env_var
+      @version_env_var ||= "ASDF_#{asdf_plugin_name.upcase}_VERSION"
+    end
+
+    # :nodoc:
+    def version_from_env
+      ENV[version_env_var]?
+    end
+
+    # :nodoc:
+    def version_from_tool_versions
+      tool_versions_path = File.join(Dir.current, ".tool-versions")
+      return nil unless File.exists?(tool_versions_path)
+
+      tool_versions = File.read(tool_versions_path).strip
+      if matches = tool_versions.match(/^#{asdf_plugin_name}\s+([^\s]+)$/m)
+        matches[1].strip
+      else
+        nil
+      end
+    end
+
+    # :nodoc:
+    def version_from_legacy_version_file
+      version_path = File.join(Dir.current, ".#{language_name}-version")
+      return nil unless File.exists?(version_path)
+      File.read(version_path).strip
+    end
+
+    # :nodoc:
+    protected def raise_setup_error!(message)
+      raise RuntimeSetupError.new(language_name, message)
     end
 
     macro finished

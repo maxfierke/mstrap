@@ -235,6 +235,13 @@ DESC
       Signal::TERM.trap { exit 1 }
 
       Commander.run(cli, options.argv)
+    rescue e
+      {% if flag?(:debug) %}
+        raise e
+      {% else %}
+        STDERR.puts "mstrap received an unhandled exception: #{e.message}"
+        exit 1
+      {% end %}
     end
 
     private def config_def

@@ -189,7 +189,7 @@ Spectator.describe MStrap::Configuration do
         it "raises an exception" do
           expect {
             subject.load_profiles!
-          }.to raise_error(MStrap::Configuration::ConfigurationNotFoundError)
+          }.to raise_error(MStrap::ConfigurationNotFoundError)
         end
       end
 
@@ -308,7 +308,7 @@ Spectator.describe MStrap::Configuration do
 
         expect {
           subject.reload!
-        }.to raise_error(MStrap::Configuration::ConfigurationNotFoundError)
+        }.to raise_error(MStrap::ConfigurationNotFoundError)
       end
     end
   end

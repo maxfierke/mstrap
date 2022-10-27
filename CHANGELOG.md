@@ -4,6 +4,30 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased] - 20XX-XX-XX
+
+### Added
+
+- Added support for Apple Silicon and easier cross-compilation ([#35](https://github.com/maxfierke/mstrap/pull/35))
+- Added support for Arch Linux and Manjaro ([#36](https://github.com/maxfierke/mstrap/pull/36))
+- Added support for projects syncing with upstream repos ([#38](https://github.com/maxfierke/mstrap/pull/38))
+- Added support for Crystal projects via asdf-crystal ([#40](https://github.com/maxfierke/mstrap/pull/40))
+
+### Changed
+
+- mstrap no longer requires a two-step initial bootstrapping process with a shell
+  restart in between during its first run. A shell/terminal restart is still necessary
+  afterwards, however.
+
+### Bugfixes
+
+- Handle invalid URIs for project repos ([#38](https://github.com/maxfierke/mstrap/pull/38), fixes [#37](https://github.com/maxfierke/mstrap/issues/37))
+
+### Removed
+
+- Dropped support for Fedora 32 ([#36](https://github.com/maxfierke/mstrap/pull/36))
+- Stopped installing Bundler < 2 for Ruby projects
+
 ## [0.4.0] - 2021-06-03
 
 ### Changed
@@ -56,7 +80,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything! First public release.
 
-[Unreleased]: https://github.com/maxfierke/mstrap/compare/v0.2.8...HEAD
+[Unreleased]: https://github.com/maxfierke/mstrap/compare/v0.4.0...HEAD
 [0.4.0]: https://github.com/maxfierke/mstrap/compare/v0.3.1...v0.4.0
 [0.3.1]: https://github.com/maxfierke/mstrap/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/maxfierke/mstrap/compare/v0.2.9...v0.3.0

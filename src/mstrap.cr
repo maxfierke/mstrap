@@ -70,11 +70,6 @@ module MStrap
     @@debug
   end
 
-  # Returns whether or not the feature passed for *name* is active.
-  def self.has_feature?(name)
-    !!ENV["MSTRAP_FEAT_#{name.upcase}"]?
-  end
-
   # Sets up Log instance that can be used to log to the mstrap log file.
   # When `MStrap.debug?` is set to `true`, this also logs messages to `STDOUT`.
   def self.initialize_logger! : Nil

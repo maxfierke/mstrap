@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Changed
+
+### Bugfixes
+
+### Removed
+
+## [0.5.0] - 2022-10-27
+
+### Added
+
 - Added support for Apple Silicon and easier cross-compilation ([#35](https://github.com/maxfierke/mstrap/pull/35))
 - Added support for Arch Linux and Manjaro ([#36](https://github.com/maxfierke/mstrap/pull/36))
 - Added support for projects syncing with upstream repos ([#38](https://github.com/maxfierke/mstrap/pull/38))
@@ -81,6 +91,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Everything! First public release.
 
 [Unreleased]: https://github.com/maxfierke/mstrap/compare/v0.4.0...HEAD
+[0.5.0]: https://github.com/maxfierke/mstrap/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/maxfierke/mstrap/compare/v0.3.1...v0.4.0
 [0.3.1]: https://github.com/maxfierke/mstrap/compare/v0.3.0...v0.3.1
 [0.3.0]: https://github.com/maxfierke/mstrap/compare/v0.2.9...v0.3.0

@@ -41,7 +41,7 @@ jobs:
         LD_FOR_BUILD: lld
 
     - name: Upload release bundle artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: mstrap_linux_amd64
         path: dist
@@ -77,7 +77,7 @@ jobs:
         make release RELEASE=1 STATIC=1 TARGET_ARCH=aarch64 TARGET_CABI=musl
 
     - name: Upload release bundle artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: mstrap_linux_aarch64
         path: dist
@@ -113,7 +113,7 @@ jobs:
         make release RELEASE=1 STATIC=1 GON_CONFIG=./gon.ci.hcl
 
     - name: Upload release bundle artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: mstrap_macos_amd64
         path: dist
@@ -149,7 +149,7 @@ jobs:
         make release RELEASE=1 STATIC=1 TARGET_ARCH=arm64 GON_CONFIG=./gon.ci.hcl
 
     - name: Upload release bundle artifact
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: mstrap_macos_arm64
         path: dist

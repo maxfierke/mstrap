@@ -190,7 +190,7 @@ DESC
             end
 
             project_def ||= Defs::ProjectDef.new
-            project_def.run_scripts = !ENV["__MSTRAP_EXEC_SCRIPTS"]
+            project_def.run_scripts = !ENV["__MSTRAP_EXEC_SCRIPTS"]?
             project_def.cname = options.string["cname"] if options.string.has_key?("cname")
             project_def.name = options.string["name"] if options.string.has_key?("name")
             project_def.hostname = options.string["hostname"] if options.string.has_key?("hostname")

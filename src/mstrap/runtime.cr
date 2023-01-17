@@ -65,7 +65,7 @@ module MStrap
       `asdf list #{asdf_plugin_name} 2>&1`
         .chomp
         .split("\n")
-        .map(&.strip)
+        .map { |version| version.strip.lstrip('*') }
         .reject do |version|
           version.blank? || version == "No versions installed"
         end

@@ -10,7 +10,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+- Updated bundled wraps for OpenSSL and zlib (affects source compiling only)
+
 ### Bugfixes
+
+- Fixed asdf global version selection when current version is latest
 
 ### Removed
 

@@ -29,7 +29,7 @@ module MStrap
         if packages.empty?
           true
         else
-          raise_setup_error!("shards does not have a global packages")
+          raise_setup_error!("shards does not have global packages")
         end
       end
 

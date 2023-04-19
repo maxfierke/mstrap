@@ -24,7 +24,7 @@ jobs:
       uses: actions/checkout@v3
 
     - name: Install crystal and tool dependencies
-      run: brew install crystal meson openssl@3
+      run: brew update && brew install crystal meson openssl@3
 
     - name: Install dependencies
       run: shards install
@@ -77,7 +77,7 @@ jobs:
 
     - name: Install crystal and tool dependencies
       run: |
-        sudo apt install -y crystal libevent-dev libpcre3-dev libssl-dev \
+        sudo apt install -y crystal libevent-dev libpcre2-dev libssl-dev \
           curl ninja-build \
           ruby ruby-bundler
         sudo apt purge meson

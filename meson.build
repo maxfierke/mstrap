@@ -28,7 +28,7 @@ if target_system == 'linux'
     add_global_link_arguments('-static', language : 'c')
   endif
 elif target_system == 'darwin'
-  macos_abi = meson.get_external_property('macos_version', '11')
+  macos_abi = meson.get_external_property('macos_version', '12')
   macos_arch = target_arch == 'aarch64' ? 'arm64' : target_arch
 
   target_triple = macos_arch + '-apple-macos' + macos_abi
@@ -43,7 +43,7 @@ shards = find_program(get_option('shards'), required : true)
 # Basics
 libiconv_dep = dependency('iconv', static : is_static and not is_darwin)
 libm_dep = cc.find_library('m', required : false, static : is_static)
-libpcre_dep = dependency('libpcre', static : is_static)
+libpcre2_dep = dependency('libpcre2-8', static : is_static)
 thread_dep = dependency('threads', static : is_static)
 zlib_dep = dependency('zlib', static : is_static and not is_darwin)
 
@@ -178,7 +178,7 @@ executable(
     libgc_dep,
     libiconv_dep,
     libm_dep,
-    libpcre_dep,
+    libpcre2_dep,
     libssl_dep,
     zlib_dep,
     thread_dep

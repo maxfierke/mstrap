@@ -24,7 +24,7 @@ development_dependencies:
 
 libraries:
   libevent: "*"
-  libpcre: "*"
+  libpcre2: "*"
   openssl: "*"
 
 targets:

@@ -28,7 +28,7 @@ if target_system == 'linux'
     add_global_link_arguments('-static', language : 'c')
   endif
 elif target_system == 'darwin'
-  macos_abi = meson.get_external_property('macos_version', '11')
+  macos_abi = meson.get_external_property('macos_version', '12')
   macos_arch = target_arch == 'aarch64' ? 'arm64' : target_arch
 
   target_triple = macos_arch + '-apple-macos' + macos_abi

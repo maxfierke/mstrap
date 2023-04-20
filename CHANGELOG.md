@@ -10,6 +10,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 
+### Bugfixes
+
+### Removed
+
+## [0.5.2] - 2023-04-19
+
+### Added
+
+### Changed
+
+- Switched to PCRE2 instead of PCRE for regular expressions (which is EOL)
 - Updated bundled wraps for OpenSSL and zlib (affects source compiling only)
 
 ### Bugfixes
@@ -17,6 +28,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Fixed asdf global version selection when current version is latest
 
 ### Removed
+
+- Drop support for macOS < 12 (might still work, but no longer testing)
 
 ## [0.5.1] - 2022-11-01
 
@@ -100,7 +113,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything! First public release.
 
-[Unreleased]: https://github.com/maxfierke/mstrap/compare/v0.4.0...HEAD
+[Unreleased]: https://github.com/maxfierke/mstrap/compare/v0.5.2...HEAD
+[0.5.2]: https://github.com/maxfierke/mstrap/compare/v0.5.1...v0.5.2
 [0.5.1]: https://github.com/maxfierke/mstrap/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/maxfierke/mstrap/compare/v0.4.0...v0.5.0
 [0.4.0]: https://github.com/maxfierke/mstrap/compare/v0.3.1...v0.4.0

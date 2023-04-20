@@ -3,5 +3,5 @@ module MStrap
   COMPILED_AT = {{`date -u`.chomp.stringify}}
 
   # `mstrap` version
-  VERSION = "0.5.1"
+  VERSION = {{`shards version`.chomp.stringify}}
 end

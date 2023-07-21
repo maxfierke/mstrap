@@ -69,7 +69,7 @@ module MStrap
       @cname = project_def.cname
       @name = project_def.name
       @hostname = project_def.hostname || "#{cname}.localhost"
-      @path = File.join(MStrap::Paths::SRC_DIR, project_def.path_present? ? project_def.path.not_nil! : cname)
+      @path = File.join(MStrap::Paths::SRC_DIR, (project_path = project_def.path) ? project_path : cname)
       @port = (port = project_def.port) ? port.to_i32 : nil
       @repo = project_def.repo
       @repo_upstream = project_def.repo_upstream
@@ -129,10 +129,10 @@ module MStrap
     def clone
       success = cmd("git", "clone", git_uri, path, quiet: true)
 
-      if success && repo_upstream
+      if success && repo_upstream && (upstream_uri = git_upstream_uri)
         Dir.cd(path) do
           success =
-            cmd("git", "remote", "add", "upstream", git_upstream_uri.not_nil!, quiet: true) &&
+            cmd("git", "remote", "add", "upstream", upstream_uri, quiet: true) &&
               cmd("git", "fetch", "upstream", quiet: true)
         end
       end
@@ -221,7 +221,7 @@ module MStrap
       `git rev-parse --abbrev-ref HEAD`.chomp
     end
 
-    private def git_checkpoint
+    private def git_checkpoint(&)
       stash_message = "MSTRAP CHECKPOINT #{Time.utc.to_unix}"
 
       begin

@@ -42,7 +42,7 @@ module MStrap
         end
       end
 
-      private def disable_go_modules
+      private def disable_go_modules(&)
         current_module_setting = ENV["GO111MODULE"]?
 
         begin

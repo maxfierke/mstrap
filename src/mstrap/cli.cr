@@ -255,12 +255,12 @@ DESC
         else
           Defs::ConfigDef.new(
             user: Defs::UserDef.new(
-              name: name.not_nil!,
-              email: email.not_nil!,
+              name: name,
+              email: email,
               github: github
             ),
           )
-        end.not_nil!
+        end
     end
 
     private def load_cli_options!(options)

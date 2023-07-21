@@ -44,7 +44,7 @@ module MStrap
         end
       end
 
-      private def skip_reshim
+      private def skip_reshim(&)
         ENV["ASDF_SKIP_RESHIM"] = "1"
         yield
       ensure

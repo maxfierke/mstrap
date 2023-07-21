@@ -111,7 +111,7 @@ module MStrap
     # version or the version specified by the environment.
     #
     # NOTE: This will not traverse parent directories to find versions files.
-    def with_dir_version(dir)
+    def with_dir_version(dir, &)
       env_version = ENV[version_env_var]?
       begin
         Dir.cd(dir) do

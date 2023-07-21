@@ -14,8 +14,8 @@ module MStrap
     getter :github
 
     def initialize(user : Defs::UserDef)
-      @name = user.name.not_nil!
-      @email = user.email.not_nil!
+      @name = user.name || ""
+      @email = user.email || ""
       @github = user.github
     end
 

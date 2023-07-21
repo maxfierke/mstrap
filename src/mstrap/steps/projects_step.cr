@@ -52,7 +52,7 @@ module MStrap
       private def projects
         @projects ||= profile.projects.map do |project_def|
           MStrap::Project.for(project_def)
-        end.not_nil!
+        end
       end
 
       private def has_web_projects?

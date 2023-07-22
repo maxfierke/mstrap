@@ -28,7 +28,7 @@ describe "dependencies step" do
       'git',
       'jq',
       'mkcert',
-      'openssl',
+      'openssl@3',
       'pkg-config',
       'zlib',
     ].freeze

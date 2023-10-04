@@ -4,12 +4,20 @@ module MStrap
 
     @app_path : String? = nil
     @requires_sudo : Bool? = nil
-    @postinstall_reboot_required = false
 
     # :nodoc:
     APT_KEY_FINGERPRINT = "9DC8 5822 9FC7 DD38 854A  E2D8 8D81 803C 0EBF CD88"
 
-    # Returns the path to an installed Docker for Mac application
+    # :nodoc:
+    DOCKER_CE_PACKAGE_NAMES = %w[
+      docker-ce
+      docker-ce-cli
+      containerd.io
+      docker-buildx-plugin
+      docker-compose-plugin
+    ]
+
+    # Returns the path to an installed Docker Desktop application
     def app_path
       {% if flag?(:darwin) %}
         @app_path ||=
@@ -25,7 +33,7 @@ module MStrap
       {% end %}
     end
 
-    # Returns a collection of flags for `docker-compose` to use `services.yml`
+    # Returns a collection of flags for `docker compose` to use `services.yml`
     # for the loaded profiles.
     def compose_file_args(config)
       file_args = [] of String
@@ -68,11 +76,11 @@ module MStrap
         {% end %}
     end
 
-    # Check for docker-compose and raise if not found. On macOS, this will loop until you confirm the
-    # command line tools have been installed for Docker for Mac
+    # Check for `docker compose` and raise if not found. On macOS, this will loop until you confirm the
+    # command line tools have been installed for Docker Desktop
     def ensure_compose!
-      while !cmd("docker-compose version", quiet: true, sudo: requires_sudo?)
-        logw "Could not find 'docker-compose'."
+      while !cmd("docker compose version", quiet: true, sudo: requires_sudo?)
+        logw "Could not execute 'docker compose'"
 
         if app_path && STDIN.tty?
           cmd "open -a #{app_path}", quiet: true
@@ -100,10 +108,9 @@ module MStrap
           logc "Could not install docker via Homebrew cask"
         end
       {% elsif flag?(:linux) %}
-        if !cmd("docker version", quiet: true, sudo: requires_sudo?)
-          logn "Docker has not been installed. Attempting to install Docker now."
+        if !cmd("docker version", quiet: true, sudo: requires_sudo?) || !cmd("docker compose version", quiet: true, sudo: requires_sudo?)
+          logn "Docker and/or Docker Compose has not been installed. Attempting to install Docker now."
           logn "You may be prompted by sudo"
-          require_reboot = false
 
           success =
             if MStrap::Linux.arch_distro?
@@ -131,38 +138,13 @@ module MStrap
           else
             success "OK. You may need to log-out and back in, or restart for it to take effect."
           end
-
-          if postinstall_reboot_required?
-            logw "Docker install successfully, but unfortunately a reboot is required for Docker to work correctly."
-            logw "You may run this again to continue anyway, but Docker may fail to launch containers."
-            exit
-          end
-        end
-
-        if !cmd("docker-compose version", quiet: true, sudo: requires_sudo?)
-          logn "docker-compose has not been installed. Attempting to install docker-compose now."
-
-          unless cmd("brew install docker-compose")
-            logc "Could not install docker-compose successfully"
-          end
         end
       {% end %}
     end
 
-    private def fedora_disable_cgroups_v2!
-      logn "Enabling cgroup backwards compatiblity (requires reboot)"
-      success = cmd("sudo grubby --update-kernel=ALL --args=\"systemd.unified_cgroup_hierarchy=0\"")
-
-      if success
-        @postinstall_reboot_required = true
-      end
-
-      success
-    end
-
     private def install_docker_archlinux!
       logn "Installing Docker from ArchLinux repos"
-      MStrap::Platform.install_packages!(["docker", "docker-compose"])
+      MStrap::Platform.install_packages!(["docker", "docker-buildx", "docker-compose"])
     end
 
     private def install_docker_centos!
@@ -170,7 +152,7 @@ module MStrap
       logn "Installing Docker from Official Docker Repos"
       success = cmd("sudo yum install -y yum-utils") &&
                 cmd("sudo yum-config-manager -y --add-repo https://download.docker.com/linux/centos/docker-ce.repo") &&
-                cmd("sudo yum install -y docker-ce docker-ce-cli containerd.io")
+                MStrap::Platform.install_packages!(DOCKER_CE_PACKAGE_NAMES)
 
       success
     end
@@ -198,7 +180,7 @@ module MStrap
                 cmd("curl -fsSL https://download.docker.com/linux/#{distro_name}/gpg | sudo apt-key add -") &&
                 cmd("sudo add-apt-repository \"deb [arch=#{docker_arch}] https://download.docker.com/linux/#{distro_name} #{distro_codename} stable\"") &&
                 cmd("sudo apt-get update") &&
-                cmd("sudo apt-get -y install docker-ce docker-ce-cli containerd.io")
+                MStrap::Platform.install_packages!(DOCKER_CE_PACKAGE_NAMES)
 
       success
     end
@@ -206,10 +188,9 @@ module MStrap
     private def install_docker_fedora!
       # https://docs.docker.com/engine/install/fedora/#installation-methods
       logn "Installing Docker from Official Docker Repos"
-      success = cmd("sudo dnf -y install dnf-plugins-core grubby") &&
+      success = cmd("sudo dnf -y install dnf-plugins-core") &&
                 cmd("sudo dnf config-manager -y --add-repo https://download.docker.com/linux/fedora/docker-ce.repo") &&
-                cmd("sudo dnf install -y docker-ce docker-ce-cli containerd.io") &&
-                fedora_disable_cgroups_v2!
+                MStrap::Platform.install_packages!(DOCKER_CE_PACKAGE_NAMES)
 
       success
     end
@@ -221,16 +202,12 @@ module MStrap
         install_docker_fedora!
       else
         logc <<-REDHAT
-        docker-ce (community edition) is not officially supported on RHEL.
-        You'll need to install it manually via supported channels or via RedHat
-        directly.
+          docker-ce (community edition) is not officially supported on RHEL.
+          You'll need to install it manually via supported channels or via RedHat
+          directly.
         REDHAT
         false
       end
-    end
-
-    private def postinstall_reboot_required?
-      @postinstall_reboot_required
     end
   end
 end

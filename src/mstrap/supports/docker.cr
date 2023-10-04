@@ -151,11 +151,8 @@ module MStrap
       # https://docs.docker.com/engine/install/centos/#installation-methods
       logn "Installing Docker from Official Docker Repos"
       success = cmd("sudo yum install -y yum-utils") &&
-                cmd("sudo yum-config-manager -y --add-repo https://download.docker.com/linux/centos/docker-ce.repo")
-
-      if success
-        MStrap::Platform.install_packages!(DOCKER_CE_PACKAGE_NAMES)
-      end
+                cmd("sudo yum-config-manager -y --add-repo https://download.docker.com/linux/centos/docker-ce.repo") &&
+                MStrap::Platform.install_packages!(DOCKER_CE_PACKAGE_NAMES)
 
       success
     end
@@ -182,11 +179,8 @@ module MStrap
                 cmd("sudo apt-get -y install apt-transport-https ca-certificates curl gnupg-agent software-properties-common") &&
                 cmd("curl -fsSL https://download.docker.com/linux/#{distro_name}/gpg | sudo apt-key add -") &&
                 cmd("sudo add-apt-repository \"deb [arch=#{docker_arch}] https://download.docker.com/linux/#{distro_name} #{distro_codename} stable\"") &&
-                cmd("sudo apt-get update")
-
-      if success
-        MStrap::Platform.install_packages!(DOCKER_CE_PACKAGE_NAMES)
-      end
+                cmd("sudo apt-get update") &&
+                MStrap::Platform.install_packages!(DOCKER_CE_PACKAGE_NAMES)
 
       success
     end
@@ -195,11 +189,8 @@ module MStrap
       # https://docs.docker.com/engine/install/fedora/#installation-methods
       logn "Installing Docker from Official Docker Repos"
       success = cmd("sudo dnf -y install dnf-plugins-core") &&
-                cmd("sudo dnf config-manager -y --add-repo https://download.docker.com/linux/fedora/docker-ce.repo")
-
-      if success
-        MStrap::Platform.install_packages!(DOCKER_CE_PACKAGE_NAMES)
-      end
+                cmd("sudo dnf config-manager -y --add-repo https://download.docker.com/linux/fedora/docker-ce.repo") &&
+                MStrap::Platform.install_packages!(DOCKER_CE_PACKAGE_NAMES)
 
       success
     end

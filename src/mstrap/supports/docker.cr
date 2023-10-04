@@ -17,7 +17,7 @@ module MStrap
       docker-compose-plugin
     ]
 
-    # Returns the path to an installed Docker for Mac application
+    # Returns the path to an installed Docker Desktop application
     def app_path
       {% if flag?(:darwin) %}
         @app_path ||=
@@ -33,7 +33,7 @@ module MStrap
       {% end %}
     end
 
-    # Returns a collection of flags for `docker-compose` to use `services.yml`
+    # Returns a collection of flags for `docker compose` to use `services.yml`
     # for the loaded profiles.
     def compose_file_args(config)
       file_args = [] of String
@@ -76,8 +76,8 @@ module MStrap
         {% end %}
     end
 
-    # Check for docker-compose and raise if not found. On macOS, this will loop until you confirm the
-    # command line tools have been installed for Docker for Mac
+    # Check for `docker compose` and raise if not found. On macOS, this will loop until you confirm the
+    # command line tools have been installed for Docker Desktop
     def ensure_compose!
       while !cmd("docker compose version", quiet: true, sudo: requires_sudo?)
         logw "Could not execute 'docker compose'"

@@ -36,7 +36,7 @@ module MStrap
     # :nodoc:
     SERVICES_INTERNAL_YML = File.join(RC_DIR, "services-internal.yml")
 
-    # Path to default profile `services.yml`, a docker-compose file.
+    # Path to default profile `services.yml`, a Docker Compose file.
     SERVICES_YML = File.join(RC_DIR, "services.yml")
 
     # :nodoc:

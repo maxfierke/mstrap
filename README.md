@@ -16,8 +16,6 @@ Iora Health.
   * Avoid vendoring or overriding tool defaults
 * Hook into standard [scripts-to-rule-them-all](https://github.com/github/scripts-to-rule-them-all)
   * Currently hooks into a project's `script/bootstrap` and `script/setup`
-* Eventually: leverage `mruby` for user-defined extensions written in Ruby, such
-  as environment migrations.
 
 `mstrap` is wholly centered around proving a no-runtime-dependency (other than
 normal system libraries) approach and will always remain a tool designed around

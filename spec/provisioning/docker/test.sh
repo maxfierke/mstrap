@@ -6,6 +6,7 @@ export BUNDLE_PATH="~/.bundle"
 export GEM_HOME="~/.gems"
 export USER="$(whoami)"
 export SHELL=/bin/bash
+export STRAP_CI=true
 
 MSTRAP_FLAGS=${MSTRAP_FLAGS:-"--debug"}
 WORKSPACE=/workspace

@@ -140,6 +140,12 @@ release: gon.hcl bin/mstrap
 		zip --junk-paths dist/mstrap.zip bin/mstrap; \
 	fi
 
+.PHONY: smoke-test
+smoke-test: $(TARGET_BUILD_DIR)/mstrap
+	BUILD_DIR=$(TARGET_BUILD_DIR) \
+	TEST_NAME=$(TEST_NAME) \
+	$(CURDIR)/spec/provisioning/test.sh
+
 .PHONY: install
 install: $(TARGET_BUILD_DIR)/mstrap $(TARGET_BUILD_DIR)/build.ninja meson.build
 	$(MESON) install -C $(TARGET_BUILD_DIR) --tags runtime

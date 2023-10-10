@@ -160,7 +160,7 @@ jobs:
         CXX_FOR_BUILD: /usr/bin/clang++
         LD_FOR_BUILD: lld
 
-    - name: Run Fedora smoke tests
+    - name: Run ${{ matrix.test_name }} smoke tests
       run: |
         make smoke-test \
           TEST_NAME=${{ matrix.test_name }} \
@@ -168,3 +168,4 @@ jobs:
           TARGET_ARCH=x86_64
       env:
         MSTRAP_FLAGS: "--config ${{ secrets.TEST_CONFIG_URL }}"
+        SHELL: /bin/bash

@@ -4,7 +4,7 @@ RUN apt-get update && \
   apt-get -y install curl expat libexpat1-dev lsb-release ruby openssh-client sudo zsh && \
   apt-get clean all
 
-RUN useradd -m -G sudo mstrap
+RUN useradd -m -s /bin/bash -G sudo mstrap
 RUN echo 'mstrap ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers
 
 USER mstrap

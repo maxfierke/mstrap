@@ -167,5 +167,4 @@ jobs:
           TARGET_OS=linux \
           TARGET_ARCH=x86_64
       env:
-        MSTRAP_FLAGS: "--config ${{ secrets.TEST_CONFIG_URL }}"
-        SHELL: /bin/bash
+        MSTRAP_FLAGS: "--config ${{ secrets.TEST_CONFIG_URL }} --force"

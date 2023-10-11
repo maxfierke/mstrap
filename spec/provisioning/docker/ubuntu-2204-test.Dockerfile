@@ -1,6 +1,6 @@
 FROM ubuntu:22.04
 
-RUN apt-get update &&
+RUN apt-get update && \
   apt-get -y install \
     curl expat libexpat1-dev lsb-release ruby ruby-bundler \
     openssh-client sudo zsh && \

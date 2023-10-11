@@ -4,9 +4,8 @@ name: Test Provisioning
 # (until later determined to be insufficent)
 on:
   push:
-    # branches:
-    # - main
-    # - master
+    branches:
+    - main
     paths-ignore:
     - 'docs/**'
     - '*.hcl'
@@ -16,105 +15,54 @@ on:
   - cron: '0 0 * * 5'
 
 jobs:
-  # macos-provision:
-  #   runs-on: macos-latest
+  macos-provision:
+    runs-on: macos-latest
 
-  #   steps:
-  #   - name: Checkout
-  #     uses: actions/checkout@v3
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v3
 
-  #   - name: Install crystal and tool dependencies
-  #     run: brew install crystal meson openssl@3
+    - name: Install crystal and tool dependencies
+      run: brew install crystal meson openssl@3
 
-  #   - name: Install dependencies
-  #     run: shards install
+    - name: Install dependencies
+      run: shards install
 
-  #   - name: Build mstrap
-  #     run: make build STATIC=1
+    - name: Build mstrap
+      run: make build STATIC=1
 
-  #   # Based on https://raw.githubusercontent.com/MikeMcQuaid/strap/master/.github/workflows/tests.yml
+    # Based on https://raw.githubusercontent.com/MikeMcQuaid/strap/master/.github/workflows/tests.yml
 
-  #   - name: Run brew bot's cleanup
-  #     run: brew test-bot --only-cleanup-before
+    - name: Run brew bot's cleanup
+      run: brew test-bot --only-cleanup-before
 
-  #   - name: Make macOS like new
-  #     run: |
-  #       sudo rm -rf /usr/local/bin/brew /usr/local/.??* \
-  #                   /usr/local/Homebrew /usr/local/Caskroom \
-  #                   /Library/Developer/CommandLineTools
+    - name: Make macOS like new
+      run: |
+        sudo rm -rf /usr/local/bin/brew /usr/local/.??* \
+                    /usr/local/Homebrew /usr/local/Caskroom \
+                    /Library/Developer/CommandLineTools
 
-  #   - name: Run mstrap
-  #     env:
-  #       STRAP_CI: true
-  #     run: |
-  #       bin/mstrap --debug \
-  #       --config ${{ secrets.TEST_CONFIG_URL }}
+    - name: Run mstrap
+      env:
+        STRAP_CI: true
+      run: |
+        bin/mstrap --debug \
+        --config ${{ secrets.TEST_CONFIG_URL }}
 
-  #   - name: Install required dependencies for ruby
-  #     run: |
-  #       brew install gmp
+    - name: Install required dependencies for ruby
+      run: |
+        brew install gmp
 
-  #   - uses: ruby/setup-ruby@v1
-  #     with:
-  #       bundler-cache: true
-  #       working-directory: spec/provisioning
+    - uses: ruby/setup-ruby@v1
+      with:
+        bundler-cache: true
+        working-directory: spec/provisioning
 
-  #   - name: Run serverspecs
-  #     env:
-  #       BUNDLE_DEPLOYMENT: true
-  #     run: |
-  #       source ~/.mstrap/env.sh && make check-provisioning
-
-  # ubuntu-provision:
-  #   runs-on: ubuntu-latest
-
-  #   steps:
-  #   - name: Checkout
-  #     uses: actions/checkout@v3
-
-  #   - name: Add Crystal repos
-  #     run: curl -sSL https://crystal-lang.org/install.sh | sudo bash
-
-  #   - name: Install crystal and tool dependencies
-  #     run: |
-  #       sudo apt install -y crystal libevent-dev libpcre2-dev libssl-dev \
-  #         curl ninja-build \
-  #         ruby ruby-bundler
-  #       sudo apt purge meson
-  #       sudo pip3 install meson
-
-  #   - name: Install dependencies
-  #     run: shards install
-
-  #   - name: Build mstrap
-  #     run: make build
-
-  #   - name: Make Ubuntu like new
-  #     run: |
-  #       sudo rm -rf /home/linuxbrew/.linuxbrew
-  #       sudo apt remove --purge build-essential file
-  #       sudo apt update
-  #       sudo apt install curl
-
-  #   - name: Run mstrap
-  #     env:
-  #       SHELL: /bin/bash
-  #       STRAP_CI: true
-  #     run: |
-  #       bin/mstrap --debug \
-  #       --config ${{ secrets.TEST_CONFIG_URL }}
-
-  #   - uses: ruby/setup-ruby@v1
-  #     with:
-  #       bundler-cache: true
-  #       working-directory: spec/provisioning
-
-  #   - name: Run serverspecs
-  #     env:
-  #       SHELL: /bin/bash
-  #       BUNDLE_DEPLOYMENT: true
-  #     run: |
-  #       source ~/.mstrap/env.sh && make check-provisioning
+    - name: Run serverspecs
+      env:
+        BUNDLE_DEPLOYMENT: true
+      run: |
+        source ~/.mstrap/env.sh && make check-provisioning
 
   linux-x86_64-smoke-tests:
     strategy:

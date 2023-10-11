@@ -6,7 +6,6 @@ on:
   push:
     branches:
     - main
-    - master
     paths-ignore:
     - 'docs/**'
     - '*.hcl'
@@ -65,7 +64,14 @@ jobs:
       run: |
         source ~/.mstrap/env.sh && make check-provisioning
 
-  ubuntu-provision:
+  linux-x86_64-smoke-tests:
+    strategy:
+      matrix:
+        test_name:
+          - archlinux-test
+          #- fedora-38-test # Broken linking w/ OpenSSL
+          #- fedora-39-test # Broken linking w/ OpenSSL
+          - ubuntu-2204-test
     runs-on: ubuntu-latest
 
     steps:
@@ -86,32 +92,27 @@ jobs:
     - name: Install dependencies
       run: shards install
 
+    - name: Install musl compiler
+      run: |
+        curl -O https://more.musl.cc/x86_64-linux-musl/x86_64-linux-musl-cross.tgz
+        tar xzf x86_64-linux-musl-cross.tgz -C /opt
+        echo "/opt/x86_64-linux-musl-cross/bin" >> $GITHUB_PATH
+
+    - run: x86_64-linux-musl-gcc --version
+
     - name: Build mstrap
-      run: make build
-
-    - name: Make Ubuntu like new
       run: |
-        sudo rm -rf /home/linuxbrew/.linuxbrew
-        sudo apt remove --purge build-essential file
-        sudo apt update
-        sudo apt install curl
-
-    - name: Run mstrap
+        make build STATIC=1 TARGET_CABI=musl
       env:
-        SHELL: /bin/bash
-        STRAP_CI: true
+        CC_FOR_BUILD: /usr/bin/clang
+        CXX_FOR_BUILD: /usr/bin/clang++
+        LD_FOR_BUILD: lld
+
+    - name: Run ${{ matrix.test_name }} smoke tests
       run: |
-        bin/mstrap --debug \
-        --config ${{ secrets.TEST_CONFIG_URL }}
-
-    - uses: ruby/setup-ruby@v1
-      with:
-        bundler-cache: true
-        working-directory: spec/provisioning
-
-    - name: Run serverspecs
+        make smoke-test \
+          TEST_NAME=${{ matrix.test_name }} \
+          TARGET_OS=linux \
+          TARGET_ARCH=x86_64
       env:
-        SHELL: /bin/bash
-        BUNDLE_DEPLOYMENT: true
-      run: |
-        source ~/.mstrap/env.sh && make check-provisioning
+        MSTRAP_FLAGS: "--config ${{ secrets.TEST_CONFIG_URL }} --force"

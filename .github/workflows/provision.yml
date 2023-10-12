@@ -69,8 +69,8 @@ jobs:
       matrix:
         test_name:
           - archlinux-test
+          - fedora-37-test
           - fedora-38-test
-          - fedora-39-test
           - ubuntu-2204-test
     runs-on: ubuntu-latest
 

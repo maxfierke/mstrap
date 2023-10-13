@@ -2,7 +2,7 @@ version: 2.0
 shards:
   ameba:
     git: https://github.com/crystal-ameba/ameba.git
-    version: 1.4.3+git.commit.8c9d234d0b06d945d0cf841dfa0596734acc715c
+    version: 1.5.0
 
   commander:
     git: https://github.com/mrrooijen/commander.git
@@ -26,7 +26,7 @@ shards:
 
   spectator:
     git: https://gitlab.com/arctic-fox/spectator.git
-    version: 0.10.5
+    version: 0.11.6
 
   term-cursor:
     git: https://github.com/crystal-term/cursor.git

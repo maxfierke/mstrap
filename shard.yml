@@ -17,11 +17,10 @@ dependencies:
 development_dependencies:
   ameba:
     github: crystal-ameba/ameba
-    commit: "8c9d234d0b06d945d0cf841dfa0596734acc715c"
-    #version: ~> 1.4.0
+    version: ~> 1.5.0
   spectator:
     gitlab: arctic-fox/spectator
-    version: ~> 0.10.5
+    version: ~> 0.11.6
 
 libraries:
   libevent: "*"

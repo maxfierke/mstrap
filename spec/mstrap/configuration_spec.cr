@@ -94,8 +94,10 @@ Spectator.describe MStrap::Configuration do
     end
 
     context "there are no loaded profiles" do
-      mock MStrap::ProfileFetcher do
-        stub fetch! { nil }
+      inject_mock MStrap::ProfileFetcher do
+        stub def fetch!
+          nil
+        end
       end
 
       after_each do

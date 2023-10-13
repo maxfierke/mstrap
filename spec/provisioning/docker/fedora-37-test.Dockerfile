@@ -15,7 +15,7 @@ ENV HOME=/home/mstrap
 WORKDIR /home/mstrap
 
 RUN mkdir -p $HOME/.mstrap
-ADD --chown=mstrap --chmod=644 config.hcl $HOME/.mstrap/
+ADD --chown=mstrap --chmod=600 config.hcl $HOME/.mstrap/
 ADD test.sh test.sh
 
 CMD [ "./test.sh" ]

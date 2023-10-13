@@ -4,8 +4,8 @@ name: Test Provisioning
 # (until later determined to be insufficent)
 on:
   push:
-    branches:
-    - main
+    # branches:
+    # - main
     paths-ignore:
     - 'docs/**'
     - '*.hcl'
@@ -69,8 +69,8 @@ jobs:
       matrix:
         test_name:
           - archlinux-test
-          #- fedora-38-test # Broken linking w/ OpenSSL
-          #- fedora-39-test # Broken linking w/ OpenSSL
+          - fedora-37-test
+          - fedora-38-test
           - ubuntu-2204-test
     runs-on: ubuntu-latest
 

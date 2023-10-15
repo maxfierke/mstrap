@@ -2,7 +2,7 @@ project('mstrap',
   'c',
   meson_version : '>= 0.60.0',
   license : 'MIT',
-  version : '0.5.2',
+  version : '0.6.0',
   default_options : [
     'buildtype=debugoptimized',
     'default_library=static'

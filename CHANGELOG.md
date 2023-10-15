@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Changed
+
+### Bugfixes
+
+### Removed
+
+## [0.6.0] - 2023-10-15
+
+### Added
+
 - Install Docker Buildkit plugin (dockerx) by default (#43)
 
 ### Changed
@@ -17,6 +27,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   and active by default since late 2022 in Docker Desktop. (#43)
 - [ci] Add Archlinux x86_64, Fedora 37 x86_64, and Fedora 38 x86_64 to CI, bumping them up into Tier 1 platform support
 - Updated Crystal to 1.10.1
+- Updated openssl wrap to 3.0.8-1
 - Updated zlib wrap to 1.3-4
 
 ### Bugfixes
@@ -126,7 +137,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Everything! First public release.
 
-[Unreleased]: https://github.com/maxfierke/mstrap/compare/v0.5.2...HEAD
+[Unreleased]: https://github.com/maxfierke/mstrap/compare/v0.6.0...HEAD
+[0.6.0]: https://github.com/maxfierke/mstrap/compare/v0.5.2...v0.6.0
 [0.5.2]: https://github.com/maxfierke/mstrap/compare/v0.5.1...v0.5.2
 [0.5.1]: https://github.com/maxfierke/mstrap/compare/v0.5.0...v0.5.1
 [0.5.0]: https://github.com/maxfierke/mstrap/compare/v0.4.0...v0.5.0

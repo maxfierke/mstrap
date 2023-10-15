@@ -8,11 +8,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Install Docker Buildkit plugin (dockerx) by default (#43)
+
 ### Changed
+
+- **[Breaking]**: Updated Docker compose CLI usage to v2 (i.e. `docker-compose` to `docker compose`)
+  Requires the Docker Compose v2 plugin for Docker CLI, which has been installed
+  and active by default since late 2022 in Docker Desktop. (#43)
+- [ci] Add Archlinux x86_64, Fedora 37 x86_64, and Fedora 38 x86_64 to CI, bumping them up into Tier 1 platform support
+- Updated Crystal to 1.10.1
+- Updated zlib wrap to 1.3-4
 
 ### Bugfixes
 
+- Workaround noisy warnings from new linker on Xcode 15.0+
+
 ### Removed
+
+- Removed Docker install support for old Fedora versions (< 37) (#43)
 
 ## [0.5.2] - 2023-04-19
 

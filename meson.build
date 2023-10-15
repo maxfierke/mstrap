@@ -9,6 +9,7 @@ project('mstrap',
   ]
 )
 
+cc = meson.get_compiler('c')
 target_arch = host_machine.cpu_family()
 target_system = host_machine.system()
 target_triple = target_arch + '-unknown-' + target_system
@@ -17,6 +18,7 @@ buildtype = get_option('buildtype')
 is_darwin = target_system == 'darwin'
 is_static = get_option('default_library') == 'static'
 is_static_libc = false
+needs_macos_classic_linker = false
 
 if target_system == 'linux'
   target_cabi = meson.get_external_property('target_triple_suffix', 'gnu')
@@ -34,9 +36,17 @@ elif target_system == 'darwin'
   target_triple = macos_arch + '-apple-macos' + macos_abi
   add_global_arguments('-target', target_triple, language : 'c', native : false)
   add_global_link_arguments('-target', target_triple, language : 'c', native : false)
+
+  # Use legacy linker with xcode 15+
+  xcode_version_output = run_command(find_program('xcodebuild'), '-version', check : true).stdout()
+  xcode_version = xcode_version_output.split('\n').get(0, '').replace('Xcode', '').strip()
+
+  if xcode_version.version_compare('>=15.0') and cc.has_link_argument('-Wl,-ld_classic')
+    needs_macos_classic_linker = true
+    add_global_link_arguments('-Wl,-ld_classic', language : 'c')
+  endif
 endif
 
-cc = meson.get_compiler('c')
 crystal = find_program(get_option('crystal'), required : true)
 shards = find_program(get_option('shards'), required : true)
 
@@ -155,6 +165,10 @@ endif
 
 if is_static_libc
   crystal_build_flags += ['--static']
+endif
+
+if needs_macos_classic_linker
+  crystal_build_flags += ['--link-flags=-Wl,-ld_classic']
 endif
 
 mstrap_build_cmd = [crystal, 'build'] + crystal_build_flags + ['-o', 'mstrap', '@INPUT@']

@@ -5,6 +5,7 @@ SHELL := bash
 .DELETE_ON_ERROR:
 .SUFFIXES:
 
+CRFLAGS           ?=
 CRYSTAL           ?= $(shell which crystal)
 SHARDS            ?= $(shell which shards)
 MESON             ?= $(shell which meson)
@@ -34,6 +35,15 @@ MESON_FLAGS ?= \
   -Dshards=$(SHARDS) \
   $(if $(RELEASE),--buildtype=release --strip,--buildtype=debug) \
   $(if $(STATIC),--default-library=static,--default-library=shared)
+
+ifeq ($(shell command -v xcodebuild > /dev/null && echo true),true)
+  XCODE_VERSION := $(shell xcodebuild -version | awk '/Xcode/ {print $$2}' | tr -d '')
+
+  # Use legacy linker with xcode 15 for now
+  ifeq ($(XCODE_VERSION),15.0)
+    override CRFLAGS += --link-flags=-Wl,-ld_classic
+  endif
+endif
 
 # Add cross-files if target and host are different
 ifeq ($(shell [[ "$(TARGET_OS)" != "$(HOST_OS)" || "$(TARGET_ARCH)" != "$(HOST_ARCH)" || ! -z "$(TARGET_CABI)" ]] && echo true),true)
@@ -99,7 +109,7 @@ format:
 	$(CRYSTAL) tool format
 
 lint: deps
-	$(CRYSTAL) bin/ameba.cr
+	$(CRYSTAL) run $(CRFLAGS) bin/ameba.cr
 
 .PHONY: clean
 clean:
@@ -111,7 +121,7 @@ clean:
 .PHONY: spec
 spec: deps $(SOURCES)
 	$(CRYSTAL) tool format --check
-	$(CRYSTAL) spec -Dmt_no_expectations --error-trace
+	$(CRYSTAL) spec $(CRFLAGS) -Dmt_no_expectations --error-trace
 
 .PHONY: check-libraries
 check-libraries: bin/mstrap

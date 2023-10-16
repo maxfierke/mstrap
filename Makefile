@@ -17,12 +17,14 @@ RELEASE           ?=
 STATIC            ?=
 STRIP_RPATH       ?=
 SOURCES           := src/*.cr src/**/*.cr
+TAG_NAME          ?= $(shell git describe --tags)
 TARGET_ARCH       ?= $(HOST_ARCH)
 TARGET_CABI       ?=
 TARGET_OS         ?= $(HOST_OS)
 
-TARGET_BUILD_DIR  ?= .build/$(TARGET_OS)-$(TARGET_ARCH)
-TARGET_CROSS_FILE ?= config/$(TARGET_OS)-$(TARGET_ARCH)$(if $(TARGET_CABI),-$(TARGET_CABI),).ini
+TARGET_TRIPLE     ?= $(TARGET_OS)-$(TARGET_ARCH)$(if $(TARGET_CABI),-$(TARGET_CABI),)
+TARGET_BUILD_DIR  ?= .build/$(TARGET_TRIPLE)
+TARGET_CROSS_FILE ?= config/$(TARGET_TRIPLE).ini
 
 # Force static compilation on musl
 ifeq ($(TARGET_CABI),musl)
@@ -148,6 +150,9 @@ release: gon.hcl bin/mstrap
 		gon -log-level=debug $(GON_CONFIG); \
 	else \
 		zip --junk-paths dist/mstrap.zip bin/mstrap; \
+	fi
+	@if [ ! -z "$(TAG_NAME)" ]; then \
+		mv dist/mstrap.zip dist/mstrap-$(TAG_NAME)-$(subst -,_,$(TARGET_TRIPLE)).zip; \
 	fi
 
 .PHONY: smoke-test

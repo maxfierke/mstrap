@@ -17,6 +17,7 @@ RELEASE           ?=
 STATIC            ?=
 STRIP_RPATH       ?=
 SOURCES           := src/*.cr src/**/*.cr
+SKIP_NOTARIZE     ?=
 TAG_NAME          ?= $(shell git describe --tags)
 TARGET_ARCH       ?= $(HOST_ARCH)
 TARGET_CABI       ?=
@@ -146,7 +147,7 @@ test: spec check-libraries
 
 release: gon.hcl bin/mstrap
 	mkdir -p ./dist
-	@if [ "$(TARGET_OS)" == "darwin" ]; then \
+	@if [ "$(TARGET_OS)" == "darwin" ] && [ -z "$(SKIP_NOTARIZE)" ]; then \
 		gon -log-level=debug $(GON_CONFIG); \
 	else \
 		zip --junk-paths dist/mstrap.zip bin/mstrap; \

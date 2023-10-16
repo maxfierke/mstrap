@@ -5,27 +5,29 @@ SHELL := bash
 .DELETE_ON_ERROR:
 .SUFFIXES:
 
+CODESIGN_IDENTITY ?= 66837B7A624EA4CDB507D40C6940C74A740EF5B1
 CRFLAGS           ?=
 CRYSTAL           ?= $(shell which crystal)
-SHARDS            ?= $(shell which shards)
-MESON             ?= $(shell which meson)
-GON_CONFIG        ?= ./gon.hcl
 HOST_ARCH         := $(shell uname -m)
 HOST_OS           := $(shell uname -s | tr '[:upper:]' '[:lower:]')
+MESON             ?= $(shell which meson)
 PREFIX            ?= /usr/local
 RELEASE           ?=
+SHARDS            ?= $(shell which shards)
+SKIP_CODESIGN     ?=
+SKIP_NOTARIZE     ?=
 STATIC            ?=
 STRIP_RPATH       ?=
 SOURCES           := src/*.cr src/**/*.cr
-SKIP_NOTARIZE     ?=
 TAG_NAME          ?= $(shell git describe --tags)
 TARGET_ARCH       ?= $(HOST_ARCH)
 TARGET_CABI       ?=
 TARGET_OS         ?= $(HOST_OS)
-
 TARGET_TRIPLE     ?= $(TARGET_OS)-$(TARGET_ARCH)$(if $(TARGET_CABI),-$(TARGET_CABI),)
+
 TARGET_BUILD_DIR  ?= .build/$(TARGET_TRIPLE)
 TARGET_CROSS_FILE ?= config/$(TARGET_TRIPLE).ini
+TARGET_DIST_PATH  ?= dist/mstrap-$(TAG_NAME)-$(subst -,_,$(TARGET_TRIPLE)).zip
 
 # Force static compilation on musl
 ifeq ($(TARGET_CABI),musl)
@@ -98,8 +100,31 @@ bin/mstrap: $(TARGET_BUILD_DIR)/mstrap
 		patchelf --set-interpreter /lib64/ld-linux-x86-64.so.2 bin/mstrap; \
 	fi
 
+dist/mstrap.zip: bin/mstrap codesign
+	@mkdir -p dist
+	zip --junk-paths dist/mstrap.zip bin/mstrap
+
 .PHONY: build
 build: bin/mstrap
+
+.PHONY: codesign
+codesign: bin/mstrap
+	@if [ "$(TARGET_OS)" == "darwin" ] && [ -z "$(SKIP_CODESIGN)" ]; then \
+		codesign -f -v \
+			--timestamp \
+			--options runtime \
+			-s "$(CODESIGN_IDENTITY)" \
+			bin/mstrap; \
+	fi
+
+.PHONY: notarize
+notarize: dist/mstrap.zip
+	@if [ "$(TARGET_OS)" == "darwin" ] && [ -z "$(SKIP_NOTARIZE)" ]; then \
+		xcrun notarytool submit \
+			--keychain-profile "mstrap" \
+			--wait \
+			dist/mstrap.zip; \
+	fi
 
 .PHONY: deps
 deps: shard.yml shard.lock
@@ -108,9 +133,11 @@ deps: shard.yml shard.lock
 docs: $(SOURCES)
 	$(CRYSTAL) docs
 
+.PHONY: format
 format:
 	$(CRYSTAL) tool format
 
+.PHONY: lint
 lint: deps
 	$(CRYSTAL) run $(CRFLAGS) bin/ameba.cr
 
@@ -123,8 +150,11 @@ clean:
 
 .PHONY: spec
 spec: deps $(SOURCES)
-	$(CRYSTAL) tool format --check
 	$(CRYSTAL) spec $(CRFLAGS) -Dmt_no_expectations --error-trace
+
+.PHONY: check-formatting
+check-formatting: $(SOURCES)
+	$(CRYSTAL) tool format --check
 
 .PHONY: check-libraries
 check-libraries: bin/mstrap
@@ -143,18 +173,12 @@ check-provisioning:
 	bundle exec rspec
 
 .PHONY: test
-test: spec check-libraries
+test: check-formatting spec check-libraries
 
-release: gon.hcl bin/mstrap
-	mkdir -p ./dist
-	@if [ "$(TARGET_OS)" == "darwin" ] && [ -z "$(SKIP_NOTARIZE)" ]; then \
-		gon -log-level=debug $(GON_CONFIG); \
-	else \
-		zip --junk-paths dist/mstrap.zip bin/mstrap; \
-	fi
-	@if [ ! -z "$(TAG_NAME)" ]; then \
-		mv dist/mstrap.zip dist/mstrap-$(TAG_NAME)-$(subst -,_,$(TARGET_TRIPLE)).zip; \
-	fi
+.PHONY: release
+release: dist/mstrap.zip notarize
+	@mv dist/mstrap.zip $(TARGET_DIST_PATH)
+	echo "Release zip saved to $(TARGET_DIST_PATH)"
 
 .PHONY: smoke-test
 smoke-test: $(TARGET_BUILD_DIR)/mstrap

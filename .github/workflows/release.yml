@@ -160,30 +160,30 @@ jobs:
     steps:
     - name: Determine version
       id: version
-      run: "echo ::set-output name=version::${GITHUB_REF:11}"
+      run: echo "version=${GITHUB_REF:11}" >> $GITHUB_ENV
 
-    - name: Download mstrap_linux_amd64.zip artifact
+    - name: Download mstrap_linux_amd64 artifacts
       id: download_linux_amd64
       uses: actions/download-artifact@v2
       with:
         name: mstrap_linux_amd64
         path: dist-linux-amd64
 
-    - name: Download mstrap_linux_aarch64.zip artifact
+    - name: Download mstrap_linux_aarch64 artifacts
       id: download_linux_aarch64
       uses: actions/download-artifact@v2
       with:
         name: mstrap_linux_aarch64
         path: dist-linux-aarch64
 
-    - name: Download mstrap_macos_amd64.zip artifact
+    - name: Download mstrap_macos_amd64 artifacts
       id: download_macos_amd64
       uses: actions/download-artifact@v2
       with:
         name: mstrap_macos_amd64
         path: dist-macos-amd64
 
-    - name: Download mstrap_macos_arm64.zip artifact
+    - name: Download mstrap_macos_arm64 artifacts
       id: download_macos_arm64
       uses: actions/download-artifact@v2
       with:
@@ -192,51 +192,13 @@ jobs:
 
     - name: Create release
       id: create_release
-      uses: actions/create-release@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      uses: softprops/action-gh-release@v1
       with:
-        tag_name: ${{ github.ref }}
-        release_name: ${{ github.ref }}
+        token: ${{ secrets.GITHUB_TOKEN }}
         draft: false
         prerelease: false
-
-    - name: Upload release zip for linux amd64
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: dist-linux-amd64/mstrap.zip
-        asset_name: mstrap-v${{ steps.version.outputs.version }}_linux_amd64.zip
-        asset_content_type: application/zip
-
-    - name: Upload release zip for linux aarch64
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: dist-linux-aarch64/mstrap.zip
-        asset_name: mstrap-v${{ steps.version.outputs.version }}_linux_aarch64.zip
-        asset_content_type: application/zip
-
-    - name: Upload release zip for macos amd64
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: dist-macos-amd64/mstrap.zip
-        asset_name: mstrap-v${{ steps.version.outputs.version }}_macos_amd64.zip
-        asset_content_type: application/zip
-
-    - name: Upload release zip for macos arm64
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: dist-macos-arm64/mstrap.zip
-        asset_name: mstrap-v${{ steps.version.outputs.version }}_macos_arm64.zip
-        asset_content_type: application/zip
+        files: |
+          dist-linux-aarch64/*.zip
+          dist-linux-amd64/*.zip
+          dist-macos-amd64/*.zip
+          dist-macos-arm64/*.zip

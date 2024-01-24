@@ -26,6 +26,7 @@ module MStrap
       MSG
 
       @login_shell : String? = nil
+      @shell_name : String? = nil
 
       def self.bootstrap(options)
         new(options).bootstrap
@@ -46,7 +47,7 @@ module MStrap
       def bootstrap
         Dir.mkdir_p(MStrap::Paths::RC_DIR)
 
-        contents = Templates::EnvSh.new.to_s
+        contents = Templates::EnvSh.new(shell_name, runtime_manager).to_s
         File.write(env_sh_path, contents, perm: 0o600)
 
         exit_if_shell_changed!
@@ -90,6 +91,10 @@ module MStrap
         else
           false
         end
+      end
+
+      private def shell_name
+        @shell_name ||= login_shell.split("/").last
       end
 
       private def shell_supported?

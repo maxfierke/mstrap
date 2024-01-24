@@ -9,7 +9,11 @@ brew 'pkg-config'
 brew 'zlib'
 
 # Language runtime managers
+<% if runtime_manager.name == "asdf" %>
 brew 'asdf'
+<% elsif runtime_manager.name == "mise" %>
+brew 'mise'
+<% end %>
 
 if /darwin/ =~ RUBY_PLATFORM
   brew 'autoconf'

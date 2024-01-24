@@ -1,10 +1,6 @@
 module MStrap
   module RuntimeManagers
     class ASDF < RuntimeManager
-      def asdf?
-        true
-      end
-
       def name : String
         "asdf"
       end

@@ -88,7 +88,7 @@ module MStrap
         if current_version && current_version != "" && !has_version?(current_version)
           log "--> Installing #{language_name} #{current_version} via #{runtime_manager.name}: "
           unless runtime_manager.install_version(language_name, current_version)
-            logc "There was an error installing the #{language_name} via asdf. Check #{MStrap::Paths::LOG_FILE} or run again with --debug"
+            logc "There was an error installing #{language_name} #{current_version} via #{runtime_manager.name}. Check #{MStrap::Paths::LOG_FILE} or run again with --debug"
           end
           success "OK"
         end

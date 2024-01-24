@@ -1,12 +1,9 @@
 module MStrap
   module Runtimes
     # Node runtime management implmentation. It contains methods for interacting
-    # with Node via ASDF and bootstrapping a Node project based on conventions.
+    # with Node via the chosen runtime manager and bootstrapping a Node project
+    # based on conventions.
     class Node < Runtime
-      def asdf_plugin_name
-        "nodejs"
-      end
-
       def language_name : String
         "node"
       end
@@ -31,7 +28,7 @@ module MStrap
           end
         end
 
-        skip_reshim { asdf_exec "npm", cmd_args, runtime_version: runtime_version }
+        skip_reshim { runtime_exec "npm", cmd_args, runtime_version: runtime_version }
       end
 
       def matches? : Bool
@@ -49,7 +46,7 @@ module MStrap
         yield
       ensure
         ENV.delete("ASDF_SKIP_RESHIM")
-        asdf_exec "asdf", ["reshim", "nodejs"]
+        runtime_exec "asdf", ["reshim", "nodejs"]
       end
     end
   end

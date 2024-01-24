@@ -1,7 +1,8 @@
 module MStrap
   module Runtimes
     # Python runtime management implmentation. It contains methods for interacting
-    # with Python via ASDF and bootstrapping a Python project based on conventions.
+    # with Python via the chosen runtime manager and bootstrapping a Python
+    # project based on conventions.
     #
     # TODO: Does not support virtualenv
     class Python < Runtime
@@ -26,7 +27,7 @@ module MStrap
           end
         end
 
-        asdf_exec "pip", cmd_args, runtime_version: runtime_version
+        runtime_exec "pip", cmd_args, runtime_version: runtime_version
       end
 
       def matches? : Bool

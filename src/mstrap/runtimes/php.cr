@@ -1,7 +1,8 @@
 module MStrap
   module Runtimes
     # PHP runtime management implmentation. It contains methods for interacting
-    # with PHP via ASDF and bootstrapping a PHP project based on conventions.
+    # with PHP via the chosen runtime manager and bootstrapping a PHP project
+    # based on conventions.
     class Php < Runtime
       def language_name : String
         "php"
@@ -25,7 +26,7 @@ module MStrap
           end
         end
 
-        cmd "composer", cmd_args, quiet: true
+        runtime_exec "composer", cmd_args, runtime_version: runtime_version
       end
 
       def matches? : Bool

@@ -1,7 +1,8 @@
 module MStrap
   module Runtimes
     # Crystal runtime management implmentation. It contains methods for interacting
-    # with Crystal via ASDF and bootstrapping a Crystal project based on conventions.
+    # with Crystal via the chosen runtime manager and bootstrapping a Crystal
+    # project based on conventions.
     class Crystal < Runtime
       class SetupError < RuntimeSetupError
         def initialize(message)

@@ -1,17 +1,15 @@
 module MStrap
   module Runtimes
     # Ruby runtime management implmentation. It contains methods for interacting
-    # with Ruby via ASDF and bootstrapping a Ruby project based on conventions.
+    # with Ruby via the chosen runtime manager and bootstrapping a Ruby project
+    # based on conventions.
     class Ruby < Runtime
       def language_name : String
         "ruby"
       end
 
       def bootstrap
-        if File.exists?("gems.rb")
-          cmd "gem install bundler", quiet: true
-          cmd "bundle check || bundle install", quiet: true
-        elsif File.exists?("Gemfile")
+        if File.exists?("gems.rb") || File.exists?("Gemfile")
           cmd "gem install bundler", quiet: true
           cmd "bundle check || bundle install", quiet: true
         end
@@ -26,7 +24,7 @@ module MStrap
             cmd_args << version
           end
 
-          asdf_exec "gem", cmd_args, runtime_version: runtime_version
+          runtime_exec "gem", cmd_args, runtime_version: runtime_version
         end
       end
 

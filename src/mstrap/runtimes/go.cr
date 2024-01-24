@@ -1,12 +1,9 @@
 module MStrap
   module Runtimes
     # Go runtime management implmentation. It contains methods for interacting
-    # with Go via ASDF and bootstrapping a Go project based on conventions.
+    # with Go via the chosen runtime manager and bootstrapping a Go project
+    # based on conventions.
     class Go < Runtime
-      def asdf_plugin_name : String
-        "golang"
-      end
-
       def language_name : String
         "go"
       end
@@ -28,7 +25,7 @@ module MStrap
           end
 
           disable_go_modules do
-            asdf_exec "go", cmd_args, runtime_version: runtime_version
+            runtime_exec "go", cmd_args, runtime_version: runtime_version
           end
         end
       end

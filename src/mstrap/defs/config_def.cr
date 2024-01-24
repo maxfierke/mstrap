@@ -4,10 +4,13 @@ module MStrap
       include HCL::Serializable
 
       @[HCL::Attribute]
-      property version = "1.0"
+      property version = "1.1"
 
       @[HCL::Block(key: "profile")]
       property profiles = [] of ::MStrap::Defs::ProfileConfigDef
+
+      @[HCL::Attribute]
+      property runtime_manager = "asdf"
 
       @[HCL::Block]
       property user = ::MStrap::Defs::UserDef.new

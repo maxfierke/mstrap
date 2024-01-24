@@ -3,29 +3,20 @@ module MStrap
   abstract class Runtime
     include DSL
 
-    @version_env_var : String?
+    getter :runtime_manager
+
+    def initialize(@runtime_manager : RuntimeManager)
+    end
 
     # Execute a command using a specific language runtime version
-    def asdf_exec(command : String, args : Array(String), runtime_version : String? = nil)
+    def runtime_exec(command : String, args : Array(String), runtime_version : String? = nil)
       if runtime_version
+        version_env_var = runtime_manager.version_env_var(language_name)
         env = {version_env_var => runtime_version}
         cmd env, command, args, quiet: true
       else
         cmd command, args, quiet: true
       end
-    end
-
-    def asdf_install_plugin
-      log "--> Adding #{asdf_plugin_name} to asdf for #{language_name} support: "
-      unless cmd("asdf plugin-add #{asdf_plugin_name}", quiet: true)
-        logc "There was an error adding the #{asdf_plugin_name} to asdf. Check #{MStrap::Paths::LOG_FILE} or run again with --debug"
-      end
-      success "OK"
-    end
-
-    # Name of the ASDF plugin. Defaults to language_name
-    def asdf_plugin_name : String
-      language_name
     end
 
     # Bootstrap the current directory for the runtime
@@ -36,17 +27,13 @@ module MStrap
     #
     # NOTE: This will not traverse parent directories to find versions files.
     def current_version
-      [
-        version_from_env,
-        version_from_tool_versions,
-        version_from_legacy_version_file,
-      ].find { |version| version }
+      runtime_manager.current_version(language_name)
     end
 
     # Returns whether the ASDF plugin has been installed for a language runtime
     # or not
-    def has_asdf_plugin?
-      `asdf plugin-list`.chomp.split("\n").includes?(asdf_plugin_name)
+    def has_runtime_plugin?
+      runtime_manager.has_plugin?(language_name)
     end
 
     def has_version?(version)
@@ -62,13 +49,7 @@ module MStrap
     # Returns a list of the versions of the language runtime installed
     # by ASDF.
     def installed_versions
-      `asdf list #{asdf_plugin_name} 2>&1`
-        .chomp
-        .split("\n")
-        .map(&.strip.lstrip('*'))
-        .reject do |version|
-          version.blank? || version == "No versions installed"
-        end
+      runtime_manager.installed_versions(language_name)
     end
 
     # Installs global packages for the runtime with an optional version
@@ -82,9 +63,9 @@ module MStrap
     abstract def language_name : String
 
     # Returns the latest version available for the language runtime, according
-    # to the asdf plugin
+    # to the runtime manager
     def latest_version
-      `asdf latest #{asdf_plugin_name}`.chomp
+      runtime_manager.latest_version(language_name)
     end
 
     # Returns whether the project uses the runtime
@@ -93,12 +74,20 @@ module MStrap
     # Installs asdf plugin for the language runtime and installs any of the
     # language runtime dependencies for the project.
     def setup
-      asdf_install_plugin unless has_asdf_plugin?
+      unless runtime_manager.has_plugin?(language_name)
+        log "--> Installing #{language_name} plugin to #{runtime_manager.name}: "
+        unless runtime_manager.install_plugin(language_name)
+          logc "There was an error adding the #{language_name} plugin to #{runtime_manager.name}. Check #{MStrap::Paths::LOG_FILE} or run again with --debug"
+        end
+        success "OK"
+      end
 
       with_dir_version(Dir.current) do
+        current_version = self.current_version
+
         if current_version && current_version != "" && !has_version?(current_version)
-          log "--> Installing #{language_name} #{current_version} via asdf-#{asdf_plugin_name}: "
-          unless cmd("asdf install #{asdf_plugin_name} #{current_version}", quiet: true)
+          log "--> Installing #{language_name} #{current_version} via #{runtime_manager.name}: "
+          unless runtime_manager.install_version(language_name, current_version)
             logc "There was an error installing the #{language_name} via asdf. Check #{MStrap::Paths::LOG_FILE} or run again with --debug"
           end
           success "OK"
@@ -112,6 +101,7 @@ module MStrap
     #
     # NOTE: This will not traverse parent directories to find versions files.
     def with_dir_version(dir, &)
+      version_env_var = runtime_manager.version_env_var(language_name)
       env_version = ENV[version_env_var]?
       begin
         Dir.cd(dir) do
@@ -124,49 +114,8 @@ module MStrap
     end
 
     # :nodoc:
-    def version_env_var
-      @version_env_var ||= "ASDF_#{asdf_plugin_name.upcase}_VERSION"
-    end
-
-    # :nodoc:
-    def version_from_env
-      ENV[version_env_var]?
-    end
-
-    # :nodoc:
-    def version_from_tool_versions
-      tool_versions_path = File.join(Dir.current, ".tool-versions")
-      return nil unless File.exists?(tool_versions_path)
-
-      tool_versions = File.read(tool_versions_path).strip
-      if matches = tool_versions.match(/^#{asdf_plugin_name}\s+([^\s]+)$/m)
-        matches[1].strip
-      else
-        nil
-      end
-    end
-
-    # :nodoc:
-    def version_from_legacy_version_file
-      version_path = File.join(Dir.current, ".#{language_name}-version")
-      return nil unless File.exists?(version_path)
-      File.read(version_path).strip
-    end
-
-    # :nodoc:
     protected def raise_setup_error!(message)
       raise RuntimeSetupError.new(language_name, message)
-    end
-
-    macro finished
-      # :nodoc:
-      def self.all
-        @@runtimes ||= [
-          {% for subclass in @type.subclasses %}
-            {{ subclass.name }}.new,
-          {% end %}
-        ]
-      end
     end
   end
 end

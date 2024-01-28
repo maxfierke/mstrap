@@ -4,19 +4,26 @@ module MStrap
     # with Go via the chosen runtime manager and bootstrapping a Go project
     # based on conventions.
     class Go < Runtime
+      # :nodoc:
+      GO_INSTALL_MIN_VERSION = SemanticVersion.new(1, 16, 0)
+
       def language_name : String
         "go"
       end
 
       def bootstrap
         if File.exists?("go.mod")
-          cmd "go mod download", quiet: true
+          runtime_exec "go mod download"
         end
       end
 
       def install_packages(packages : Array(Defs::PkgDef), runtime_version : String? = nil) : Bool
         packages.all? do |pkg|
-          cmd_args = ["get", "-u"]
+          cmd_args = if SemanticVersion.parse(runtime_version) >= GO_INSTALL_MIN_VERSION
+            ["install"]
+          else
+            ["get", "-u"]
+          end
 
           if version = pkg.version
             cmd_args << "#{pkg.name}@#{version}"

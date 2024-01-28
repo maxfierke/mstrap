@@ -9,8 +9,8 @@ module MStrap
       end
 
       def current_version
-        # Falling back to stable is probably fairly safe
-        super || "stable"
+        # Falling back to latest is _usually_ safe
+        super || latest_version
       end
 
       def bootstrap

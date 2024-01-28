@@ -65,13 +65,13 @@ module MStrap
     # Returns whether the project uses the runtime
     abstract def matches? : Bool
 
-    # Installs asdf plugin for the language runtime and installs any of the
-    # language runtime dependencies for the project.
+    # Installs runtime manager plugin for the language runtime and installs any
+    # of the language runtime dependencies for the project.
     def setup
       unless runtime_manager.has_plugin?(language_name)
         log "--> Installing #{language_name} plugin to #{runtime_manager.name}: "
         unless runtime_manager.install_plugin(language_name)
-          logc "There was an error adding the #{language_name} plugin to #{runtime_manager.name}. Check #{MStrap::Paths::LOG_FILE} or run again with --debug"
+          raise_setup_error!("There was an unexpected error adding the #{language_name} plugin to #{runtime_manager.name}")
         end
         success "OK"
       end
@@ -82,7 +82,7 @@ module MStrap
         if current_version && current_version != "" && !has_version?(current_version)
           log "--> Installing #{language_name} #{current_version} via #{runtime_manager.name}: "
           unless runtime_manager.install_version(language_name, current_version)
-            logc "There was an error installing #{language_name} #{current_version} via #{runtime_manager.name}. Check #{MStrap::Paths::LOG_FILE} or run again with --debug"
+            raise_setup_error!("There was an unexpected error installing #{current_version} via #{runtime_manager.name}")
           end
           success "OK"
         end

@@ -235,6 +235,8 @@ DESC
       Signal::TERM.trap { exit 1 }
 
       Commander.run(cli, options.argv)
+    rescue e : MStrapError
+      logc e.message
     rescue e
       {% if flag?(:debug) %}
         raise e

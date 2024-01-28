@@ -4,12 +4,6 @@ module MStrap
     # with Crystal via the chosen runtime manager and bootstrapping a Crystal
     # project based on conventions.
     class Crystal < Runtime
-      class SetupError < RuntimeSetupError
-        def initialize(message)
-          super("crystal", message)
-        end
-      end
-
       def language_name : String
         "crystal"
       end

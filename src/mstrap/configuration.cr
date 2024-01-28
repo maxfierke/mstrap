@@ -44,7 +44,7 @@ module MStrap
       @loaded_profiles = [] of Defs::ProfileDef
       @known_profile_configs = config.profiles + [DEFAULT_PROFILE_CONFIG_DEF]
       @resolved_profile = Defs::ProfileDef.new
-      @runtime_manager = RuntimeManager.for(config.runtime_manager)
+      @runtime_manager = RuntimeManager.for(config.runtimes.default_manager)
       @user = User.new(user: config.user)
     end
 

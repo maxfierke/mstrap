@@ -34,7 +34,7 @@ def delete_profile(name)
 end
 
 Spectator.describe MStrap::Configuration do
-  let(config_def) do
+  let(config_def_v1_0) do
     MStrap::Defs::ConfigDef.from_hcl(<<-HCL)
       version = "1.0"
 
@@ -49,6 +49,8 @@ Spectator.describe MStrap::Configuration do
 
     HCL
   end
+
+  let(config_def) { config_def_v1_0 }
 
   let(personal_profile_def) do
     MStrap::Defs::ProfileDef.from_hcl(<<-HCL)
@@ -311,6 +313,44 @@ Spectator.describe MStrap::Configuration do
         expect {
           subject.reload!
         }.to raise_error(MStrap::ConfigurationNotFoundError)
+      end
+    end
+  end
+
+  describe "#runtime_manager" do
+    context "for v1.0 configs" do
+      subject { MStrap::Configuration.new(config_def_v1_0) }
+
+      it "defaults to asdf" do
+        expect(subject.runtime_manager).to be_a(MStrap::RuntimeManagers::ASDF)
+      end
+    end
+
+    context "for v1.1 configs" do
+      let(config_def_v1_1) do
+        MStrap::Defs::ConfigDef.from_hcl(<<-HCL)
+          version = "1.1"
+
+          runtimes {
+            default_manager = "mise"
+          }
+
+          user {
+            name = "Reginald Testington"
+            email = "reginald@testington.biz"
+          }
+
+          profile "personal" {
+            url = "ssh://git@gitprovider.biz/reggiemctest/mstrap-personal.git"
+          }
+
+        HCL
+      end
+
+      subject { MStrap::Configuration.new(config_def_v1_1) }
+
+      it "can be set through runtimes.default_manager" do
+        expect(subject.runtime_manager).to be_a(MStrap::RuntimeManagers::Mise)
       end
     end
   end

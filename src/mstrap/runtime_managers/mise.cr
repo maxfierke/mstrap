@@ -18,7 +18,7 @@ module MStrap
         end
 
         cmd_args = ["exec"] + exec_args + ["--", command]
-        cmd_args += args unless !args
+        cmd_args += args if args
 
         if command && (!args || args.empty?)
           cmd "mise #{cmd_args.join(' ')}", quiet: true

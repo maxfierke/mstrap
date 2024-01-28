@@ -9,13 +9,13 @@ module MStrap
       @[HCL::Block(key: "profile")]
       property profiles = [] of ::MStrap::Defs::ProfileConfigDef
 
-      @[HCL::Attribute]
-      property runtime_manager = "asdf"
+      @[HCL::Block]
+      property runtimes = ::MStrap::Defs::RuntimesConfigDef.new
 
       @[HCL::Block]
       property user = ::MStrap::Defs::UserDef.new
 
-      def_equals_and_hash @version, @profiles, @user
+      def_equals_and_hash @version, @profiles, @runtimes, @user
 
       def self.from_url(url : String)
         HTTP::Client.get(url, tls: MStrap.tls_client) do |response|
@@ -23,7 +23,11 @@ module MStrap
         end
       end
 
-      def initialize(@user = UserDef.new, @profiles = Array(ProfileConfigDef).new)
+      def initialize(
+        @user = UserDef.new,
+        @profiles = Array(ProfileConfigDef).new,
+        @runtimes = RuntimesConfigDef.new
+      )
       end
     end
   end

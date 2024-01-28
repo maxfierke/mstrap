@@ -62,12 +62,28 @@ module MStrap
         end
       end
 
+      # Execute a command using a specific language runtime version
+      def runtime_exec(language_name : String, command : String, args : Array(String)? = nil, runtime_version : String? = nil)
+        if runtime_version
+          version_env_var = version_env_var(language_name)
+          env = {version_env_var => runtime_version}
+          cmd env, command, args, quiet: true
+        else
+          cmd command, args, quiet: true
+        end
+      end
+
+      def set_version(language_name : String, version : String?) : Bool
+        version_env_var = version_env_var(language_name)
+        ENV[version_env_var] = version
+        true
+      end
+
       def set_global_version(language_name, version : String) : Bool
         cmd "asdf global #{plugin_name(language_name)} #{version}", quiet: true
       end
 
-      # :nodoc:
-      def version_env_var(language_name) : String
+      private def version_env_var(language_name) : String
         if asdf_plugin_name = plugin_name(language_name)
           "ASDF_#{asdf_plugin_name.upcase}_VERSION"
         else
@@ -75,14 +91,12 @@ module MStrap
         end
       end
 
-      # :nodoc:
-      def version_from_env(language_name)
+      private def version_from_env(language_name)
         env_var_name = version_env_var(language_name)
         ENV[env_var_name]?
       end
 
-      # :nodoc:
-      def version_from_tool_versions(language_name)
+      private def version_from_tool_versions(language_name)
         tool_versions_path = File.join(Dir.current, ".tool-versions")
         return nil unless File.exists?(tool_versions_path)
 
@@ -95,8 +109,7 @@ module MStrap
         end
       end
 
-      # :nodoc:
-      def version_from_legacy_version_file(language_name)
+      private def version_from_legacy_version_file(language_name)
         version_path = File.join(Dir.current, ".#{language_name}-version")
         return nil unless File.exists?(version_path)
         File.read(version_path).strip

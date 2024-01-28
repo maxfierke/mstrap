@@ -6,7 +6,25 @@ module MStrap
       end
 
       def current_version(language_name : String) : String?
-        `mise current #{language_name}`.chomp
+        `mise current #{plugin_name(language_name)}`.chomp
+      end
+
+      # Execute a command using a specific language runtime version
+      def runtime_exec(language_name : String, command : String, args : Array(String)? = nil, runtime_version : String? = nil)
+        exec_args = [] of String
+
+        if runtime_version
+          exec_args << "#{plugin_name(language_name)}@#{runtime_version}"
+        end
+
+        cmd_args = ["exec"] + exec_args + ["--", command]
+        cmd_args += args unless !args
+
+        if command && (!args || args.empty?)
+          cmd "mise #{cmd_args.join(' ')}", quiet: true
+        else
+          cmd "mise", cmd_args, quiet: true
+        end
       end
 
       # Returns whether the mise plugin has been installed for a language runtime
@@ -45,17 +63,12 @@ module MStrap
         language_name
       end
 
-      def set_global_version(language_name, version : String) : Bool
-        cmd "mise use -g #{plugin_name(language_name)}@#{version}", quiet: true
+      def set_version(language_name : String, version : String?) : Bool
+        true
       end
 
-      # :nodoc:
-      def version_env_var(language_name) : String
-        if mise_plugin_name = plugin_name(language_name)
-          "MISE_#{mise_plugin_name.upcase}_VERSION"
-        else
-          "MISE_#{language_name.upcase}_VERSION"
-        end
+      def set_global_version(language_name, version : String) : Bool
+        cmd "mise use -g #{plugin_name(language_name)}@#{version}", quiet: true
       end
     end
   end

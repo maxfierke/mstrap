@@ -22,9 +22,9 @@ module MStrap
     abstract def install_version(language_name : String, version : String) : Bool
     abstract def installed_versions(language_name : String) : Array(String)
     abstract def latest_version(language_name : String) : String
-    abstract def plugin_name(language_name : String) : String?
+    abstract def runtime_exec(language_name : String, command : String, args : Array(String)? = nil, runtime_version : String? = nil)
+    abstract def set_version(language_name : String, version : String?) : Bool
     abstract def set_global_version(language_name : String, version : String) : Bool
-    abstract def version_env_var(language_name : String) : String
 
     macro finished
       # :nodoc:

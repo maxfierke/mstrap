@@ -10,13 +10,7 @@ module MStrap
 
     # Execute a command using a specific language runtime version
     def runtime_exec(command : String, args : Array(String)? = nil, runtime_version : String? = nil)
-      if runtime_version
-        version_env_var = runtime_manager.version_env_var(language_name)
-        env = {version_env_var => runtime_version}
-        cmd env, command, args, quiet: true
-      else
-        cmd command, args, quiet: true
-      end
+      runtime_manager.runtime_exec(language_name, command, args, runtime_version)
     end
 
     # Bootstrap the current directory for the runtime
@@ -101,15 +95,18 @@ module MStrap
     #
     # NOTE: This will not traverse parent directories to find versions files.
     def with_dir_version(dir, &)
-      version_env_var = runtime_manager.version_env_var(language_name)
-      env_version = ENV[version_env_var]?
+      org_version = current_version
       begin
         Dir.cd(dir) do
-          ENV[version_env_var] = current_version
+          unless runtime_manager.set_version(language_name, current_version)
+            raise_setup_error!("Unable to switch version to #{current_version}")
+          end
           yield
         end
       ensure
-        ENV[version_env_var] = env_version
+        unless runtime_manager.set_version(language_name, org_version)
+          raise_setup_error!("Unable to set version back to #{current_version}")
+        end
       end
     end
 

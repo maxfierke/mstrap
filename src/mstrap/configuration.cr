@@ -7,6 +7,7 @@ module MStrap
     @loaded_profiles : Array(Defs::ProfileDef)
     @known_profile_configs : Array(Defs::ProfileConfigDef)
     @resolved_profile : Defs::ProfileDef
+    @runtime_manager : RuntimeManager
     @user : User
 
     DEFAULT_PROFILE_CONFIG_DEF = Defs::DefaultProfileConfigDef.new
@@ -27,6 +28,9 @@ module MStrap
     # profiles with the default profiles.
     getter :resolved_profile
 
+    # Returns the runtime manager specified by the configuration
+    getter :runtime_manager
+
     # Returns the mstrap user
     getter :user
 
@@ -40,6 +44,7 @@ module MStrap
       @loaded_profiles = [] of Defs::ProfileDef
       @known_profile_configs = config.profiles + [DEFAULT_PROFILE_CONFIG_DEF]
       @resolved_profile = Defs::ProfileDef.new
+      @runtime_manager = RuntimeManager.for(config.runtimes.default_manager)
       @user = User.new(user: config.user)
     end
 

@@ -1,11 +1,11 @@
 module MStrap
   module Runtimes
     # Go runtime management implmentation. It contains methods for interacting
-    # with Go via ASDF and bootstrapping a Go project based on conventions.
+    # with Go via the chosen runtime manager and bootstrapping a Go project
+    # based on conventions.
     class Go < Runtime
-      def asdf_plugin_name : String
-        "golang"
-      end
+      # :nodoc:
+      GO_INSTALL_MIN_VERSION = SemanticVersion.new(1, 16, 0)
 
       def language_name : String
         "go"
@@ -13,13 +13,18 @@ module MStrap
 
       def bootstrap
         if File.exists?("go.mod")
-          cmd "go mod download", quiet: true
+          runtime_exec "go mod download"
         end
       end
 
       def install_packages(packages : Array(Defs::PkgDef), runtime_version : String? = nil) : Bool
         packages.all? do |pkg|
-          cmd_args = ["get", "-u"]
+          cmd_args =
+            if SemanticVersion.parse(runtime_version) >= GO_INSTALL_MIN_VERSION
+              ["install"]
+            else
+              ["get", "-u"]
+            end
 
           if version = pkg.version
             cmd_args << "#{pkg.name}@#{version}"
@@ -28,7 +33,7 @@ module MStrap
           end
 
           disable_go_modules do
-            asdf_exec "go", cmd_args, runtime_version: runtime_version
+            runtime_exec "go", cmd_args, runtime_version: runtime_version
           end
         end
       end

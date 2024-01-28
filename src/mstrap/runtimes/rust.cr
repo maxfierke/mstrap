@@ -1,20 +1,21 @@
 module MStrap
   module Runtimes
     # Rust runtime management implmentation. It contains methods for interacting
-    # with Rust via ASDF and bootstrapping a Rust project based on conventions.
+    # with Rust via the chosen runtime manager and bootstrapping a Rust project
+    # based on conventions.
     class Rust < Runtime
       def language_name : String
         "rust"
       end
 
       def current_version
-        # Falling back to stable is probably fairly safe
-        super || "stable"
+        # Falling back to latest is _usually_ safe
+        super || latest_version
       end
 
       def bootstrap
         if File.exists?("Cargo.toml")
-          cmd "cargo fetch", quiet: true
+          runtime_exec "cargo fetch"
         end
       end
 
@@ -27,7 +28,7 @@ module MStrap
             cmd_args << version
           end
 
-          asdf_exec "cargo", cmd_args, runtime_version: runtime_version
+          runtime_exec "cargo", cmd_args, runtime_version: runtime_version
         end
       end
 

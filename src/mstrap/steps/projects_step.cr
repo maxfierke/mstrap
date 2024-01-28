@@ -38,7 +38,7 @@ module MStrap
           end
 
           logn "--> Bootstrapping: "
-          project.bootstrap
+          project.bootstrap(runtime_manager)
           success "Finished bootstrapping #{project.name}"
         end
 

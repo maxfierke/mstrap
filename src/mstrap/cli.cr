@@ -200,7 +200,7 @@ DESC
             project_def.runtimes = options.string["runtimes"].split(',') if options.string.has_key?("runtimes")
 
             project = MStrap::Project.for(project_def)
-            project.bootstrap
+            project.bootstrap(config.runtime_manager)
           end
         end
 
@@ -235,6 +235,8 @@ DESC
       Signal::TERM.trap { exit 1 }
 
       Commander.run(cli, options.argv)
+    rescue e : MStrapError
+      logc e.message
     rescue e
       {% if flag?(:debug) %}
         raise e

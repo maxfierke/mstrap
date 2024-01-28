@@ -168,7 +168,7 @@ module MStrap
     # Executes `script/bootstrap` and `script/setup` (if either exists and are
     # configured to run) or executes conventional runtime bootstrapping as
     # determined by mstrap.
-    def bootstrap
+    def bootstrap(runtime_manager : RuntimeManager)
       if has_scripts? && run_scripts?
         logd "Found bootstrapping scripts, executing instead of using defaults."
         begin
@@ -183,7 +183,7 @@ module MStrap
         end
       else
         logd "Bootstrapping '#{name}' with runtime defaults."
-        default_bootstrap
+        default_bootstrap(runtime_manager)
       end
     end
 
@@ -192,12 +192,14 @@ module MStrap
     # This **does not** run any bootstrapping scripts, and is used mainly for
     # calling into conventional bootstrapping within a project's
     # `script/bootstrap` or `script/setup` from `mstrap project`.
-    protected def default_bootstrap
+    #
+    # TODO: Move this somewhere more appropriate
+    protected def default_bootstrap(runtime_manager : RuntimeManager)
       runtime_impls =
         if runtimes.empty?
-          MStrap::Runtime.all
+          runtime_manager.runtimes
         else
-          MStrap::Runtime.all.select do |runtime|
+          runtime_manager.runtimes.select do |runtime|
             runtimes.includes?(runtime.language_name)
           end
         end

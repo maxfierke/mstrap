@@ -32,6 +32,12 @@ module MStrap
     end
   end
 
+  class InvalidRuntimeManagerError < MStrapError
+    def initialize(manager_name)
+      super("Runtime manager is not recognized or supported by mstrap: #{manager_name}")
+    end
+  end
+
   # Exception class to indicate a failure involving language runtime setup
   class RuntimeSetupError < MStrapError
     def initialize(language_name, message)

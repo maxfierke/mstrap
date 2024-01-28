@@ -8,6 +8,21 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+- Support for using [mise](https://mise.jdx.dev) to manage language runtime versions (#50). `config.hcl` can be configured as such to enable it:
+  ```
+  version = "1.1"
+
+  # ...
+
+  runtimes {
+    default_manager = "mise"
+  }
+  ```
+
+  To switch, you'll need to re-run `mstrap` and restart your terminal windows.
+  Then, you can run `brew uninstall asdf --force` to uninstall asdf (`mstrap`
+  will have removed `asdf`'s activation from mstrap's `env.sh` already)
+
 ### Changed
 
 ### Bugfixes

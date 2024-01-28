@@ -1,14 +1,9 @@
 module MStrap
   module Runtimes
     # Crystal runtime management implmentation. It contains methods for interacting
-    # with Crystal via ASDF and bootstrapping a Crystal project based on conventions.
+    # with Crystal via the chosen runtime manager and bootstrapping a Crystal
+    # project based on conventions.
     class Crystal < Runtime
-      class SetupError < RuntimeSetupError
-        def initialize(message)
-          super("crystal", message)
-        end
-      end
-
       def language_name : String
         "crystal"
       end
@@ -20,7 +15,7 @@ module MStrap
 
       def bootstrap
         if File.exists?("shard.lock")
-          cmd "shards check || shards install", quiet: true
+          runtime_exec "shards check || shards install"
         end
       end
 

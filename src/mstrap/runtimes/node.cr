@@ -46,7 +46,7 @@ module MStrap
         yield
       ensure
         ENV.delete("ASDF_SKIP_RESHIM")
-        runtime_exec "asdf", ["reshim", "nodejs"]
+        runtime_exec "asdf", ["reshim", "nodejs"] if runtime_manager.name == "asdf"
       end
     end
   end

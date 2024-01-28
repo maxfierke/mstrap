@@ -19,11 +19,12 @@ module MStrap
 
       def install_packages(packages : Array(Defs::PkgDef), runtime_version : String? = nil) : Bool
         packages.all? do |pkg|
-          cmd_args = if SemanticVersion.parse(runtime_version) >= GO_INSTALL_MIN_VERSION
-            ["install"]
-          else
-            ["get", "-u"]
-          end
+          cmd_args =
+            if SemanticVersion.parse(runtime_version) >= GO_INSTALL_MIN_VERSION
+              ["install"]
+            else
+              ["get", "-u"]
+            end
 
           if version = pkg.version
             cmd_args << "#{pkg.name}@#{version}"

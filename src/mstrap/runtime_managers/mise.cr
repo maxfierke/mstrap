@@ -30,7 +30,7 @@ module MStrap
         mise_installed = JSON.parse(mise_json_output)
 
         if installed = mise_installed.as_a?
-          installed.map { |version| version["version"].as_s }
+          installed.map(&.["version"].as_s)
         else
           Array(String).new
         end

@@ -10,8 +10,7 @@ module MStrap
 
       def bootstrap
         if File.exists?("yarn.lock")
-          cmd "brew install yarn", quiet: true &&
-            skip_reshim { runtime_exec "yarn install" }
+          cmd "brew install yarn", quiet: true && skip_reshim { runtime_exec "yarn install" }
         elsif File.exists?("package.json")
           skip_reshim { runtime_exec "npm install" }
         end

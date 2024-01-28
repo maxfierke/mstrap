@@ -15,7 +15,7 @@ module MStrap
 
       def bootstrap
         if File.exists?("Cargo.toml")
-          cmd "cargo fetch", quiet: true
+          runtime_exec "cargo fetch"
         end
       end
 

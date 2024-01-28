@@ -9,7 +9,7 @@ module MStrap
     end
 
     # Execute a command using a specific language runtime version
-    def runtime_exec(command : String, args : Array(String), runtime_version : String? = nil)
+    def runtime_exec(command : String, args : Array(String)? = nil, runtime_version : String? = nil)
       if runtime_version
         version_env_var = runtime_manager.version_env_var(language_name)
         env = {version_env_var => runtime_version}

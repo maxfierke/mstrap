@@ -12,7 +12,7 @@ module MStrap
 
       def bootstrap
         if File.exists?("requirements.txt")
-          cmd "pip install -r requirements.txt", quiet: true
+          runtime_exec "pip install -r requirements.txt"
         end
       end
 

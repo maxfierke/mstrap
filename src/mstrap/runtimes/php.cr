@@ -11,7 +11,7 @@ module MStrap
       def bootstrap
         if File.exists?("composer.json")
           cmd "brew install composer", quiet: true
-          cmd "composer install", quiet: true
+          runtime_exec "composer install"
         end
       end
 

@@ -21,7 +21,7 @@ module MStrap
 
       def bootstrap
         if File.exists?("shard.lock")
-          cmd "shards check || shards install", quiet: true
+          runtime_exec "shards check || shards install"
         end
       end
 

@@ -52,7 +52,7 @@ module MStrap
     end
 
     def installed?
-      File.exists?(MISE_INSTALL_PATH)
+      File.exists?(MISE_INSTALL_PATH) && (`command -v mise` && $?.success?)
     end
 
     private def fetch_installer!

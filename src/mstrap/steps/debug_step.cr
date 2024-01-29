@@ -19,6 +19,8 @@ module MStrap
         puts "mstrap v#{MStrap::VERSION}"
         puts "Loaded Config:"
         puts "  #{options.config_path}"
+        puts "Default runtime manager:"
+        puts "  #{runtime_manager.name}"
         puts "Known Profiles:"
         config.known_profile_configs.each do |profile|
           puts "  #{profile.name}"

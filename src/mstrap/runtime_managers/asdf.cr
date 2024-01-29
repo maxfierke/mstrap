@@ -83,6 +83,19 @@ module MStrap
         cmd "asdf global #{plugin_name(language_name)} #{version}", quiet: true
       end
 
+      def shell_activation(shell_name : String) : String
+        <<-SHELL
+        # Activate asdf for language runtime version management
+        if [ -d "$(brew --prefix asdf)" ]; then
+          source "$(brew --prefix asdf)/libexec/asdf.sh"
+
+          if [ ! -f "$HOME/.asdfrc" ]; then
+            echo "legacy_version_file = yes\n" > "$HOME/.asdfrc"
+          fi
+        fi
+        SHELL
+      end
+
       private def version_env_var(language_name) : String
         if asdf_plugin_name = plugin_name(language_name)
           "ASDF_#{asdf_plugin_name.upcase}_VERSION"

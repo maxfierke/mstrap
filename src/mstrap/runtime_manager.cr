@@ -25,6 +25,7 @@ module MStrap
     abstract def runtime_exec(language_name : String, command : String, args : Array(String)? = nil, runtime_version : String? = nil)
     abstract def set_version(language_name : String, version : String?) : Bool
     abstract def set_global_version(language_name : String, version : String) : Bool
+    abstract def shell_activation(shell_name : String) : String
 
     macro finished
       # :nodoc:

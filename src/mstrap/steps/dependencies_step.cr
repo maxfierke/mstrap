@@ -4,7 +4,7 @@ module MStrap
     # and installs software from any available `Brewfile`s.
     class DependenciesStep < Step
       def self.description
-        "Basic machine bootstrapping with strap.sh, hub, and brew bundle."
+        "Basic machine bootstrapping with strap.sh, brew bundle, and other dependencies"
       end
 
       def self.requires_mstrap?
@@ -16,6 +16,7 @@ module MStrap
       end
 
       def bootstrap
+        install_mise if runtime_manager.name == "mise"
         set_strap_env!
         strap_sh
         load_profile!
@@ -31,7 +32,7 @@ module MStrap
       private def strap_sh
         logn "==> Running strap.sh"
         unless cmd "bash #{MStrap::Paths::STRAP_SH_PATH} #{MStrap.debug? ? "--debug" : ""}"
-          logc "Uhh oh, something went wrong in strap.sh-land. Check above or in #{MStrap::Paths::LOG_FILE}."
+          logc "Uhh oh, something went wrong in strap.sh-land."
         end
         success "Finished running strap.sh"
         set_brew_env_if_not_set
@@ -46,10 +47,24 @@ module MStrap
           if File.exists?(brewfile_path)
             log "--> Installing dependencies from Brewfile from profile '#{profile_config.name})': "
             unless cmd "brew bundle --file=#{brewfile_path} #{MStrap.debug? ? "--verbose" : ""}"
-              logc "Uhh oh, something went wrong in homebrewland. Check above or in #{MStrap::Paths::LOG_FILE}."
+              logc "Uhh oh, something went wrong in homebrewland."
             end
             success "OK"
           end
+        end
+      end
+
+      def install_mise
+        mise_installer = MiseInstaller.new
+
+        log "==> Checking for mise: "
+        if mise_installer.installed? && !options.force?
+          success "OK"
+        else
+          logn "Not installed".colorize(:yellow)
+          log "--> Installing mise for language runtime version management: "
+          mise_installer.install!
+          success "OK"
         end
       end
 

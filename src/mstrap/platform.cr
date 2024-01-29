@@ -13,6 +13,11 @@ module MStrap
       ENV["MSTRAP_IGNORE_GIT"]? != "true" && (`command -v git` && $?.success?)
     end
 
+    # Indicates whether the host platform has GPG installed
+    def self.has_gpg?
+      !!(`command -v gpg` && $?.success?)
+    end
+
     # Installs a list of packages using the platform's package manager
     def self.install_packages!(packages : Array(String))
       platform.install_packages!(packages)

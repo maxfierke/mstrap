@@ -70,6 +70,17 @@ module MStrap
       def set_global_version(language_name, version : String) : Bool
         cmd "mise use -g #{plugin_name(language_name)}@#{version}", quiet: true
       end
+
+      def shell_activation(shell_name : String) : String
+        <<-SHELL
+        # Activate mise for language runtime version management
+        if [ -x "#{MStrap::MiseInstaller::MISE_INSTALL_PATH}" ]; then
+          export MISE_ASDF_COMPAT=1
+          eval "$(#{MStrap::MiseInstaller::MISE_INSTALL_PATH} activate #{shell_name})"
+          eval "$(#{MStrap::MiseInstaller::MISE_INSTALL_PATH} hook-env)"
+        fi
+        SHELL
+      end
     end
   end
 end

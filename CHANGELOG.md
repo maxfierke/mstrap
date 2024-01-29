@@ -8,7 +8,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- Support for using [mise](https://mise.jdx.dev) to manage language runtime versions (#50). `config.hcl` can be configured as such to enable it:
+- Support for using [mise](https://mise.jdx.dev) to manage language runtime versions (#50, #53). `config.hcl` can be configured as such to enable it:
   ```
   version = "1.1"
 

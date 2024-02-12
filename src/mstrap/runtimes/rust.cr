@@ -4,10 +4,6 @@ module MStrap
     # with Rust via the chosen runtime manager and bootstrapping a Rust project
     # based on conventions.
     class Rust < Runtime
-      def language_name : String
-        "rust"
-      end
-
       def current_version
         # Falling back to latest is _usually_ safe
         super || latest_version

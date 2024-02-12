@@ -2,7 +2,9 @@ module MStrap
   abstract class RuntimeManager
     include DSL
 
-    abstract def name : String
+    def name : String
+      {{ @type.name.stringify.split("::").last.downcase }}
+    end
 
     def self.for(runtime_manager_name : String)
       if manager = all[runtime_manager_name]?

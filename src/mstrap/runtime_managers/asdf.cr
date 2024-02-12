@@ -1,10 +1,6 @@
 module MStrap
   module RuntimeManagers
     class ASDF < RuntimeManager
-      def name : String
-        "asdf"
-      end
-
       def current_version(language_name : String) : String?
         [
           version_from_env(language_name),

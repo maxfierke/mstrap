@@ -4,13 +4,9 @@ module MStrap
     # with Ruby via the chosen runtime manager and bootstrapping a Ruby project
     # based on conventions.
     class Ruby < Runtime
-      def language_name : String
-        "ruby"
-      end
-
       def bootstrap
         if File.exists?("gems.rb") || File.exists?("Gemfile")
-          runtime_exec "bundle check || bundle install"
+          runtime_exec "bundle install" unless runtime_exec "bundle check"
         end
       end
 

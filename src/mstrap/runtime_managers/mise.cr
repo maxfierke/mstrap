@@ -1,10 +1,6 @@
 module MStrap
   module RuntimeManagers
     class Mise < RuntimeManager
-      def name : String
-        "mise"
-      end
-
       def current_version(language_name : String) : String?
         `mise current #{plugin_name(language_name)}`.chomp
       end

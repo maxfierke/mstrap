@@ -9,7 +9,7 @@ module MStrap
       def bootstrap(project : Project) : Bool
         logd "Bootstrapping '#{project.name}' with runtime defaults."
 
-        runtime_impls(project).each do |runtime|
+        runtime_impls(project).each_value do |runtime|
           Dir.cd(project.path) do
             if runtime.matches?
               logd "Detected #{runtime.language_name}. Installing #{runtime.language_name}, project #{runtime.language_name} packages, and other relevant dependencies"
@@ -23,9 +23,9 @@ module MStrap
 
       def runtime_impls(project)
         if project.runtimes.empty?
-          config.runtime_manager.runtimes
+          config.runtimes
         else
-          config.runtime_manager.runtimes.select do |runtime|
+          config.runtimes.select do |_, runtime|
             project.runtimes.includes?(runtime.language_name)
           end
         end

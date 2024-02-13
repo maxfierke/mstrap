@@ -77,6 +77,10 @@ module MStrap
         fi
         SHELL
       end
+
+      def supported_languages : Array(String)
+        %w(crystal go node php python ruby rust)
+      end
     end
   end
 end

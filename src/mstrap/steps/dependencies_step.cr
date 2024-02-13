@@ -16,7 +16,7 @@ module MStrap
       end
 
       def bootstrap
-        install_mise if runtime_manager.name == "mise"
+        install_mise if config.default_runtime_manager.name == "mise"
         set_strap_env!
         strap_sh
         load_profile!

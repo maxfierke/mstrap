@@ -92,6 +92,10 @@ module MStrap
         SHELL
       end
 
+      def supported_languages : Array(String)
+        %w(crystal go node php python ruby rust)
+      end
+
       private def version_env_var(language_name) : String
         if asdf_plugin_name = plugin_name(language_name)
           "ASDF_#{asdf_plugin_name.upcase}_VERSION"

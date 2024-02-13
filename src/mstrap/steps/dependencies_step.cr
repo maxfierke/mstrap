@@ -16,7 +16,8 @@ module MStrap
       end
 
       def bootstrap
-        install_mise if config.default_runtime_manager.name == "mise"
+        install_mise if runtime_managers.any? { |rm| rm.name == "mise" }
+        install_rustup if runtime_managers.any? { |rm| rm.name == "rustup" }
         set_strap_env!
         strap_sh
         load_profile!
@@ -64,6 +65,20 @@ module MStrap
           logn "Not installed".colorize(:yellow)
           log "--> Installing mise for language runtime version management: "
           mise_installer.install!
+          success "OK"
+        end
+      end
+
+      def install_rustup
+        rustup_installer = RustupInstaller.new
+
+        log "==> Checking for rustup: "
+        if rustup_installer.installed? && !options.force?
+          success "OK"
+        else
+          logn "Not installed".colorize(:yellow)
+          log "--> Installing rustup for language runtime version management: "
+          rustup_installer.install!
           success "OK"
         end
       end

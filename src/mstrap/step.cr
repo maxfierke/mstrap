@@ -6,7 +6,8 @@ module MStrap
     @docker : Docker? = nil
     # BUG?: Why aren't these inferred correctly?
     @profile : Defs::ProfileDef
-    @runtime_manager : RuntimeManager
+    @runtime_managers : Array(RuntimeManager)
+    @runtimes : Hash(String, Runtime)
     @user : User
 
     # Extra arguments passed to the step not processed by the main CLI
@@ -21,8 +22,11 @@ module MStrap
     # Resolved profile for mstrap
     getter :profile
 
-    # Language runtime manager for mstrap
-    getter :runtime_manager
+    # Language runtime managers in use
+    getter :runtime_managers
+
+    # Language runtimes
+    getter :runtimes
 
     # User configured for mstrap
     getter :user
@@ -33,8 +37,10 @@ module MStrap
       @args = args
       @config = config
       @options = cli_options
+
       @profile = config.resolved_profile
-      @runtime_manager = config.runtime_manager
+      @runtime_managers = config.runtime_managers
+      @runtimes = config.runtimes
       @user = config.user
     end
 

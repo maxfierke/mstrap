@@ -6,7 +6,10 @@ module MStrap
       @[HCL::Attribute]
       property default_manager = "asdf"
 
-      def_equals_and_hash @default_manager
+      @[HCL::Block(key: "runtime")]
+      property runtimes = [] of ::MStrap::Defs::RuntimeConfigDef
+
+      def_equals_and_hash @default_manager, @runtimes
 
       def initialize
       end

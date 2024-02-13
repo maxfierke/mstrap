@@ -20,7 +20,15 @@ module MStrap
         puts "Loaded Config:"
         puts "  #{options.config_path}"
         puts "Default runtime manager:"
-        puts "  #{runtime_manager.name}"
+        puts "  #{config.default_runtime_manager.name}"
+        puts "Resolved runtime managers:"
+        config.runtime_managers.each do |runtime_manager|
+          puts "  #{runtime_manager.name}"
+        end
+        puts "Resolved runtimes:"
+        config.runtimes.each do |runtime_name, runtime|
+          puts "  #{runtime_name} (via #{runtime.runtime_manager.name})"
+        end
         puts "Known Profiles:"
         config.known_profile_configs.each do |profile|
           puts "  #{profile.name}"

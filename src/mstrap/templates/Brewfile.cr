@@ -4,9 +4,9 @@ module MStrap
     class Brewfile
       ECR.def_to_s "#{__DIR__}/Brewfile.ecr"
 
-      getter :runtime_manager
+      getter :default_runtime_manager
 
-      def initialize(@runtime_manager : RuntimeManager)
+      def initialize(@default_runtime_manager : RuntimeManager)
       end
     end
   end

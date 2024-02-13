@@ -8,12 +8,6 @@ module MStrap
     # :nodoc:
     SCP_REPO_REGEX = /\A(.+@)?[\w\d\.\-_]+:/
 
-    # :nodoc:
-    BOOTSTRAP_SCRIPT = File.join("script", "bootstrap")
-
-    # :nodoc:
-    SETUP_SCRIPT = File.join("script", "setup")
-
     @cname : String
     @hostname : String
     @name : String
@@ -117,14 +111,6 @@ module MStrap
       end
     end
 
-    # Whether project has any bootstrapping/setup scripts a-la
-    # [`scripts-to-rule-them-all`](https://github.com/github/scripts-to-rule-them-all)
-    def has_scripts?
-      [BOOTSTRAP_SCRIPT, SETUP_SCRIPT].any? do |script_path|
-        File.exists?(File.join(path, script_path))
-      end
-    end
-
     # Clones the project from Git
     def clone
       success = cmd("git", "clone", git_uri, path, quiet: true)
@@ -162,60 +148,6 @@ module MStrap
 
           success
         end
-      end
-    end
-
-    # Executes `script/bootstrap` and `script/setup` (if either exists and are
-    # configured to run) or executes conventional runtime bootstrapping as
-    # determined by mstrap.
-    def bootstrap(runtime_manager : RuntimeManager)
-      if has_scripts? && run_scripts?
-        logd "Found bootstrapping scripts, executing instead of using defaults."
-        begin
-          ENV["__MSTRAP_EXEC_SCRIPTS"] = "true"
-
-          Dir.cd(path) do
-            cmd BOOTSTRAP_SCRIPT if File.exists?(BOOTSTRAP_SCRIPT)
-            cmd SETUP_SCRIPT if File.exists?(SETUP_SCRIPT)
-          end
-        ensure
-          ENV.delete("__MSTRAP_EXEC_SCRIPTS")
-        end
-      else
-        logd "Bootstrapping '#{name}' with runtime defaults."
-        default_bootstrap(runtime_manager)
-      end
-    end
-
-    # Conventional bootstrapping from mstrap. This will auto-detect the runtimes
-    # used by the project and run the standard bootstrapping for each runtime.
-    # This **does not** run any bootstrapping scripts, and is used mainly for
-    # calling into conventional bootstrapping within a project's
-    # `script/bootstrap` or `script/setup` from `mstrap project`.
-    #
-    # TODO: Move this somewhere more appropriate
-    protected def default_bootstrap(runtime_manager : RuntimeManager)
-      runtime_impls =
-        if runtimes.empty?
-          runtime_manager.runtimes
-        else
-          runtime_manager.runtimes.select do |runtime|
-            runtimes.includes?(runtime.language_name)
-          end
-        end
-
-      runtime_impls.each do |runtime|
-        Dir.cd(path) do
-          if runtime.matches?
-            logd "Detected #{runtime.language_name}. Installing #{runtime.language_name}, project #{runtime.language_name} packages, and other relevant dependencies"
-            runtime.setup
-          end
-        end
-      end
-
-      if web?
-        logd "'#{name}' is a web project. Running web bootstrapper."
-        WebBootstrapper.new(self).bootstrap
       end
     end
 

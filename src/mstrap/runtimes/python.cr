@@ -6,10 +6,6 @@ module MStrap
     #
     # TODO: Does not support virtualenv
     class Python < Runtime
-      def language_name : String
-        "python"
-      end
-
       def bootstrap
         if File.exists?("requirements.txt")
           runtime_exec "pip install -r requirements.txt"

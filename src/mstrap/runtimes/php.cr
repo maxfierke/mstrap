@@ -4,10 +4,6 @@ module MStrap
     # with PHP via the chosen runtime manager and bootstrapping a PHP project
     # based on conventions.
     class Php < Runtime
-      def language_name : String
-        "php"
-      end
-
       def bootstrap
         if File.exists?("composer.json")
           cmd "brew install composer", quiet: true

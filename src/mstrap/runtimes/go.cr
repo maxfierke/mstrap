@@ -7,10 +7,6 @@ module MStrap
       # :nodoc:
       GO_INSTALL_MIN_VERSION = SemanticVersion.new(1, 16, 0)
 
-      def language_name : String
-        "go"
-      end
-
       def bootstrap
         if File.exists?("go.mod")
           runtime_exec "go mod download"

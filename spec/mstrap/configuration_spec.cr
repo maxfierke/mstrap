@@ -317,12 +317,12 @@ Spectator.describe MStrap::Configuration do
     end
   end
 
-  describe "#runtime_manager" do
+  describe "#default_runtime_manager" do
     context "for v1.0 configs" do
       subject { MStrap::Configuration.new(config_def_v1_0) }
 
       it "defaults to asdf" do
-        expect(subject.runtime_manager).to be_a(MStrap::RuntimeManagers::ASDF)
+        expect(subject.default_runtime_manager).to be_a(MStrap::RuntimeManagers::ASDF)
       end
     end
 
@@ -350,7 +350,120 @@ Spectator.describe MStrap::Configuration do
       subject { MStrap::Configuration.new(config_def_v1_1) }
 
       it "can be set through runtimes.default_manager" do
-        expect(subject.runtime_manager).to be_a(MStrap::RuntimeManagers::Mise)
+        expect(subject.default_runtime_manager).to be_a(MStrap::RuntimeManagers::Mise)
+      end
+    end
+  end
+
+  describe "#runtime_managers" do
+    context "for v1.0 configs" do
+      subject { MStrap::Configuration.new(config_def_v1_0) }
+
+      it "defaults to [asdf]" do
+        expect(subject.runtime_managers).to eq([MStrap::RuntimeManager.for("asdf")])
+      end
+    end
+
+    context "for v1.1 configs" do
+      let(config_def_v1_1) do
+        MStrap::Defs::ConfigDef.from_hcl(<<-HCL)
+          version = "1.1"
+
+          runtimes {
+            default_manager = "mise"
+
+            runtime "rust" {
+              manager = "rustup"
+            }
+          }
+
+          user {
+            name = "Reginald Testington"
+            email = "reginald@testington.biz"
+          }
+
+          profile "personal" {
+            url = "ssh://git@gitprovider.biz/reggiemctest/mstrap-personal.git"
+          }
+
+        HCL
+      end
+
+      subject { MStrap::Configuration.new(config_def_v1_1) }
+
+      it "it derived through runtimes.default_manager and runtimes.runtime[*].manager" do
+        expect(subject.runtime_managers).to eq([
+          MStrap::RuntimeManager.for("mise"),
+          MStrap::RuntimeManager.for("rustup"),
+        ])
+      end
+    end
+  end
+
+  describe "#runtimes" do
+    context "for v1.0 configs" do
+      subject { MStrap::Configuration.new(config_def_v1_0) }
+
+      it "defaults all to ASDF-provided runtimes" do
+        %w(crystal go node php python ruby rust).each do |language_name|
+          expect(subject.runtimes[language_name].runtime_manager).to be_a(MStrap::RuntimeManagers::ASDF)
+        end
+      end
+
+      it "returns the expected language runtimes" do
+        expect(subject.runtimes["crystal"]).to be_a(MStrap::Runtimes::Crystal)
+        expect(subject.runtimes["go"]).to be_a(MStrap::Runtimes::Go)
+        expect(subject.runtimes["node"]).to be_a(MStrap::Runtimes::Node)
+        expect(subject.runtimes["php"]).to be_a(MStrap::Runtimes::Php)
+        expect(subject.runtimes["python"]).to be_a(MStrap::Runtimes::Python)
+        expect(subject.runtimes["ruby"]).to be_a(MStrap::Runtimes::Ruby)
+        expect(subject.runtimes["rust"]).to be_a(MStrap::Runtimes::Rust)
+      end
+    end
+
+    context "for v1.1 configs" do
+      let(config_def_v1_1) do
+        MStrap::Defs::ConfigDef.from_hcl(<<-HCL)
+          version = "1.1"
+
+          runtimes {
+            default_manager = "mise"
+
+            runtime "rust" {
+              manager = "rustup"
+            }
+          }
+
+          user {
+            name = "Reginald Testington"
+            email = "reginald@testington.biz"
+          }
+
+          profile "personal" {
+            url = "ssh://git@gitprovider.biz/reggiemctest/mstrap-personal.git"
+          }
+
+        HCL
+      end
+
+      subject { MStrap::Configuration.new(config_def_v1_1) }
+
+      it "allows overriding language manager for specific languages" do
+        %w(crystal go node php python ruby).each do |language_name|
+          expect(subject.runtimes[language_name].runtime_manager).to be_a(MStrap::RuntimeManagers::Mise)
+        end
+
+        expect(subject.runtimes["rust"].runtime_manager).to be_a(MStrap::RuntimeManagers::Rustup)
+      end
+
+      it "returns the expected language runtimes" do
+        expect(subject.runtimes["crystal"]).to be_a(MStrap::Runtimes::Crystal)
+        expect(subject.runtimes["go"]).to be_a(MStrap::Runtimes::Go)
+        expect(subject.runtimes["node"]).to be_a(MStrap::Runtimes::Node)
+        expect(subject.runtimes["php"]).to be_a(MStrap::Runtimes::Php)
+        expect(subject.runtimes["python"]).to be_a(MStrap::Runtimes::Python)
+        expect(subject.runtimes["ruby"]).to be_a(MStrap::Runtimes::Ruby)
+        expect(subject.runtimes["rust"]).to be_a(MStrap::Runtimes::Rust)
       end
     end
   end

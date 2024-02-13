@@ -4,10 +4,6 @@ module MStrap
     # with Node via the chosen runtime manager and bootstrapping a Node project
     # based on conventions.
     class Node < Runtime
-      def language_name : String
-        "node"
-      end
-
       def bootstrap
         if File.exists?("yarn.lock")
           cmd "brew install yarn", quiet: true && skip_reshim { runtime_exec "yarn install" }

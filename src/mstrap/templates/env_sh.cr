@@ -5,9 +5,9 @@ module MStrap
       ECR.def_to_s "#{__DIR__}/env.sh.ecr"
 
       getter :shell_name
-      getter :runtime_manager
+      getter :runtime_managers
 
-      def initialize(@shell_name : String, @runtime_manager : RuntimeManager)
+      def initialize(@shell_name : String, @runtime_managers : Array(RuntimeManager))
       end
 
       def needs_homebrew_shellenv?

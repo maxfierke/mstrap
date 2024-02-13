@@ -200,7 +200,7 @@ DESC
             project_def.runtimes = options.string["runtimes"].split(',') if options.string.has_key?("runtimes")
 
             project = MStrap::Project.for(project_def)
-            Bootstrapper.for(config, project).each { |bs| bs.bootstrap(project) }
+            Bootstrapper.for(config, project).each(&.bootstrap(project))
           end
         end
 

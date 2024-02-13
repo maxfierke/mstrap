@@ -38,7 +38,7 @@ module MStrap
           end
 
           logn "--> Bootstrapping: "
-          Bootstrapper.for(config, project).each { |bs| bs.bootstrap(project) }
+          Bootstrapper.for(config, project).each(&.bootstrap(project))
           success "Finished bootstrapping #{project.name}"
         end
 

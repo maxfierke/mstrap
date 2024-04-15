@@ -4,7 +4,7 @@ module MStrap
     # updating, and bootstrapping all configured projects.
     class ProjectsStep < Step
       @has_web_projects = false
-      @projects : Array(Project) | Nil
+      @projects : Array(Project)?
 
       def self.description
         "Bootstraps configured projects"
@@ -38,7 +38,7 @@ module MStrap
           end
 
           logn "--> Bootstrapping: "
-          project.bootstrap(runtime_manager)
+          Bootstrapper.for(config, project).each(&.bootstrap(project))
           success "Finished bootstrapping #{project.name}"
         end
 

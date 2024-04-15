@@ -10,7 +10,7 @@ module MStrap
       FileUtils.mkdir_p(Paths::RC_DIR, 0o755)
       Dir.cd(Paths::RC_DIR) do
         unless cmd("curl -L --silent --remote-name --time-cond cacert.pem https://curl.se/ca/cacert.pem")
-          logc "There was an error fetching the cURL CA Cert bundle, which is needed to verify HTTPS certificates. mstrap cannot continue."
+          logc "There was an error fetching the cURL CA Cert bundle, which is needed to verify HTTPS certificates. mstrap cannot continue. Please ensure that `curl` is installed."
         end
         File.chmod(Paths::CA_CERT_BUNDLE, 0o600)
       end

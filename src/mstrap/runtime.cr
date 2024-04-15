@@ -54,7 +54,9 @@ module MStrap
     abstract def install_packages(packages : Array(Defs::PkgDef), runtime_version : String? = nil) : Bool
 
     # Name of the language as a string. Always lowercase.
-    abstract def language_name : String
+    def language_name : String
+      {{ @type.name.stringify.split("::").last.downcase }}
+    end
 
     # Returns the latest version available for the language runtime, according
     # to the runtime manager

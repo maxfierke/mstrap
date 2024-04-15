@@ -3,11 +3,13 @@ module MStrap
     include DSL
 
     @config_def : Defs::ConfigDef
+    @default_runtime_manager : RuntimeManager
     @loaded_profile_configs : Array(Defs::ProfileConfigDef)
     @loaded_profiles : Array(Defs::ProfileDef)
     @known_profile_configs : Array(Defs::ProfileConfigDef)
     @resolved_profile : Defs::ProfileDef
-    @runtime_manager : RuntimeManager
+    @runtime_managers : Array(RuntimeManager)
+    @runtimes : Hash(String, Runtime)
     @user : User
 
     DEFAULT_PROFILE_CONFIG_DEF = Defs::DefaultProfileConfigDef.new
@@ -28,8 +30,18 @@ module MStrap
     # profiles with the default profiles.
     getter :resolved_profile
 
-    # Returns the runtime manager specified by the configuration
-    getter :runtime_manager
+    # Returns the default runtime manager specified by the configuration
+    getter :default_runtime_manager
+
+    # Returns the runtime managers specified by the configuration
+    getter :runtime_managers
+
+    # Returns the language runtimes with their resolved runtime manager
+    #
+    # Raises UnsupportedLanguageRuntimeManagerError if the configuration of a
+    # language runtime to a runtime manager is invalid
+    # Raises InvalidRuntimeManagerError if an invalid runtime manager is provided
+    getter :runtimes
 
     # Returns the mstrap user
     getter :user
@@ -40,11 +52,13 @@ module MStrap
     )
       @config_def = config
       @config_path = config_path
+      @default_runtime_manager = RuntimeManager.for(config.runtimes.default_manager)
       @loaded_profile_configs = [] of Defs::ProfileConfigDef
       @loaded_profiles = [] of Defs::ProfileDef
       @known_profile_configs = config.profiles + [DEFAULT_PROFILE_CONFIG_DEF]
       @resolved_profile = Defs::ProfileDef.new
-      @runtime_manager = RuntimeManager.for(config.runtimes.default_manager)
+      @runtime_managers = RuntimeManager.resolve_managers(config)
+      @runtimes = RuntimeManager.resolve_runtimes(config)
       @user = User.new(user: config.user)
     end
 

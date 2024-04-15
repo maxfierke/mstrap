@@ -47,7 +47,7 @@ module MStrap
       def bootstrap
         Dir.mkdir_p(MStrap::Paths::RC_DIR)
 
-        contents = Templates::EnvSh.new(shell_name, runtime_manager).to_s
+        contents = Templates::EnvSh.new(shell_name, runtime_managers).to_s
         File.write(env_sh_path, contents, perm: 0o600)
 
         exit_if_shell_changed!

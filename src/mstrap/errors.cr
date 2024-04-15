@@ -38,6 +38,12 @@ module MStrap
     end
   end
 
+  class UnsupportedLanguageRuntimeManagerError < MStrapError
+    def initialize(manager_name, language_name)
+      super("#{manager_name} does not support the language provided: #{language_name}")
+    end
+  end
+
   # Exception class to indicate a failure involving language runtime setup
   class RuntimeSetupError < MStrapError
     def initialize(language_name, message)

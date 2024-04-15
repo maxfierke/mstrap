@@ -4,10 +4,6 @@ module MStrap
     # with Crystal via the chosen runtime manager and bootstrapping a Crystal
     # project based on conventions.
     class Crystal < Runtime
-      def language_name : String
-        "crystal"
-      end
-
       def current_version
         # Falling back to the latest is usually fairly safe
         super || latest_version
@@ -15,7 +11,7 @@ module MStrap
 
       def bootstrap
         if File.exists?("shard.lock")
-          runtime_exec "shards check || shards install"
+          runtime_exec "shards install" unless runtime_exec "shards check"
         end
       end
 

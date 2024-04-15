@@ -1,10 +1,6 @@
 module MStrap
   module RuntimeManagers
     class ASDF < RuntimeManager
-      def name : String
-        "asdf"
-      end
-
       def current_version(language_name : String) : String?
         [
           version_from_env(language_name),
@@ -94,6 +90,10 @@ module MStrap
           fi
         fi
         SHELL
+      end
+
+      def supported_languages : Array(String)
+        %w(crystal go node php python ruby rust)
       end
 
       private def version_env_var(language_name) : String

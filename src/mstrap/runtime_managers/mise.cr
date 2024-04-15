@@ -1,10 +1,6 @@
 module MStrap
   module RuntimeManagers
     class Mise < RuntimeManager
-      def name : String
-        "mise"
-      end
-
       def current_version(language_name : String) : String?
         `mise current #{plugin_name(language_name)}`.chomp
       end
@@ -80,6 +76,10 @@ module MStrap
           eval "$(#{MStrap::MiseInstaller::MISE_INSTALL_PATH} hook-env)"
         fi
         SHELL
+      end
+
+      def supported_languages : Array(String)
+        %w(crystal go node php python ruby rust)
       end
     end
   end

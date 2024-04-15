@@ -10,7 +10,7 @@ module MStrap
       end
 
       def bootstrap
-        runtime_manager.runtimes.each do |runtime|
+        runtimes.each_value do |runtime|
           if runtime.has_runtime_plugin? && runtime.has_versions?
             logn "==> Setting global #{runtime.language_name} settings"
             set_default_to_latest(runtime)
@@ -49,7 +49,7 @@ module MStrap
         return unless latest_version
 
         log "--> Setting default #{runtime.language_name} version to #{latest_version}: "
-        unless runtime_manager.set_global_version(runtime.language_name, latest_version)
+        unless runtime.runtime_manager.set_global_version(runtime.language_name, latest_version)
           logc "Could not set global #{runtime.language_name} version to #{latest_version}"
         end
         success "OK"

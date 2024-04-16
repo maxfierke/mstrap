@@ -113,6 +113,7 @@ codesign: bin/mstrap
 		codesign -f -v \
 			--timestamp \
 			--options runtime \
+			--entitlements "macos-entitlements.plist" \
 			-s "$(CODESIGN_IDENTITY)" \
 			bin/mstrap; \
 	fi

@@ -115,6 +115,9 @@ jobs:
     - name: Build signed & notorized release bundle
       run: make release RELEASE=1 STATIC=1
 
+    - name: Smoke test the codesigned release
+      run: bin/mstrap --help
+
     - name: Upload release bundle artifact
       uses: actions/upload-artifact@v3
       with:
@@ -153,6 +156,9 @@ jobs:
 
     - name: Build signed & notorized release bundle
       run: make release RELEASE=1 STATIC=1 TARGET_ARCH=arm64
+
+    - name: Smoke test the codesigned release
+      run: bin/mstrap --help
 
     - name: Upload release bundle artifact
       uses: actions/upload-artifact@v3

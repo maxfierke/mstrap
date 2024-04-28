@@ -5,8 +5,12 @@ module MStrap
     # based on conventions.
     class Node < Runtime
       def bootstrap
-        if File.exists?("yarn.lock")
-          cmd "brew install yarn", quiet: true && skip_reshim { runtime_exec "yarn install" }
+        if File.exists?("pnpm-lock.yaml") || File.exists?("pnpm-workspace.yaml")
+          cmd("brew install pnpm", quiet: true) unless has_command?("pnpm")
+          skip_reshim { runtime_exec "pnpm install" }
+        elsif File.exists?("yarn.lock")
+          cmd("brew install yarn", quiet: true) unless has_command?("yarn")
+          skip_reshim { runtime_exec "yarn install" }
         elsif File.exists?("package.json")
           skip_reshim { runtime_exec "npm install" }
         end
@@ -29,6 +33,7 @@ module MStrap
       def matches? : Bool
         [
           "yarn.lock",
+          "pnpm-lock.yaml",
           "package.json",
           ".node-version",
         ].any? do |file|

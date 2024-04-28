@@ -12,7 +12,7 @@ module MStrap
 
     # Indicates whether the host platform has Git installed
     def self.has_git?
-      ENV["MSTRAP_IGNORE_GIT"]? != "true" && has_command?("git")
+      ENV["MSTRAP_IGNORE_GIT"]? != "true" && platform.has_git?
     end
 
     # Indicates whether the host platform has a given command available

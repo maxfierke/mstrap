@@ -5,7 +5,7 @@ module MStrap
 
     # Returns whether mkcert is installed
     def installed?
-      cmd("command -v mkcert", quiet: true)
+      has_command?("mkcert")
     end
 
     # Runs mkcert install process to add CARoot, etc.

@@ -36,7 +36,7 @@ module MStrap
     end
 
     def installed?
-      `command -v rustup` && $?.success?
+      has_command?("rustup")
     end
 
     private def fetch_installer!

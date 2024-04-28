@@ -52,7 +52,7 @@ module MStrap
     end
 
     def installed?
-      File.exists?(MISE_INSTALL_PATH) && (`command -v mise` && $?.success?)
+      File.exists?(MISE_INSTALL_PATH) && has_command?("mise")
     end
 
     private def fetch_installer!
@@ -82,7 +82,7 @@ module MStrap
     end
 
     private def verify_installer?
-      @verify_installer ||= MStrap::Platform.has_gpg?
+      has_command?("gpg")
     end
   end
 end

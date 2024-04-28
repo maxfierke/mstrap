@@ -16,7 +16,7 @@ module MStrap
     @repo : String
     @repo_upstream : String?
     @run_scripts : Bool
-    @runtimes : Array(String)
+    @runtimes : Array(String)?
     @upstream : String?
     @websocket : Bool
     @web : Bool
@@ -68,7 +68,7 @@ module MStrap
       @repo = project_def.repo
       @repo_upstream = project_def.repo_upstream
       @run_scripts = project_def.run_scripts?
-      @runtimes = project_def.runtimes
+      @runtimes = project_def.runtimes_present? ? project_def.runtimes : nil
       @upstream = project_def.upstream
       @websocket = project_def.websocket?
       @web = if project_def.web_present?

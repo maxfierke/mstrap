@@ -14,7 +14,10 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
+
+    - name: Set up Homebrew to install from API
+      run: echo HOMEBREW_NO_INSTALL_FROM_API= >> "$GITHUB_ENV"
 
     - name: Install crystal and tool dependencies
       run: brew install crystal meson openssl@3
@@ -33,7 +36,7 @@ jobs:
 
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Add Crystal repos
       run: curl -sSL https://crystal-lang.org/install.sh | sudo bash

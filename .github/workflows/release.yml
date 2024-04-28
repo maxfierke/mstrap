@@ -170,6 +170,8 @@ jobs:
   release:
     needs: [build_linux_amd64, build_linux_aarch64, build_macos_amd64, build_macos_arm64]
     runs-on: ubuntu-latest
+    if: ${{ !startsWith(github.ref, 'refs/tags/v0.0.0') && !contains(github.ref, 'dev') }}
+
     steps:
     - name: Determine version
       id: version
@@ -209,7 +211,7 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         draft: false
-        prerelease: false
+        prerelease: ${{ contains(github.ref, 'alpha') || contains(github.ref, 'beta') || contains(github.ref, 'pre') || contains(github.ref, 'rc') }}
         files: |
           dist-linux-aarch64/*.zip
           dist-linux-amd64/*.zip

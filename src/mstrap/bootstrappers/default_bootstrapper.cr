@@ -22,12 +22,14 @@ module MStrap
       end
 
       def runtime_impls(project)
-        if project.runtimes.empty?
-          config.runtimes
-        else
+        if project_runtimes = project.runtimes
+          # Just the ones specified in the config, including empty
           config.runtimes.select do |_, runtime|
-            project.runtimes.includes?(runtime.language_name)
+            project_runtimes.includes?(runtime.language_name)
           end
+        else
+          # Default to all, if unspecified
+          config.runtimes
         end
       end
     end

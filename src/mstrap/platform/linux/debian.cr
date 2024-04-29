@@ -3,10 +3,6 @@ module MStrap
     module Debian
       extend DSL
 
-      def self.has_git?
-        has_command?("git")
-      end
-
       def self.install_packages!(packages : Array(String))
         cmd("apt-get", ["-y", "install"] + packages, sudo: true)
       end

@@ -7,14 +7,18 @@ module MStrap
 
       @@git_path : String = ""
 
-      # :nodoc:
+      # Indicates whether the host platform has Git installed
+      #
+      # NOTE: On macOS, there's a few tricks involved due to Xcode shims, so we'll only
+      # consider it installed if it's from Homebrew (or elswhere),
+      # accessible via `xcrun` or installed via Xcode Command Line Tools
       def self.has_git?
         git_path = @@git_path
         return true if git_path != ""
 
         git_path = Process.find_executable("git")
 
-        # Ignore the XCode CLT shim trickery!
+        # Ignore the Xcode CLT shim trickery!
         if git_path && git_path == "/usr/bin/git"
           # Try and look it up with xcrun
           if has_command?("xcrun")

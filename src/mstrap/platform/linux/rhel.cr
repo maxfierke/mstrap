@@ -3,10 +3,6 @@ module MStrap
     module RHEL
       extend DSL
 
-      def self.has_git?
-        has_command?("git")
-      end
-
       def self.install_packages!(packages : Array(String))
         cmd("yum", ["-y", "install"] + packages, sudo: true)
       end

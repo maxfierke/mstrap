@@ -118,6 +118,11 @@ module MStrap
       distro_family == DISTRO_UNKNOWN
     end
 
+    # Indicates whether the host platform has Git installed
+    def has_git?
+      ENV["MSTRAP_IGNORE_GIT"]? != "true" && has_command?("git")
+    end
+
     # :nodoc:
     def platform
       if arch_distro?

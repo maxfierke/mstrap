@@ -10,11 +10,6 @@ module MStrap
 
     @@found_commands = Hash(String, String).new
 
-    # Indicates whether the host platform has Git installed
-    def self.has_git?
-      ENV["MSTRAP_IGNORE_GIT"]? != "true" && has_command?("git")
-    end
-
     # Indicates whether the host platform has a given command available
     #
     # Lookups are cached by default, but cached info can be skipped by passing

@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Add Crystal repos
       run: curl -sSL https://crystal-lang.org/install.sh | sudo bash
@@ -41,7 +41,7 @@ jobs:
         LD_FOR_BUILD: lld
 
     - name: Upload release bundle artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: mstrap_linux_amd64
         path: dist
@@ -50,7 +50,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Add Crystal repos
       run: curl -sSL https://crystal-lang.org/install.sh | sudo bash
@@ -77,19 +77,23 @@ jobs:
         make release RELEASE=1 STATIC=1 TARGET_ARCH=aarch64 TARGET_CABI=musl
 
     - name: Upload release bundle artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: mstrap_linux_aarch64
         path: dist
 
   build_macos_amd64:
-    runs-on: macos-latest
+    runs-on: macos-14
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
+    # TODO: Remove openssl@3 reinstall cmd after 20240422.3 is no longer the latest
+    # macos-14-arm64 image
     - name: Install crystal and tool dependencies
-      run: brew install crystal meson openssl@3
+      run: |
+        brew install crystal meson openssl@3
+        brew update && brew reinstall openssl@3
 
     - name: Install dependencies
       run: shards install
@@ -113,25 +117,29 @@ jobs:
           mstrap
 
     - name: Build signed & notorized release bundle
-      run: make release RELEASE=1 STATIC=1
+      run: make release RELEASE=1 STATIC=1 TARGET_ARCH=x86_64
 
     - name: Smoke test the codesigned release
       run: bin/mstrap --help
 
     - name: Upload release bundle artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: mstrap_macos_amd64
         path: dist
 
   build_macos_arm64:
-    runs-on: macos-latest
+    runs-on: macos-14
     steps:
     - name: Checkout
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
+    # TODO: Remove openssl@3 reinstall cmd after 20240422.3 is no longer the latest
+    # macos-14-arm64 image
     - name: Install crystal and tool dependencies
-      run: brew install crystal meson openssl@3
+      run: |
+        brew install crystal meson openssl@3
+        brew update && brew reinstall openssl@3
 
     - name: Install dependencies
       run: shards install
@@ -157,12 +165,11 @@ jobs:
     - name: Build signed & notorized release bundle
       run: make release RELEASE=1 STATIC=1 TARGET_ARCH=arm64
 
-    # Re-enable after macos-latest is on Apple Silicon
-    # - name: Smoke test the codesigned release
-    #   run: bin/mstrap --help
+    - name: Smoke test the codesigned release
+      run: bin/mstrap --help
 
     - name: Upload release bundle artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: mstrap_macos_arm64
         path: dist
@@ -179,35 +186,35 @@ jobs:
 
     - name: Download mstrap_linux_amd64 artifacts
       id: download_linux_amd64
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4
       with:
         name: mstrap_linux_amd64
         path: dist-linux-amd64
 
     - name: Download mstrap_linux_aarch64 artifacts
       id: download_linux_aarch64
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4
       with:
         name: mstrap_linux_aarch64
         path: dist-linux-aarch64
 
     - name: Download mstrap_macos_amd64 artifacts
       id: download_macos_amd64
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4
       with:
         name: mstrap_macos_amd64
         path: dist-macos-amd64
 
     - name: Download mstrap_macos_arm64 artifacts
       id: download_macos_arm64
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v4
       with:
         name: mstrap_macos_arm64
         path: dist-macos-arm64
 
     - name: Create release
       id: create_release
-      uses: softprops/action-gh-release@v1
+      uses: softprops/action-gh-release@v2
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         draft: false

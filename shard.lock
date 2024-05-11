@@ -2,7 +2,7 @@ version: 2.0
 shards:
   ameba:
     git: https://github.com/crystal-ameba/ameba.git
-    version: 1.5.0
+    version: 1.6.1
 
   commander:
     git: https://github.com/mrrooijen/commander.git
@@ -14,7 +14,7 @@ shards:
 
   hcl:
     git: https://github.com/maxfierke/hcl.cr.git
-    version: 0.2.1
+    version: 0.2.2
 
   ioctl:
     git: https://github.com/crystal-posix/ioctl.cr.git

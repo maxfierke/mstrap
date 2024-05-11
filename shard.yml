@@ -10,14 +10,14 @@ dependencies:
     version: ~> 0.4.0
   hcl:
     github: maxfierke/hcl.cr
-    version: ~> 0.2.1
+    version: ~> 0.2.2
   term-prompt:
     github: crystal-term/prompt
 
 development_dependencies:
   ameba:
     github: crystal-ameba/ameba
-    version: ~> 1.5.0
+    version: ~> 1.6.1
   spectator:
     gitlab: arctic-fox/spectator
     version: ~> 0.11.6

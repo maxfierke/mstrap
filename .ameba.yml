@@ -1,0 +1,9 @@
+Documentation/DocumentationAdmonition:
+  Enabled: false
+
+Naming/BlockParameterName:
+  Enabled: false
+
+Naming/Filename:
+  Excluded:
+  - src/mstrap/templates/Brewfile.cr

@@ -53,11 +53,11 @@ DESC
         end
 
         cmd.flags.add do |flag|
-          flag.name = "debug"
-          flag.short = "-d"
-          flag.long = "--debug"
+          flag.name = "verbose"
+          flag.short = "-v"
+          flag.long = "--verbose"
           flag.default = false
-          flag.description = "Run with debug messaging."
+          flag.description = "Run with verbose messaging."
           flag.persistent = true
         end
 
@@ -96,6 +96,15 @@ DESC
           flag.long = "--skip-project-update"
           flag.default = false
           flag.description = "Skip auto-update of projects."
+          flag.persistent = true
+        end
+
+        cmd.flags.add do |flag|
+          flag.name = "version"
+          flag.short = "-V"
+          flag.long = "--version"
+          flag.default = false
+          flag.description = "Prints version number."
           flag.persistent = true
         end
 
@@ -266,7 +275,7 @@ DESC
     end
 
     private def load_cli_options!(options)
-      MStrap.debug = options.bool["debug"] if options.bool.has_key?("debug")
+      MStrap.verbose = options.bool["verbose"] if options.bool.has_key?("verbose")
       self.options.config_path = options.string["config_path"] if options.string.has_key?("config_path")
       self.options.force = options.bool["force"] if options.bool.has_key?("force")
       self.options.skip_project_update = options.bool["skip_project_update"] if options.bool.has_key?("skip_project_update")

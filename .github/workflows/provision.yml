@@ -49,7 +49,7 @@ jobs:
       env:
         STRAP_CI: true
       run: |
-        bin/mstrap --debug \
+        bin/mstrap --verbose \
         --config ${{ secrets.TEST_CONFIG_URL }}
 
     - name: Install required dependencies for ruby

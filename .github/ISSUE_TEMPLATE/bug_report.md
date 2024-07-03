@@ -28,7 +28,7 @@ If applicable, add logs or screenshots to help explain your problem. **Please re
 Add any other context about the problem here.
 
 **Checklist**
-- [ ] I have tried running with `--debug` and troubleshooting based on that output
+- [ ] I have tried running with `--verbose` and troubleshooting based on that output
 - [ ] I have provided relevant steps to reproduce
 - [ ] I have provided a log file and/or screenshots and have verified there is nothing sensitive
 - [ ] I am not asking for general troubleshooting/assistance with using the software

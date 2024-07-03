@@ -74,7 +74,7 @@ module MStrap
         error:  error,
       }
 
-      if MStrap.debug?
+      if MStrap.verbose?
         named = named.merge({
           input:  Process::Redirect::Inherit,
           output: Process::Redirect::Inherit,

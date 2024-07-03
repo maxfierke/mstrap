@@ -8,7 +8,7 @@ export USER="$(whoami)"
 export SHELL=/bin/bash
 export STRAP_CI=true
 
-MSTRAP_FLAGS=${MSTRAP_FLAGS:-"--debug"}
+MSTRAP_FLAGS=${MSTRAP_FLAGS:-"--verbose"}
 WORKSPACE=/workspace
 
 mkdir -p ~/.ssh && chmod 700 ~/.ssh

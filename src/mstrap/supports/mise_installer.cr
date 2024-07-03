@@ -38,7 +38,7 @@ module MStrap
         "MISE_INSTALL_PATH" => MISE_INSTALL_PATH,
       }
 
-      if MStrap.debug?
+      if MStrap.verbose?
         mise_env["MISE_DEBUG"] = "1"
       else
         mise_env["MISE_QUIET"] = "1"

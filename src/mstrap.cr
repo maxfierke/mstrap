@@ -59,24 +59,22 @@ module MStrap
     end
   end
 
-  @@debug = false
+  @@verbose = false
 
-  # Set debug mode for `mstrap`
-  def self.debug=(value)
-    @@debug = value
+  # Set verbose mode for `mstrap`
+  def self.verbose=(value)
+    @@verbose = value
   end
 
-  # Returns whether or not `mstrap` is in debug mode.
-  #
-  # NOTE: This is not the same as whether it was _compiled_ in debug mode.
-  def self.debug?
-    @@debug
+  # Returns whether or not `mstrap` is in verbose mode.
+  def self.verbose?
+    @@verbose
   end
 
   # Sets up Log instance that can be used to log to the mstrap log file.
-  # When `MStrap.debug?` is set to `true`, this also logs messages to `STDOUT`.
+  # When `MStrap.verbose?` is set to `true`, this also logs messages to `STDOUT`.
   def self.initialize_logger! : Nil
-    if debug?
+    if verbose?
       FileUtils.mkdir_p(Paths::RC_DIR, 0o755)
       log_file = File.new(MStrap::Paths::LOG_FILE, "a+")
       writer = IO::MultiWriter.new(log_file, STDOUT)

@@ -3,7 +3,7 @@ module MStrap
     module Logging
       # Logs a message, without appending a newline.
       def log(msg)
-        return logn(msg) if MStrap.debug?
+        return logn(msg) if MStrap.verbose?
         print msg
         Log.info { msg }
       end
@@ -34,14 +34,14 @@ module MStrap
       end
 
       # Logs a message at the FATAL level and terminate program. On a TTY, this
-      # will output in red. In debug, this will also print the stacktrace.
+      # will output in red. With --verbose, this will also print the stacktrace.
       def logc(msg)
         Log.fatal { msg }
-        if MStrap.debug?
+        if MStrap.verbose?
           abort msg.colorize(:red)
         else
           puts "!!! #{msg}".colorize(:red)
-          puts "!!! Check #{MStrap::Paths::LOG_FILE} and/or run with --debug for more detail.".colorize(:red)
+          puts "!!! Check #{MStrap::Paths::LOG_FILE} and/or run with --verbose for more detail.".colorize(:red)
           exit 1
         end
       end

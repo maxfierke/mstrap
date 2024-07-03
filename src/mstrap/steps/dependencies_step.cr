@@ -32,7 +32,7 @@ module MStrap
 
       private def strap_sh
         logn "==> Running strap.sh"
-        unless cmd "bash #{MStrap::Paths::STRAP_SH_PATH} #{MStrap.debug? ? "--debug" : ""}"
+        unless cmd "bash #{MStrap::Paths::STRAP_SH_PATH} #{MStrap.verbose? ? "--debug" : ""}"
           logc "Uhh oh, something went wrong in strap.sh-land."
         end
         success "Finished running strap.sh"
@@ -47,7 +47,7 @@ module MStrap
 
           if File.exists?(brewfile_path)
             log "--> Installing dependencies from Brewfile from profile '#{profile_config.name})': "
-            unless cmd "brew bundle --file=#{brewfile_path} #{MStrap.debug? ? "--verbose" : ""}"
+            unless cmd "brew bundle --file=#{brewfile_path} #{MStrap.verbose? ? "--verbose" : ""}"
               logc "Uhh oh, something went wrong in homebrewland."
             end
             success "OK"

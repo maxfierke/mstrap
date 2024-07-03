@@ -19,7 +19,7 @@ module MStrap
 
       install_args = [RUSTUP_INIT_SH_PATH, "--no-modify-path"]
 
-      if MStrap.debug?
+      if MStrap.verbose?
         install_args << "--verbose"
       else
         install_args << "--quiet"

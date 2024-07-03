@@ -23,12 +23,9 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
-    # TODO: Remove openssl@3 reinstall cmd after 20240422.3 is no longer the latest
-    # macos-14-arm64 image
     - name: Install crystal and tool dependencies
       run: |
         brew install crystal meson openssl@3
-        brew update && brew reinstall openssl@3
 
     - name: Install dependencies
       run: shards install

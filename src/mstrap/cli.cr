@@ -213,17 +213,12 @@ DESC
           end
         end
 
-        cmd.commands.add do |version_cmd|
-          version_cmd.use = "version"
-          version_cmd.short = "Prints version number."
-          version_cmd.long = version_cmd.short
-          version_cmd.run do |_, _|
-            puts "mstrap v#{MStrap::VERSION}"
+        cmd.run do |options, _|
+          if options.bool["version"]
+            puts MStrap::VERSION
             exit
           end
-        end
 
-        cmd.run do |options, _|
           cli_options = load_cli_options!(options)
           load_bootstrap_options!(options)
 

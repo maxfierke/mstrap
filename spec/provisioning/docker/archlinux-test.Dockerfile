@@ -1,6 +1,6 @@
 FROM archlinux:base
 
-RUN pacman --noconfirm -Syu && pacman --noconfirm -S ruby openssh zsh expat sudo
+RUN pacman --noconfirm -Syu && pacman --noconfirm -S ruby ruby-stdlib openssh zsh expat sudo
 
 RUN useradd -m -s /bin/bash -G wheel mstrap
 RUN echo 'mstrap ALL=(ALL) NOPASSWD:ALL' >> /etc/sudoers

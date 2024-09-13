@@ -44,7 +44,7 @@ module MStrap
 
     {% if flag?(:darwin) %}
       # :nodoc:
-      STRAP_SH_URL = "https://raw.githubusercontent.com/MikeMcQuaid/strap/master/bin/strap.sh"
+      STRAP_SH_URL = "https://raw.githubusercontent.com/MikeMcQuaid/strap/main/strap.sh"
 
       {% if flag?(:aarch64) %}
         # :nodoc:

@@ -19,18 +19,14 @@ module MStrap
         install_mise if runtime_managers.any? { |rm| rm.name == "mise" }
         install_rustup if runtime_managers.any? { |rm| rm.name == "rustup" }
         strap_sh
-        set_git_user!
         load_profile!
         brew_bundle
       end
 
-      private def set_git_user!
-        log "==> Setting git user details: "
-        unless cmd("git", "config", "--global", "user.name", user.name, quiet: true) && cmd("git", "config", "--global", "user.email", user.email, quiet: true)
-          logc "Unable to set git user details. Is git installed?"
-        end
-
-        success "OK"
+      private def set_strap_env!
+        ENV["STRAP_GIT_NAME"] = user.name
+        ENV["STRAP_GIT_EMAIL"] = user.email
+        ENV["STRAP_GITHUB_USER"] = user.github
       end
 
       private def strap_sh

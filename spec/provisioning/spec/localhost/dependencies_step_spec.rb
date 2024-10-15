@@ -16,7 +16,7 @@ describe "dependencies step" do
 
       expect(config_hcl).to match(/name = "#{git_name}"/)
       expect(config_hcl).to match(/email = "#{git_email}"/)
-      expect(config_hcl).to match(/github = "#{ENV["MSTRAP_USER_GITHUB"]}"/)
+      expect(config_hcl).to match(/github = "#{git_github}"/)
     end
   end
 

@@ -161,7 +161,7 @@ check-formatting: $(SOURCES)
 
 .PHONY: check-libraries
 check-libraries: bin/mstrap
-	@if [ ! -z "$(STATIC)" ] && [ "$(TARGET_OS)" == "darwin" ] && [ "$$(otool -LX bin/mstrap | awk '{print $$1}')" != "$$(cat expected.libs.darwin)" ]; then \
+	@if [ ! -z "$(STATIC)" ] && [ "$(TARGET_OS)" == "darwin" ] && [ "$$(otool -LX bin/mstrap | awk '{print $$1}' | sort)" != "$$(cat expected.libs.darwin)" ]; then \
 		echo "FAIL: bin/mstrap has non-allowed dynamic libraries"; \
 		exit 1; \
 	else \

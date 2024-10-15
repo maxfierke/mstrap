@@ -5,7 +5,9 @@ SHELL := bash
 .DELETE_ON_ERROR:
 .SUFFIXES:
 
-CODESIGN_IDENTITY ?= 66837B7A624EA4CDB507D40C6940C74A740EF5B1
+-include Makefile.local
+
+CODESIGN_IDENTITY ?=
 CRFLAGS           ?=
 CRYSTAL           ?= $(shell which crystal)
 HOST_ARCH         := $(shell uname -m)

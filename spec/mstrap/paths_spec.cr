@@ -86,7 +86,7 @@ Spectator.describe MStrap::Paths do
       {% if flag?(:darwin) %}
         expect(
           MStrap::Paths::STRAP_SH_URL
-        ).to eq("https://raw.githubusercontent.com/MikeMcQuaid/strap/main/strap.sh")
+        ).to eq("https://raw.githubusercontent.com/MikeMcQuaid/strap/9bab07706bb1e143b8f1dbadf26d01d017f53436/bin/strap.sh")
       {% elsif flag?(:linux) %}
         expect(
           MStrap::Paths::STRAP_SH_URL

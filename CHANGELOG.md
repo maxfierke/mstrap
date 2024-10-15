@@ -40,11 +40,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - [BREAKING] The `-d`/`--debug` flag has been changed to `-v`/`--verbose` (#59)
 - macOS: Attempt to work out if `git` is really installed or not (#57)
+- macOS: Updated codesigning certificate
+- `strap.sh` removed a few behaviors on 2024-09-04, specifically setting Git
+  user attributes. These attributes are now set via `mstrap dependencies`. Other
+  removed behaviors like setting a "Found this computer?" message can be set via
+  dotfiles scripts, which are still supported.
 
 ### Bugfixes
 
 - [BREAKING] Setting `runtimes = []` in a project now has the intended effect of
   _disabling_ all language runtime detection. Previously, this had no effect. (#56)
+- Update `strap.sh` URL to the new structure
 
 ### Removed
 

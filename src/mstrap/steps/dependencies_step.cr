@@ -18,8 +18,8 @@ module MStrap
       def bootstrap
         install_mise if runtime_managers.any? { |rm| rm.name == "mise" }
         install_rustup if runtime_managers.any? { |rm| rm.name == "rustup" }
-        set_git_user!
         strap_sh
+        set_git_user!
         load_profile!
         brew_bundle
       end

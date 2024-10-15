@@ -96,7 +96,7 @@ jobs:
       run: shards install
 
     - name: Import Developer ID Application cert for signing and notorizing
-      uses: Apple-Actions/import-codesign-certs@5565bb656f60c98c8fc515f3444dd8db73545dc2
+      uses: Apple-Actions/import-codesign-certs@63fff01cd422d4b7b855d40ca1e9d34d2de9427d # v3
       with:
         p12-file-base64: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_P12_BASE64 }}
         p12-password: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_PASSWORD }}
@@ -139,7 +139,7 @@ jobs:
       run: shards install
 
     - name: Import Developer ID Application cert for signing and notorizing
-      uses: Apple-Actions/import-codesign-certs@5565bb656f60c98c8fc515f3444dd8db73545dc2
+      uses: Apple-Actions/import-codesign-certs@63fff01cd422d4b7b855d40ca1e9d34d2de9427d # v3
       with:
         p12-file-base64: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_P12_BASE64 }}
         p12-password: ${{ secrets.APPLE_DEVELOPER_CERTIFICATE_PASSWORD }}

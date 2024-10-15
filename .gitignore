@@ -12,3 +12,4 @@
 *.dwarf
 .DS_Store
 /vendor/
+Makefile.local

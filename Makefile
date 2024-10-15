@@ -5,7 +5,9 @@ SHELL := bash
 .DELETE_ON_ERROR:
 .SUFFIXES:
 
-CODESIGN_IDENTITY ?= 66837B7A624EA4CDB507D40C6940C74A740EF5B1
+-include Makefile.local
+
+CODESIGN_IDENTITY ?=
 CRFLAGS           ?=
 CRYSTAL           ?= $(shell which crystal)
 HOST_ARCH         := $(shell uname -m)
@@ -159,7 +161,7 @@ check-formatting: $(SOURCES)
 
 .PHONY: check-libraries
 check-libraries: bin/mstrap
-	@if [ ! -z "$(STATIC)" ] && [ "$(TARGET_OS)" == "darwin" ] && [ "$$(otool -LX bin/mstrap | awk '{print $$1}')" != "$$(cat expected.libs.darwin)" ]; then \
+	@if [ ! -z "$(STATIC)" ] && [ "$(TARGET_OS)" == "darwin" ] && [ "$$(otool -LX bin/mstrap | awk '{print $$1}' | sort)" != "$$(cat expected.libs.darwin)" ]; then \
 		echo "FAIL: bin/mstrap has non-allowed dynamic libraries"; \
 		exit 1; \
 	else \

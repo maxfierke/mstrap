@@ -114,7 +114,7 @@ jobs:
           mstrap
 
     - name: Build signed & notorized release bundle
-      run: make release RELEASE=1 STATIC=1 TARGET_ARCH=x86_64
+      run: make release RELEASE=1 STATIC=1 TARGET_ARCH=x86_64 CODESIGN_IDENTITY="${{ secrets.CODESIGN_IDENTITY }}"
 
     - name: Smoke test the codesigned release
       run: bin/mstrap --help
@@ -157,7 +157,7 @@ jobs:
           mstrap
 
     - name: Build signed & notorized release bundle
-      run: make release RELEASE=1 STATIC=1 TARGET_ARCH=arm64
+      run: make release RELEASE=1 STATIC=1 TARGET_ARCH=arm64 CODESIGN_IDENTITY="${{ secrets.CODESIGN_IDENTITY }}"
 
     - name: Smoke test the codesigned release
       run: bin/mstrap --help

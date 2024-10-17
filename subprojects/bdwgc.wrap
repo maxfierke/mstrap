@@ -1,12 +1,13 @@
 [wrap-file]
-directory = gc-8.2.2
-source_url = https://github.com/ivmai/bdwgc/releases/download/v8.2.2/gc-8.2.2.tar.gz
-source_filename = gc-8.2.2.tar.gz
-source_hash = f30107bcb062e0920a790ffffa56d9512348546859364c23a14be264b38836a0
-patch_filename = bdwgc_8.2.2-1_patch.zip
-patch_url = https://wrapdb.mesonbuild.com/v2/bdwgc_8.2.2-1/get_patch
-patch_hash = 7e6bd7765d3bbbc83b983fa6928d91f740d3bf0bb5b5cbe58c4cf9642d5b5989
-wrapdb_version = 8.2.2-1
+directory = gc-8.2.8
+source_url = https://github.com/ivmai/bdwgc/releases/download/v8.2.8/gc-8.2.8.tar.gz
+source_filename = gc-8.2.8.tar.gz
+source_hash = 7649020621cb26325e1fb5c8742590d92fb48ce5c259b502faf7d9fb5dabb160
+patch_filename = bdwgc_8.2.8-1_patch.zip
+patch_url = https://wrapdb.mesonbuild.com/v2/bdwgc_8.2.8-1/get_patch
+patch_hash = 4dd7f367ed257d41d6712082b269fed43abebb0049253505222f472dfc3ab04c
+source_fallback_url = https://github.com/mesonbuild/wrapdb/releases/download/bdwgc_8.2.8-1/gc-8.2.8.tar.gz
+wrapdb_version = 8.2.8-1
 
 [provide]
 gc = bdwgc_dep

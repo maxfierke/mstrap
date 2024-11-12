@@ -8,6 +8,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
+### Changed
+
+### Bugfixes
+
+### Removed
+
+## [0.7.0] - 2024-11-11
+
+### Added
+
 - Support for using [mise](https://mise.jdx.dev) to manage language runtime versions (#50, #53). `config.hcl` can be configured as such to enable it:
   ```
   version = "1.1"
@@ -22,14 +32,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   To switch, you'll need to re-run `mstrap` and restart your terminal windows.
   Then, you can run `brew uninstall asdf --force` to uninstall asdf (`mstrap`
   will have removed `asdf`'s activation from mstrap's `env.sh` already)
+- [EXPERIMENTAL] Support `pnpm install` for Node.js/JavaScript-based projects.
+  This is currently done through `brew`, rather than `corepack`, but this may
+  change. (#56)
 
 ### Changed
 
+- [BREAKING] The `-d`/`--debug` flag has been changed to `-v`/`--verbose` (#59)
+- macOS: Attempt to work out if `git` is really installed or not (#57)
+- macOS: Updated codesigning certificate
+
 ### Bugfixes
+
+- [BREAKING] Setting `runtimes = []` in a project now has the intended effect of
+  _disabling_ all language runtime detection. Previously, this had no effect. (#56)
+- macOS: `strap.sh` URL is pinned to [`9bab07706bb1e143b8f1dbadf26d01d017f53436`](https://github.com/MikeMcQuaid/strap/blob/9bab07706bb1e143b8f1dbadf26d01d017f53436/bin/strap.sh) given functionality removed after that
 
 ### Removed
 
-- Fix deprecation warning in newer Docker Compose versions caused by version property in `~/.mstrap/services-internal.yml`
+- Fix deprecation warning in newer Docker Compose versions caused by version property in `~/.mstrap/services-internal.yml` (#58)
 
 ## [0.6.0] - 2023-10-15
 

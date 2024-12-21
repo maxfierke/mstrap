@@ -29,7 +29,7 @@ describe "dependencies step" do
       'jq',
       'mkcert',
       'openssl@3',
-      'pkg-config',
+      'pkgconf',
       'zlib',
     ].freeze
 

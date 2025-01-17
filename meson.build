@@ -1,6 +1,6 @@
 project('mstrap',
   'c',
-  meson_version : '>= 0.60.0',
+  meson_version : '>= 0.62.0',
   license : 'MIT',
   version : '0.7.0',
   default_options : [
@@ -47,7 +47,7 @@ elif target_system == 'darwin'
   endif
 endif
 
-crystal = find_program(get_option('crystal'), required : true)
+crystal = find_program(get_option('crystal'), version : '>= 1.8.0', required : true)
 shards = find_program(get_option('shards'), required : true)
 
 # Basics
@@ -79,14 +79,18 @@ if embedded_openssl
   )
 endif
 
-# Libevent (required for Crystal runtime)
+# Libevent (required for Crystal runtime < 1.15.0 or platforms not supported by
+#           lifetime event loop in Crystal 1.15.0+)
+crystal_requires_libevent = crystal.version().version_compare('< 1.15.0') or \
+  (target_system != 'linux' and target_system != 'darwin' and target_system != 'freebsd')
+
 libevent_dep = dependency(
   'libevent',
   version : '>= 2.1.2',
   static : is_static,
   required : false,
 )
-if not libevent_dep.found()
+if not libevent_dep.found() and crystal_requires_libevent
   cmake = import('cmake')
   libevent_options = cmake.subproject_options()
   libevent_options.add_cmake_defines({
@@ -147,7 +151,6 @@ if embedded_openssl
 endif
 
 crystal_build_flags = [
-  '-Devloop=libevent',
   '--error-trace',
   '--cross-compile',
   '--target',

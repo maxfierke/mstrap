@@ -8,7 +8,7 @@ SHELL := bash
 -include Makefile.local
 
 CODESIGN_IDENTITY ?=
-CRFLAGS           ?= -Devloop=libevent
+CRFLAGS           ?=
 CRYSTAL           ?= $(shell which crystal)
 HOST_ARCH         := $(shell uname -m)
 HOST_OS           := $(shell uname -s | tr '[:upper:]' '[:lower:]')

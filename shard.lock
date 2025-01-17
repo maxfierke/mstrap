@@ -2,7 +2,7 @@ version: 2.0
 shards:
   ameba:
     git: https://github.com/crystal-ameba/ameba.git
-    version: 1.6.1
+    version: 1.6.4
 
   commander:
     git: https://github.com/mrrooijen/commander.git
@@ -18,7 +18,7 @@ shards:
 
   ioctl:
     git: https://github.com/crystal-posix/ioctl.cr.git
-    version: 0.1.2
+    version: 1.0.0
 
   pegmatite:
     git: https://github.com/jemc/crystal-pegmatite.git
@@ -30,17 +30,17 @@ shards:
 
   term-cursor:
     git: https://github.com/crystal-term/cursor.git
-    version: 0.1.0+git.commit.8805d5f686d153db92cf2ce3333433f8ed3708d0
+    version: 0.1.0+git.commit.6bbe0a27a423bc4e0239a051afca05fd36b47e0a
 
   term-prompt:
     git: https://github.com/crystal-term/prompt.git
-    version: 0.1.0+git.commit.bf2b17f885a6c660aea0dda62b0b9da4343ab295
+    version: 0.1.0+git.commit.40918abe27dcba10b6f0cfed2e33a01b2a336733
 
   term-reader:
     git: https://github.com/crystal-term/reader.git
-    version: 0.1.0+git.commit.e174733435c96c745bee31ac5c5d4def3ccf4285
+    version: 0.1.0+git.commit.83adad4a77115dc08efad8057cda3e399d0f1a24
 
   term-screen:
     git: https://github.com/crystal-term/screen.git
-    version: 0.1.0+git.commit.b3a57931b529d60f4e626913feef21b30a6e697a
+    version: 0.1.0+git.commit.8fdecd58ace9e981280b79dc6b16179b173e630b
 

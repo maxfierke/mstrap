@@ -41,7 +41,7 @@ jobs:
 
     - name: Install crystal and tool dependencies
       run: |
-        sudo apt install -y crystal libevent-dev libpcre2-dev libssl-dev ninja-build
+        sudo apt install -y crystal libpcre2-dev libssl-dev ninja-build
         sudo apt purge meson
         sudo pip3 install meson
 

@@ -53,7 +53,7 @@ module MStrap
       output = Process::Redirect::Inherit,
       error = Process::Redirect::Inherit,
       quiet = false,
-      sudo = false
+      sudo = false,
     )
       if sudo
         if args

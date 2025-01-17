@@ -26,7 +26,7 @@ module MStrap
       def initialize(
         @user = UserDef.new,
         @profiles = Array(ProfileConfigDef).new,
-        @runtimes = RuntimesConfigDef.new
+        @runtimes = RuntimesConfigDef.new,
       )
       end
     end

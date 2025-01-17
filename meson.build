@@ -147,6 +147,7 @@ if embedded_openssl
 endif
 
 crystal_build_flags = [
+  '-Devloop=libevent',
   '--error-trace',
   '--cross-compile',
   '--target',

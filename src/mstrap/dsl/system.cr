@@ -11,7 +11,7 @@ module MStrap
         env : Hash?,
         command : String,
         args : Array(String)?,
-        **kwargs
+        **kwargs,
       )
         MStrap::Platform.run_command(
           env,

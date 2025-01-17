@@ -48,7 +48,7 @@ module MStrap
 
     def initialize(
       config : Defs::ConfigDef,
-      config_path : String = Paths::CONFIG_HCL
+      config_path : String = Paths::CONFIG_HCL,
     )
       @config_def = config
       @config_path = config_path

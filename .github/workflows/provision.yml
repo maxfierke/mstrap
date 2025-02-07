@@ -54,7 +54,7 @@ jobs:
 
     - name: Install required dependencies for ruby
       run: |
-        brew install gmp
+        brew install gmp libyaml
 
     - uses: ruby/setup-ruby@v1
       with:

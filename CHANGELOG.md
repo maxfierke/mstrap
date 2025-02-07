@@ -14,6 +14,24 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [0.7.1] - 2025-02-06
+
+### Added
+
+### Changed
+
+* Update default `Brewfile` to use `pkgconf` instead of `pkg-config` to match
+  formula rename in `homebrew-core` (#63)
+* Allow skipping libevent when compiled with Crystal 1.15.0+ (#64)
+* Update `asdf` integration to work with 0.16 (#65) -- `asdf` 0.16 itself is a
+  breaking change, but running `mstrap` should install the latest version and
+  update shell configuration accordingly. Standard caveats about restarting the
+  shell.
+
+### Bugfixes
+
+### Removed
+
 ## [0.7.0] - 2024-11-11
 
 ### Added

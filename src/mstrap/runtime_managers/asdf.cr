@@ -12,14 +12,14 @@ module MStrap
       # Returns whether the ASDF plugin has been installed for a language runtime
       # or not
       def has_plugin?(language_name : String) : Bool
-        `asdf plugin-list`.chomp.split("\n").includes?(plugin_name(language_name))
+        `asdf plugin list`.chomp.split("\n").includes?(plugin_name(language_name))
       end
 
       def install_plugin(language_name : String) : Bool
         asdf_plugin_name = plugin_name(language_name)
 
         if asdf_plugin_name
-          cmd("asdf plugin-add #{asdf_plugin_name}", quiet: true)
+          cmd("asdf plugin add #{asdf_plugin_name}", quiet: true)
         else
           logw "Unable to find an ASDF plugin for #{language_name}"
           false
@@ -76,14 +76,14 @@ module MStrap
       end
 
       def set_global_version(language_name, version : String) : Bool
-        cmd "asdf global #{plugin_name(language_name)} #{version}", quiet: true
+        cmd "asdf set --home #{plugin_name(language_name)} #{version}", quiet: true
       end
 
       def shell_activation(shell_name : String) : String
         <<-SHELL
         # Activate asdf for language runtime version management
         if [ -d "$(brew --prefix asdf)" ]; then
-          source "$(brew --prefix asdf)/libexec/asdf.sh"
+          export PATH="${ASDF_DATA_DIR:-$HOME/.asdf}/shims:$PATH"
 
           if [ ! -f "$HOME/.asdfrc" ]; then
             echo "legacy_version_file = yes\n" > "$HOME/.asdfrc"

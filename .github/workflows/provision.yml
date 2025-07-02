@@ -100,7 +100,7 @@ jobs:
         set -eu -o pipefail
         curl -fsSL -O https://github.com/cross-tools/musl-cross/releases/download/20250520/x86_64-unknown-linux-musl.tar.xz
         echo "a896bad67a4dae7cd7baece62d537fda07f8c74e65fee1b450a691b83e151a9c x86_64-unknown-linux-musl.tar.xz" | sha256sum -c -
-        tar xzf x86_64-unknown-linux-musl.tar.xz -C /opt
+        tar xaf x86_64-unknown-linux-musl.tar.xz -C /opt
         echo "/opt/x86_64-unknown-linux-musl/bin" >> $GITHUB_PATH
         sed -i 's/x86_64-linux-musl/x86_64-unknown-linux-musl/g' config/linux-x86_64-musl.ini
 

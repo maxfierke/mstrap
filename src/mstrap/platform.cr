@@ -117,6 +117,16 @@ module MStrap
       platform.install_packages!([package_name])
     end
 
+    # Uninstall a list of packages using the platform's package manager
+    def self.uninstall_packages!(packages : Array(String))
+      platform.uninstall_packages!(packages)
+    end
+
+    # Uninstall a single package using the platform's package manager
+    def self.uninstall_package!(package_name : String)
+      platform.uninstall_packages!([package_name])
+    end
+
     # Install a single package using the platform's package manager
     def self.package_installed?(package_name : String)
       platform.package_installed?(package_name)

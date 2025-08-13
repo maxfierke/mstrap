@@ -22,6 +22,7 @@ module MStrap
 
     # Runs dnsmasq install process and adds resolver for .localhost
     def install!
+      remove_launchdns!
       install_dnsmasq!
       install_dnsmasq_config!
       install_resolver!
@@ -35,9 +36,27 @@ module MStrap
       File.exists?(RESOLVER_CONFIG_PATH)
     end
 
+    private def remove_launchdns! : Nil
+      return unless has_command?("launchdns")
+
+      logn "==> Found launchdns. Removing..."
+
+      log "===> Remove .localhost resolver config:"
+      if File.exists?(RESOLVER_CONFIG_PATH)
+        unless cmd("rm", "-f", RESOLVER_CONFIG_PATH, sudo: true)
+          logc "An error occurred while removing #{RESOLVER_CONFIG_PATH}"
+        end
+      end
+      success "OK"
+
+      log "===> Uninstalling launchdns:"
+      MStrap::Platform.uninstall_packages!(["launchdns"])
+      success "OK"
+    end
+
     private def install_dnsmasq! : Nil
       return if has_command?("dnsmasq")
-      logn "==> Installing dnsmasq:"
+      log "==> Installing dnsmasq:"
       MStrap::Platform.install_packages!(["dnsmasq"])
       success "OK"
     end
@@ -49,12 +68,12 @@ module MStrap
         logc "dnsmasq config doesn't exist at #{CONFIG_PATH}"
       end
 
-      logn "==> Updating dnsmasq config to resolve *.localhost: "
+      log "==> Updating dnsmasq config to resolve *.localhost: "
       File.open(CONFIG_PATH, "a") do |config_file|
         config_file.puts CONFIG_BLOCK
       end
       success "OK"
-      logn "==> Reloading dnsmasq with config...: "
+      log "==> Restarting dnsmasq: "
       unless cmd("brew services restart dnsmasq", quiet: true, sudo: true)
         logc "An error occurred while restarting dnsmasq. Did you have a prior configuration that conflicts?"
       end

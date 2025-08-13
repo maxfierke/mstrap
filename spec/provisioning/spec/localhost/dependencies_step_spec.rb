@@ -59,10 +59,4 @@ describe "dependencies step" do
       end
     end
   end
-
-  describe "launchdns", :if => os[:family] == 'darwin' do
-    describe service('homebrew.mxcl.launchdns') do
-      it { is_expected.to be_enabled }
-    end
-  end
 end

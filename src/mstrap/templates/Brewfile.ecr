@@ -23,9 +23,4 @@ if /darwin/ =~ RUBY_PLATFORM
   brew 'gnu-sed'
   brew 'gnu-tar'
   brew 'libiconv'
-
-  # Resolve *.localhost
-  brew 'launchdns', restart_service: true
-else
-  # TODO: dnsmasq or something
 end

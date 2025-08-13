@@ -7,6 +7,10 @@ module MStrap
         cmd("yum", ["-y", "install"] + packages, sudo: true)
       end
 
+      def self.uninstall_packages!(packages : Array(String))
+        cmd("yum", ["-y", "remove"] + packages, sudo: true)
+      end
+
       def self.package_installed?(package_name : String)
         cmd("yum", ["info", "--installed", package_name], quiet: true)
       end

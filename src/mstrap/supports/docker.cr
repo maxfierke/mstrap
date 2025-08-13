@@ -104,8 +104,8 @@ module MStrap
     # requiring a reboot.
     def install!
       {% if flag?(:darwin) %}
-        unless app_path || cmd "brew cask install docker"
-          logc "Could not install docker via Homebrew cask"
+        unless app_path || cmd "brew install --cask docker-desktop"
+          logc "Could not install docker-desktop via Homebrew cask"
         end
       {% elsif flag?(:linux) %}
         if !cmd("docker version", quiet: true, sudo: requires_sudo?) || !cmd("docker compose version", quiet: true, sudo: requires_sudo?)

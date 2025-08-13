@@ -7,12 +7,15 @@ module MStrap
 
       def initialize(@config : Configuration)
         super
+        @dnsmasq = DNSMasq.new
         @mkcert = Mkcert.new
       end
 
       # Executes the bootstrapper
       def bootstrap(project : Project) : Bool
         logd "'#{project.name}' is a web project. Running web bootstrapper."
+
+        dnsmasq.install! unless dnsmasq.installed?
 
         if mkcert.installed?
           Dir.cd(Paths::PROJECT_CERTS) do
@@ -27,6 +30,7 @@ module MStrap
         true
       end
 
+      private getter :dnsmasq
       private getter :mkcert
     end
   end

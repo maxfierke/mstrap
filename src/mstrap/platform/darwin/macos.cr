@@ -33,6 +33,10 @@ module MStrap
         cmd("brew", ["install"] + packages)
       end
 
+      def self.uninstall_packages!(packages : Array(String))
+        cmd("brew", ["uninstall"] + packages)
+      end
+
       def self.package_installed?(package_name : String)
         cmd("brew list | grep -q '^#{package_name}$'", quiet: true)
       end

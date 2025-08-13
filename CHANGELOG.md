@@ -14,6 +14,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Removed
 
+## [0.7.2] - 2025-08-13
+
+### Added
+
+* ci: Add Ubuntu 24.04 LTS to CI
+
+### Changed
+
+* macOS: replace `launchdns` with `dnsmasq` for `*.localhost` TLD resolution for
+  bootstrapped web projects
+
+  `launchdns` has been removed from Homebrew after the upstream project was
+  archived, so it is no longer installable. `dnsmasq` is a mostly drop-in
+  replacement
+
+### Bugfixes
+
+* Fixed install of Docker Desktop on macOS via Homebrew
+
+### Removed
+
 ## [0.7.1] - 2025-02-06
 
 ### Added

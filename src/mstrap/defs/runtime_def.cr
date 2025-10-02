@@ -8,7 +8,7 @@ module MStrap
       property default_version : String? = nil
 
       @[HCL::Block(key: "package")]
-      property packages = [] of ::MStrap::Defs::PkgDef
+      property packages = Hash(String, MStrap::Defs::PkgDef).new
 
       def_equals_and_hash @name, @default_version, @packages
 
@@ -17,11 +17,11 @@ module MStrap
           self.default_version = other.default_version
         end
 
-        other.packages.each do |pkg|
-          if existing_pkg = self.packages.find { |g| g.name == pkg.name }
+        other.packages.each do |pkg_name, pkg|
+          if existing_pkg = self.packages[pkg_name]?
             existing_pkg.merge!(pkg)
           else
-            self.packages << pkg
+            self.packages[pkg_name] = pkg
           end
         end
       end

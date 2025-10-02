@@ -14,7 +14,7 @@ shards:
 
   hcl:
     git: https://github.com/maxfierke/hcl.cr.git
-    version: 0.2.2
+    version: 0.3.0
 
   ioctl:
     git: https://github.com/crystal-posix/ioctl.cr.git

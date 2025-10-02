@@ -50,7 +50,7 @@ module MStrap
       end
 
       private def projects
-        @projects ||= profile.projects.map do |project_def|
+        @projects ||= profile.projects.values.map do |project_def|
           MStrap::Project.for(project_def)
         end
       end

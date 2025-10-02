@@ -47,7 +47,7 @@ module MStrap
         default_runtime_manager = self.for(config_def.runtimes.default_manager)
         managers = [default_runtime_manager]
 
-        config_def.runtimes.runtimes.map(&.manager).uniq!.each do |manager_name|
+        config_def.runtimes.runtimes.values.map(&.manager).uniq!.each do |manager_name|
           next if !manager_name
           managers << RuntimeManager.for(manager_name)
         end
@@ -63,7 +63,7 @@ module MStrap
         {% for subclass, index in Runtime.subclasses %}
           {% language_name = subclass.name.stringify.split("::").last.downcase %}
 
-          %runtime_def{index} = config_def.runtimes.runtimes.find { |r| r.name == {{ language_name }} }
+          %runtime_def{index} = config_def.runtimes.runtimes[{{ language_name }}]?
 
           if %runtime_def{index} && (runtime_manager_name = %runtime_def{index}.manager)
             runtime_manager = self.for(runtime_manager_name)

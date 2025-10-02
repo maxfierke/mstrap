@@ -24,7 +24,7 @@ module MStrap
       end
 
       private def runtime_config(runtime)
-        profile.runtimes.find { |r| r.name == runtime.language_name }
+        profile.runtimes[runtime.language_name]?
       end
 
       private def runtime_packages(runtime)
@@ -32,7 +32,7 @@ module MStrap
         if cfg
           cfg.packages
         else
-          [] of Defs::PkgDef
+          Hash(String, Defs::PkgDef).new
         end
       end
 
@@ -58,9 +58,9 @@ module MStrap
       private def install_package_globals(runtime, packages)
         logn "--> Installing global packages for installed #{runtime.language_name} versions: "
         runtime.installed_versions.each do |version|
-          package_names = packages.map(&.name)
+          package_names = packages.keys
           log "Installing #{package_names.join(", ")} for #{runtime.language_name} #{version}: "
-          unless runtime.install_packages(packages, version)
+          unless runtime.install_packages(packages.values, version)
             logc "Could not install global #{runtime.language_name} packages for #{version}"
           end
           success "OK"

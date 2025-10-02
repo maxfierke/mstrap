@@ -194,8 +194,7 @@ DESC
               project_cname = arguments[0]
               project_def = config
                 .resolved_profile
-                .projects
-                .find { |proj| proj.cname == project_cname }
+                .projects[project_cname]?
             end
 
             project_def ||= Defs::ProjectDef.new

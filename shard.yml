@@ -10,7 +10,7 @@ dependencies:
     version: ~> 0.4.0
   hcl:
     github: maxfierke/hcl.cr
-    version: ~> 0.2.2
+    version: ~> 0.3.0
   term-prompt:
     github: crystal-term/prompt
 

@@ -5,10 +5,10 @@ module MStrap
       property version = "1.0"
 
       @[HCL::Block(key: "project")]
-      property projects = [] of ::MStrap::Defs::ProjectDef
+      property projects = Hash(String, ::MStrap::Defs::ProjectDef).new
 
       @[HCL::Block(key: "runtime")]
-      property runtimes = [] of ::MStrap::Defs::RuntimeDef
+      property runtimes = Hash(String, MStrap::Defs::RuntimeDef).new
 
       def_equals_and_hash @version, @projects, @runtimes
 
@@ -16,19 +16,19 @@ module MStrap
       end
 
       def merge!(other : self)
-        other.runtimes.each do |runtime|
-          if existing_runtime = self.runtimes.find { |rt| rt.name == runtime.name }
+        other.runtimes.each do |runtime_name, runtime|
+          if existing_runtime = self.runtimes[runtime_name]?
             existing_runtime.merge!(runtime)
           else
-            self.runtimes << runtime
+            self.runtimes[runtime_name] = runtime
           end
         end
 
-        other.projects.each do |proj|
-          if existing_project = self.projects.find { |pr| pr.cname == proj.cname }
+        other.projects.each do |proj_cname, proj|
+          if existing_project = self.projects[proj_cname]?
             existing_project.merge!(proj)
           else
-            self.projects << proj
+            self.projects[proj_cname] = proj
           end
         end
       end

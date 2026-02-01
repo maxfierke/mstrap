@@ -13,6 +13,7 @@ dependencies:
     version: ~> 0.2.2
   term-prompt:
     github: crystal-term/prompt
+    version: ~> 0.3.3
 
 development_dependencies:
   ameba:

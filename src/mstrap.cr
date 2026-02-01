@@ -46,6 +46,20 @@ module Term
   end
 end
 
+# :nodoc:
+module Term
+  class Prompt
+    class ConfirmQuestion
+      def convert_result(value)
+        positive_word = Regex.escape(positive.to_s)
+        positive_letter = Regex.escape("#{positive.to_s[0]}") # Regex.escape does not support char anymore
+        pattern = Regex.new("^#{positive_word}|#{positive_letter}$", Regex::Options::IGNORE_CASE)
+        !value.to_s.match(pattern).nil?
+      end
+    end
+  end
+end
+
 # Defines top-level constants and shared utilities
 module MStrap
   Log          = ::Log.for("mstrap")

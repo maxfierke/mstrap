@@ -8,17 +8,9 @@ shards:
     git: https://github.com/mrrooijen/commander.git
     version: 0.4.0
 
-  cor:
-    git: https://github.com/watzon/cor.git
-    version: 0.1.0+git.commit.9c9e51ac6168f3bd4fdc51d679b65de09ef76cac
-
   hcl:
     git: https://github.com/maxfierke/hcl.cr.git
     version: 0.2.2
-
-  ioctl:
-    git: https://github.com/crystal-posix/ioctl.cr.git
-    version: 1.0.0
 
   pegmatite:
     git: https://github.com/jemc/crystal-pegmatite.git
@@ -28,19 +20,23 @@ shards:
     git: https://gitlab.com/arctic-fox/spectator.git
     version: 0.12.1
 
+  term-color:
+    git: https://github.com/crystal-term/color.git
+    version: 0.4.1
+
   term-cursor:
     git: https://github.com/crystal-term/cursor.git
-    version: 0.1.0+git.commit.6bbe0a27a423bc4e0239a051afca05fd36b47e0a
+    version: 0.3.1
 
   term-prompt:
     git: https://github.com/crystal-term/prompt.git
-    version: 0.1.0+git.commit.40918abe27dcba10b6f0cfed2e33a01b2a336733
+    version: 0.3.3
 
   term-reader:
     git: https://github.com/crystal-term/reader.git
-    version: 0.1.0+git.commit.83adad4a77115dc08efad8057cda3e399d0f1a24
+    version: 0.3.2
 
   term-screen:
     git: https://github.com/crystal-term/screen.git
-    version: 0.1.0+git.commit.8fdecd58ace9e981280b79dc6b16179b173e630b
+    version: 0.3.1
 
